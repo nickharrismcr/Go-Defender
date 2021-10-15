@@ -35,7 +35,7 @@ func TestFSM(t *testing.T) {
 
 	logs := len(testlog.Get())
 	if logs != 600 {
-		t.Fatalf("State transition count %d != %d", logs, 800)
+		t.Errorf("State transition count %d != %d", logs, 800)
 	}
 
 }

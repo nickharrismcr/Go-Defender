@@ -24,11 +24,11 @@ func (s *teststate1) GetName() string {
 
 func (s *teststate1) Enter(ai *cmp.AICmp) {
 
-	testlog.Add(fmt.Sprintf("%d Enter %s %d", ai.Id, s.Name, ai.Counter))
+	testlog.Add(fmt.Sprintf("%d Enter %s", ai.Id, s.Name))
 }
 
 func (s *teststate1) Update(ai *cmp.AICmp) {
 
 	ai.NextStateName = "teststate2"
-	testlog.Add(fmt.Sprintf("%d Update %s %d", ai.Id, s.Name, ai.Counter))
+	testlog.Add(fmt.Sprintf("%d Update %s", ai.Id, s.Name))
 }

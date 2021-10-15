@@ -2,6 +2,7 @@ package game
 
 import (
 	"FSM/cmp"
+	"FSM/logger"
 	"fmt"
 )
 
@@ -36,25 +37,20 @@ func (e *Entity) Active() bool {
 	return e.active
 }
 
-func (e *Entity) Activate() {
-	if !e.active {
-		e.active = true
-	}
-}
-
-func (e *Entity) Deactivate() {
-	if e.active {
-		e.active = false
-	}
+func (e *Entity) SetActive(s bool) {
+	logger.Debug("Entity %d set active %t ", e.Id, s)
+	e.active = s
 }
 
 func (e *Entity) AddComponent(c cmp.ICmp) {
+	logger.Debug("Entity %d add component %s", e.Id, c.Type())
 	e.comps[c.Type()] = c
 	e.engine.AddComponent(e, c)
 
 }
 
 func (e *Entity) RemoveComponent(ct cmp.CmpType) {
+	logger.Debug("Entity %d remove component %s", e.Id, ct.String())
 	delete(e.comps, ct)
 	e.engine.RemoveComponent(e, ct)
 }
