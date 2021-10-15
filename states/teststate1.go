@@ -2,8 +2,7 @@ package states
 
 import (
 	"FSM/cmp"
-	"FSM/testlog"
-	"fmt"
+	"FSM/game"
 )
 
 // NB States should not contain entity state ;) they should act on cmp
@@ -22,13 +21,14 @@ func (s *teststate1) GetName() string {
 	return s.Name
 }
 
-func (s *teststate1) Enter(ai *cmp.AICmp) {
+func (s *teststate1) Enter(ai *cmp.AICmp, e *game.Entity) {
 
-	testlog.Add(fmt.Sprintf("%d Enter %s", ai.Id, s.Name))
+	game.NotifyEvent(game.EnterState1Event, e)
+
 }
 
-func (s *teststate1) Update(ai *cmp.AICmp) {
+func (s *teststate1) Update(ai *cmp.AICmp, e *game.Entity) {
 
 	ai.NextStateName = "teststate2"
-	testlog.Add(fmt.Sprintf("%d Update %s", ai.Id, s.Name))
+	game.NotifyEvent(game.UpdateState1Event, e)
 }

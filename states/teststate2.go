@@ -2,8 +2,7 @@ package states
 
 import (
 	"FSM/cmp"
-	"FSM/testlog"
-	"fmt"
+	"FSM/game"
 )
 
 type TestState2 struct {
@@ -21,12 +20,12 @@ func (s *TestState2) GetName() string {
 	return s.Name
 }
 
-func (s *TestState2) Enter(ai *cmp.AICmp) {
+func (s *TestState2) Enter(ai *cmp.AICmp, e *game.Entity) {
 
-	testlog.Add(fmt.Sprintf("%d Enter %s", ai.Id, s.Name))
+	game.NotifyEvent(game.EnterState2Event, e)
 }
 
-func (s *TestState2) Update(ai *cmp.AICmp) {
+func (s *TestState2) Update(ai *cmp.AICmp, e *game.Entity) {
 	ai.NextStateName = "teststate1"
-	testlog.Add(fmt.Sprintf("%d Update %s", ai.Id, s.Name))
+	game.NotifyEvent(game.UpdateState2Event, e)
 }

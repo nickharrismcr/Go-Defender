@@ -1,22 +1,25 @@
-package testlog
+package tests
 
-import "regexp"
+import (
+	"regexp"
+)
 
 var loglist []string
 
-func Init() {
+func InitTestLog() {
 	loglist = []string{}
 }
 
-func Add(s string) {
+func AddTestLog(s string) {
 	loglist = append(loglist, s)
+
 }
 
-func Get() []string {
+func GetTestLog() []string {
 	return loglist
 }
 
-func CountPattern(patt string) (c int) {
+func TestLogCountPattern(patt string) (c int) {
 	c = 0
 	valid := regexp.MustCompile(patt)
 	for _, s := range loglist {

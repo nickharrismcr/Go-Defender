@@ -32,7 +32,7 @@ func GetFSM(id int) FSM {
 	return fsmList[id]
 }
 
-func (f FSM) Update(ai *cmp.AICmp) {
+func (f FSM) Update(ai *cmp.AICmp, e *Entity) {
 
 	if ai.NextStateName != ai.StateName {
 		if ai.StateName != "" {
@@ -44,12 +44,12 @@ func (f FSM) Update(ai *cmp.AICmp) {
 		if err != nil {
 			panic(fmt.Sprint("No state defined in FSM %s for %s", f.name, ai.NextStateName))
 		}
-		next_state.Enter(ai)
+		next_state.Enter(ai, e)
 		ai.StateName = ai.NextStateName
 	}
 	curr_state, err := f.statetree.State(ai.StateName)
 	if err != nil {
 		panic(fmt.Sprintf("no current state %s in FSM %s ", ai.StateName, f.name))
 	}
-	curr_state.Update(ai)
+	curr_state.Update(ai, e)
 }

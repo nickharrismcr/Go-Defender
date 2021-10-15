@@ -1,4 +1,4 @@
-package systems
+package update_systems
 
 import (
 	"FSM/cmp"
@@ -44,7 +44,7 @@ func (ai *AISystem) Update(dt float64) {
 
 func (ai *AISystem) process(e *game.Entity, dt float64) {
 	aicmp := e.GetComponent(cmp.AIType).(*cmp.AICmp)
-	game.GetFSM(aicmp.FSMId).Update(aicmp)
+	game.GetFSM(aicmp.FSMId).Update(aicmp, e)
 }
 
 func (ai *AISystem) Active() bool {
