@@ -34,7 +34,7 @@ func main() {
 
 	testfsm := game.NewFSM(stree, "fsm1")
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 10; i++ {
 
 		testAICmp := cmp.NewAI(testfsm, "teststate1")
 		testEntity := game.NewEntity(engine)
@@ -42,7 +42,7 @@ func main() {
 		testEntity.SetActive(true)
 	}
 
-	for i := 0; i < 2000; i++ {
+	for i := 0; i < 20; i++ {
 		engine.Update(0)
 	}
 
