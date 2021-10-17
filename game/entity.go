@@ -1,8 +1,8 @@
 package game
 
 import (
-	"FSM/cmp"
-	"FSM/logger"
+	"Def/cmp"
+	"Def/logger"
 	"fmt"
 )
 

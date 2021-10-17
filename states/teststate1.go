@@ -1,8 +1,8 @@
 package states
 
 import (
-	"FSM/cmp"
-	"FSM/game"
+	"Def/cmp"
+	"Def/game"
 )
 
 // NB States should not contain entity state ;) they should act on cmp

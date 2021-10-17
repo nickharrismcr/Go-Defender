@@ -1,8 +1,10 @@
 package game
 
 import (
-	"FSM/cmp"
-	"FSM/logger"
+	"Def/cmp"
+	"Def/logger"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
@@ -114,11 +116,14 @@ func (eng *Engine) GetEntitiesWithComponent(ct cmp.CmpType) map[EntityID]*Entity
 	return nil
 }
 
-func (eng *Engine) Update(dt float64) {
+func (eng *Engine) Update() {
 	for _, s := range eng.update_systems {
-		s.Update(dt)
+		s.Update()
 	}
+}
+
+func (eng *Engine) Draw(screen *ebiten.Image) {
 	for _, s := range eng.draw_systems {
-		s.Update(dt)
+		s.Draw(screen)
 	}
 }

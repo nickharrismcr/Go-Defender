@@ -1,49 +1,83 @@
 package main
 
 import (
-	"FSM/cmp"
-	"FSM/game"
-	"FSM/states"
-	"FSM/update_systems"
+	"Def/cmp"
+	"Def/constants"
+	"Def/game"
 	"fmt"
+	"image/color"
+	"log"
+	"math/rand"
+
+	"Def/draw_systems"
+	"Def/update_systems"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-func GetEventFunction(s string) func(*game.Entity) {
-	return func(e *game.Entity) {
-		fmt.Printf("Entity %d : %s \n", e.Id, s)
+type Game struct {
+	count int
+}
+
+var engine *game.Engine
+
+func (g *Game) Update() error {
+
+	engine.Update()
+	for i := 0; i < 5; i++ {
+		g.count++
+		engine.GetEntity(game.EntityID(g.count)).SetActive(false)
 	}
+
+	return nil
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	engine.Draw(screen)
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", ebiten.CurrentTPS()))
+
+}
+
+func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return 320 * 5, 240 * 5
+}
+
+func AddBlob(engine *game.Engine, img *ebiten.Image) {
+
+	e := game.NewEntity(engine)
+	e.SetActive(true)
+	pos := cmp.NewPos(rand.Float64()*float64(constants.ScreenWidth),
+		rand.Float64()*float64(constants.ScreenHeight),
+		rand.Float64()*4-4,
+		rand.Float64()*4-4)
+	e.AddComponent(pos)
+	col := constants.ColorF{}
+	col.Randomize()
+	dr := cmp.NewDraw(img, col)
+	dr.Scale = rand.Float64() + 1
+	e.AddComponent(dr)
 }
 
 func main() {
 
-	game.AddEventListener(game.EnterState1Event, GetEventFunction("Enter teststate1"))
-	game.AddEventListener(game.EnterState2Event, GetEventFunction("Enter teststate2"))
-	game.AddEventListener(game.UpdateState1Event, GetEventFunction("Update teststate1"))
-	game.AddEventListener(game.UpdateState2Event, GetEventFunction("Update teststate2"))
+	engine = game.NewEngine()
+	engine.AddSystem(update_systems.NewPosSystem(true), game.UPDATE)
+	engine.AddSystem(draw_systems.NewDrawSystem(true), game.DRAW)
+	img := ebiten.NewImage(5, 5)
+	img.Fill(color.White)
 
-	engine := game.NewEngine()
-	engine.AddSystem(update_systems.NewAISystem(true), game.UPDATE)
-
-	stree := game.NewStateTree()
-	teststate1 := states.NewTestState1()
-	teststate2 := states.NewTestState2()
-	stree.AddState(teststate1)
-	stree.AddState(teststate2)
-	stree.AddTransition("teststate1", "teststate2")
-	stree.AddTransition("teststate2", "teststate1")
-
-	testfsm := game.NewFSM(stree, "fsm1")
-
-	for i := 0; i < 10; i++ {
-
-		testAICmp := cmp.NewAI(testfsm, "teststate1")
-		testEntity := game.NewEntity(engine)
-		testEntity.AddComponent(testAICmp)
-		testEntity.SetActive(true)
+	for i := 0; i < 10000; i++ {
+		AddBlob(engine, img)
 	}
 
-	for i := 0; i < 20; i++ {
-		engine.Update(0)
+	game := &Game{}
+
+	ebiten.SetWindowSize(320*5, 240*5)
+	ebiten.SetWindowTitle("Defender")
+	ebiten.SetFullscreen(true)
+	if err := ebiten.RunGame(game); err != nil {
+		log.Fatal(err)
 	}
 
 }

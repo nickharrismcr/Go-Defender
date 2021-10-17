@@ -1,11 +1,11 @@
 package tests
 
 import (
-	"FSM/cmp"
-	"FSM/game"
-	"FSM/logger"
-	"FSM/states"
-	"FSM/update_systems"
+	"Def/cmp"
+	"Def/game"
+	"Def/logger"
+	"Def/states"
+	"Def/update_systems"
 	"fmt"
 	"testing"
 )

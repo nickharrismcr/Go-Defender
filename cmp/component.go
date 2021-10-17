@@ -3,13 +3,19 @@ package cmp
 type CmpType int
 
 const (
-	AIType CmpType = iota
+	AIType   CmpType = iota
+	PosType  CmpType = iota
+	DrawType CmpType = iota
 )
 
 func (t CmpType) String() string {
 	switch t {
-	case 0:
+	case AIType:
 		return "AI"
+	case PosType:
+		return "Pos"
+	case DrawType:
+		return "Draw"
 	}
 	return ""
 }

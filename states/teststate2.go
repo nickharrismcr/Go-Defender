@@ -1,8 +1,8 @@
 package states
 
 import (
-	"FSM/cmp"
-	"FSM/game"
+	"Def/cmp"
+	"Def/game"
 )
 
 type TestState2 struct {

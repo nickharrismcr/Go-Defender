@@ -1,7 +1,7 @@
 package game
 
 import (
-	"FSM/cmp"
+	"Def/cmp"
 	"fmt"
 )
 

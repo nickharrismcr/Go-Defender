@@ -1,6 +1,6 @@
 package game
 
-import "FSM/cmp"
+import "Def/cmp"
 
 type IState interface {
 	GetName() string

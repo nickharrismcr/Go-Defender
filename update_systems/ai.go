@@ -1,9 +1,11 @@
 package update_systems
 
 import (
-	"FSM/cmp"
-	"FSM/game"
-	"FSM/logger"
+	"Def/cmp"
+	"Def/game"
+	"Def/logger"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // implements ISystem
@@ -31,18 +33,20 @@ func (ai *AISystem) GetName() game.SystemName {
 	return ai.sysname
 }
 
-func (ai *AISystem) Update(dt float64) {
+func (ai *AISystem) Update() {
 	if !ai.active {
 		return
 	}
 	for _, e := range ai.targets {
 		if e.Active() {
-			ai.process(e, dt)
+			ai.process(e)
 		}
 	}
 }
 
-func (ai *AISystem) process(e *game.Entity, dt float64) {
+func (ai *AISystem) Draw(screen *ebiten.Image) {}
+
+func (ai *AISystem) process(e *game.Entity) {
 	aicmp := e.GetComponent(cmp.AIType).(*cmp.AICmp)
 	game.GetFSM(aicmp.FSMId).Update(aicmp, e)
 }
@@ -56,6 +60,9 @@ func (ai *AISystem) SetActive(active bool) {
 }
 
 func (ai *AISystem) AddEntityIfRequired(e *game.Entity) {
+	if _, ok := ai.targets[e.Id]; ok {
+		return
+	}
 	for _, c := range ai.filter.Requires() {
 		if _, ok := e.GetComponents()[c]; !ok {
 			return
