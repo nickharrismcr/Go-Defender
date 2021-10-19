@@ -18,6 +18,7 @@ type Engine struct {
 	systems               map[SystemName]ISystem
 	update_systems        []ISystem
 	draw_systems          []ISystem
+	particle_system       *ParticleSystem
 }
 
 func NewEngine() *Engine {
@@ -25,6 +26,7 @@ func NewEngine() *Engine {
 		entities:              make(map[EntityID]*Entity),
 		entitiesWithComponent: make(map[cmp.CmpType]map[EntityID]*Entity),
 		systems:               make(map[SystemName]ISystem),
+		particle_system:       NewParticleSystem(),
 	}
 }
 
@@ -120,10 +122,16 @@ func (eng *Engine) Update() {
 	for _, s := range eng.update_systems {
 		s.Update()
 	}
+	eng.particle_system.Update()
 }
 
 func (eng *Engine) Draw(screen *ebiten.Image) {
 	for _, s := range eng.draw_systems {
 		s.Draw(screen)
 	}
+	eng.particle_system.Draw(screen)
+}
+
+func (eng *Engine) TriggerPS(x, y float64) {
+	eng.particle_system.Trigger(x, y)
 }

@@ -49,7 +49,6 @@ func (drawsys *DrawSystem) Draw(screen *ebiten.Image) {
 
 func (drawsys *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
-	logger.Debug("draw loop")
 	drawcmp := e.GetComponent(cmp.DrawType).(*cmp.DrawCmp)
 	poscmp := e.GetComponent(cmp.PosType).(*cmp.PosCmp)
 	drawcmp.Opts.GeoM.Reset()
