@@ -1,6 +1,15 @@
-package game
+package event
+
+import (
+	"Def/logger"
+)
 
 type EventType int
+
+type IEvent interface {
+	GetType() EventType
+	GetPayload() interface{}
+}
 
 const (
 	// test events
@@ -8,6 +17,7 @@ const (
 	EnterState2Event  EventType = iota
 	UpdateState1Event EventType = iota
 	UpdateState2Event EventType = iota
+	ExplodeEvent      EventType = iota
 )
 
 func (ev EventType) String() string {
@@ -20,25 +30,29 @@ func (ev EventType) String() string {
 		return "UpdateState1"
 	case UpdateState2Event:
 		return "UpdateState2"
+	case ExplodeEvent:
+		return "Explode"
 	}
+
 	return ""
 }
 
-var events map[EventType][]func(*Entity)
+var events map[EventType][]func(IEvent)
 
 func init() {
-	events = make(map[EventType][]func(*Entity))
+	events = make(map[EventType][]func(IEvent))
 }
 
-func AddEventListener(et EventType, fn func(*Entity)) {
+func AddEventListener(et EventType, fn func(IEvent)) {
 	if _, ok := events[et]; !ok {
-		events[et] = []func(*Entity){}
+		events[et] = []func(IEvent){}
 	}
 	events[et] = append(events[et], fn)
 }
 
-func NotifyEvent(et EventType, e *Entity) {
-	if evs, ok := events[et]; ok {
+func NotifyEvent(e IEvent) {
+	logger.Debug("Event notified : %s ", e.GetType().String())
+	if evs, ok := events[e.GetType()]; ok {
 		for _, v := range evs {
 			v(e)
 		}

@@ -8,7 +8,7 @@ const (
 )
 
 type ColorF struct {
-	R, G, B float64
+	R, G, B, A float64
 }
 
 func (c *ColorF) Randomize() {

@@ -3,7 +3,6 @@ package game
 import (
 	"Def/cmp"
 	"Def/logger"
-	"fmt"
 )
 
 type EntityID int
@@ -63,7 +62,7 @@ func (e *Entity) HasComponent(c cmp.CmpType) bool {
 func (e *Entity) GetComponent(c cmp.CmpType) cmp.ICmp {
 	rv, ok := e.comps[c]
 	if !ok {
-		panic(fmt.Sprintf("Entity %d has no component %s", e.Id, c.String()))
+		return nil
 	}
 	return rv
 }

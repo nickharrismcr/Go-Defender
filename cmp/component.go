@@ -23,3 +23,7 @@ func (t CmpType) String() string {
 type ICmp interface {
 	Type() CmpType
 }
+
+type ComponentGetter interface {
+	GetComponent(c CmpType) ICmp
+}
