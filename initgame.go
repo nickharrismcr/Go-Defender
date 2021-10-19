@@ -2,14 +2,21 @@ package main
 
 import (
 	"Def/cmp"
+	"Def/constants"
+	"Def/draw_systems"
 	"Def/event"
 	"Def/game"
 	"Def/logger"
 	"Def/states"
 	"Def/update_systems"
+	"math/rand"
+
+	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
-//import "Def/draw_systems"
+// game setup
 
 func InitGame(engine *game.Engine) {
 
@@ -26,17 +33,28 @@ func InitGame(engine *game.Engine) {
 
 	engine.AddSystem(update_systems.NewPosSystem(true), game.UPDATE)
 	engine.AddSystem(update_systems.NewAISystem(true), game.UPDATE)
-	//engine.AddSystem(draw_systems.NewDrawSystem(true), DRAW)
+	engine.AddSystem(update_systems.NewCollideSystem(true), game.UPDATE)
+	engine.AddSystem(draw_systems.NewDrawSystem(true), game.DRAW)
 
-	ent := game.NewEntity(engine)
-	ent.SetActive(true)
-	pc := cmp.NewPos(100, 100, 0, 0)
-	ent.AddComponent(pc)
-	stree := game.NewStateTree()
-	teststate1 := states.NewTestState1()
-	stree.AddState(teststate1)
-	testfsm := game.NewFSM(stree, "fsm1")
-	ai := cmp.NewAI(testfsm, "teststate1")
-	ent.AddComponent(ai)
+	for i := 0; i < 20; i++ {
+		ent := game.NewEntity(engine)
+		ent.SetActive(true)
+		dx := rand.Float64()*4 - 4
+		dy := rand.Float64()*4 - 4
+		pc := cmp.NewPos(rand.Float64()*constants.ScreenWidth, rand.Float64()*constants.ScreenHeight, dx, dy)
+		ent.AddComponent(pc)
+		stree := game.NewStateTree()
+		teststate1 := states.NewTestState1()
+		stree.AddState(teststate1)
+		testfsm := game.NewFSM(stree, "fsm1")
+		ai := cmp.NewAI(testfsm, "teststate1")
+		ent.AddComponent(ai)
+		img := ebiten.NewImage(10, 10)
+		img.Fill(color.White)
+		dr := cmp.NewDraw(img, constants.ColorF{R: 1, G: 1, B: 1})
+		cl := cmp.NewCollide()
+		ent.AddComponent(dr)
+		ent.AddComponent(cl)
+	}
 
 }

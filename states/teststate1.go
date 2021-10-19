@@ -3,8 +3,6 @@ package states
 import (
 	"Def/cmp"
 	"Def/constants"
-	"Def/event"
-	"math/rand"
 )
 
 // NB States should not contain entity state ;) they should act on cmp
@@ -23,23 +21,19 @@ func (s *teststate1) GetName() string {
 	return s.Name
 }
 
-func (s *teststate1) Enter(ai *cmp.AICmp, e cmp.ComponentGetter) {
-
-	ai.Counter = rand.Intn(60)
+func (s *teststate1) Enter(ai *cmp.AICmp, e cmp.EntityGetter) {
 
 }
 
-func (s *teststate1) Update(ai *cmp.AICmp, e cmp.ComponentGetter) {
+func (s *teststate1) Update(ai *cmp.AICmp, e cmp.EntityGetter) {
 
-	ai.Counter--
-	if ai.Counter <= 0 {
-		x := rand.Float64() * constants.ScreenWidth
-		y := rand.Float64() * constants.ScreenHeight
-		pc := e.GetComponent(cmp.PosType).(*cmp.PosCmp)
-		pc.X = x
-		pc.Y = y
-		ev := event.NewExplode(e)
-		event.NotifyEvent(ev)
-		ai.Counter = rand.Intn(60)
+	pc := e.GetComponent(cmp.PosType).(*cmp.PosCmp)
+	pc.X += pc.DX
+	pc.Y += pc.DY
+	if pc.X < 0 || pc.X > constants.ScreenWidth {
+		pc.DX = -pc.DX
+	}
+	if pc.Y < 0 || pc.Y > constants.ScreenHeight {
+		pc.DY = -pc.DY
 	}
 }

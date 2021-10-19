@@ -5,9 +5,10 @@ import "github.com/hajimehoshi/ebiten/v2"
 type SystemName int
 
 const (
-	AISystem   SystemName = iota
-	DrawSystem SystemName = iota
-	PosSystem  SystemName = iota
+	AISystem      SystemName = iota
+	DrawSystem    SystemName = iota
+	PosSystem     SystemName = iota
+	CollideSystem SystemName = iota
 )
 
 func (t SystemName) String() string {
@@ -18,10 +19,13 @@ func (t SystemName) String() string {
 		return "Draw"
 	case PosSystem:
 		return "Pos"
+	case CollideSystem:
+		return "Collide"
 	}
 	return ""
 }
 
+// interface for ECS systems
 type ISystem interface {
 	GetName() SystemName
 	Active() bool

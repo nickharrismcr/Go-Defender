@@ -2,6 +2,7 @@ package main
 
 import (
 	"Def/game"
+	"errors"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -16,6 +17,9 @@ var engine *game.Engine
 func (g *Game) Update() error {
 
 	engine.Update()
+	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		return errors.New("escape pressed")
+	}
 	return nil
 }
 

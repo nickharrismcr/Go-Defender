@@ -13,6 +13,9 @@ func init() {
 	fsmCount = 0
 }
 
+// a finite state machine used by the AI ECS.
+// each entity with an AI component will have its own state tree, this struct
+// runs logic in the current AI state and handles transitions between states.
 type FSM struct {
 	statetree *StateTree
 	name      string
@@ -42,7 +45,7 @@ func (f FSM) Update(ai *cmp.AICmp, e *Entity) {
 		}
 		next_state, err := f.statetree.State(ai.NextStateName)
 		if err != nil {
-			panic(fmt.Sprint("No state defined in FSM %s for %s", f.name, ai.NextStateName))
+			panic(fmt.Sprintf("No state defined in FSM %s for %s", f.name, ai.NextStateName))
 		}
 		next_state.Enter(ai, e)
 		ai.StateName = ai.NextStateName

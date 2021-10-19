@@ -1,3 +1,4 @@
+// game/ECS functions
 package game
 
 import (
@@ -5,6 +6,7 @@ import (
 	"fmt"
 )
 
+// contains a tree of FSM state structs and allowed transitions between them
 type StateTree struct {
 	states      map[string]IState
 	transitions map[string]map[string]bool

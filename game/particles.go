@@ -12,6 +12,7 @@ import (
 
 const MAX int = 1000
 
+// individual particle. system has a pool of these size = MAX
 type particle struct {
 	active              bool
 	ticksToLive         int
@@ -22,6 +23,9 @@ type particle struct {
 	opts                *ebiten.DrawImageOptions
 }
 
+// particle system. only particles in activeList are processed.
+// a call to Trigger moves inactive particles from the plist pool to the active list.
+// when a particles ticksToLive expires it is taken out of the active list.
 type ParticleSystem struct {
 	plist      []*particle
 	activeList []*particle
@@ -48,7 +52,7 @@ func new1(p *particle, x, y float64, col constants.ColorF) {
 	p.ticksToLive = 90
 	p.x = x
 	p.y = y
-	p.scale = 2
+	p.scale = 1
 	dir := rand.Float64() * math.Pi * 2
 	p.dx = math.Sin(dir)
 	p.dy = math.Cos(dir)
