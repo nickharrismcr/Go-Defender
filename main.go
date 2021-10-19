@@ -2,28 +2,32 @@ package main
 
 import (
 	"Def/game"
+	"Def/logger"
 	"errors"
-	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Game struct {
-	count int
+	ucount int
+	dcount int
 }
 
 var engine *game.Engine
 
 func (g *Game) Update() error {
 
+	g.ucount++
 	engine.Update()
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return errors.New("escape pressed")
 	}
+
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	g.dcount++
 	engine.Draw(screen)
 	//ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", ebiten.CurrentTPS()))
 }
@@ -38,15 +42,17 @@ func main() {
 
 	InitGame(engine)
 
-	app := &Game{
-		count: 0,
+	gm := &Game{
+		ucount: 0,
+		dcount: 0,
 	}
 
 	ebiten.SetWindowSize(320*5, 240*5)
 	ebiten.SetWindowTitle("Defender")
 	ebiten.SetFullscreen(true)
-	if err := ebiten.RunGame(app); err != nil {
-		log.Fatal(err)
+	ebiten.SetMaxTPS(30)
+	if err := ebiten.RunGame(gm); err != nil {
+		logger.Debug(">>> %d %d ", gm.ucount, gm.dcount)
 	}
 
 }

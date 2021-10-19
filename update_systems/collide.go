@@ -55,7 +55,7 @@ func (pos *CollideSystem) process(e *game.Entity) {
 
 			ep := e.GetComponent(cmp.PosType).(*cmp.PosCmp)
 			tep := te.GetComponent(cmp.PosType).(*cmp.PosCmp)
-			if math.Abs(ep.X-tep.X) < 10 && math.Abs(ep.Y-tep.Y) < 10 {
+			if math.Abs(ep.X-tep.X) < 25 && math.Abs(ep.Y-tep.Y) < 25 {
 				ev := event.NewExplode(e)
 				event.NotifyEvent(ev)
 				e.SetActive(false)

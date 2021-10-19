@@ -10,7 +10,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const MAX int = 1000
+const MAX int = 200
 
 // individual particle. system has a pool of these size = MAX
 type particle struct {
@@ -57,7 +57,7 @@ func new1(p *particle, x, y float64, col constants.ColorF) {
 	p.dx = math.Sin(dir)
 	p.dy = math.Cos(dir)
 	p.color = col
-	speed := 2 + rand.Float64()*16
+	speed := 2 + rand.Float64()*32
 	p.dx *= speed
 	p.dy *= speed
 	p.update = &update1
@@ -93,7 +93,7 @@ func (s *ParticleSystem) Trigger(x, y float64) {
 	for _, p := range s.plist {
 		if !p.active {
 			c++
-			if c > 200 {
+			if c > 100 {
 				return
 			}
 			new1(p, x, y, col)

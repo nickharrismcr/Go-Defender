@@ -39,8 +39,8 @@ func InitGame(engine *game.Engine) {
 	for i := 0; i < 20; i++ {
 		ent := game.NewEntity(engine)
 		ent.SetActive(true)
-		dx := rand.Float64()*4 - 4
-		dy := rand.Float64()*4 - 4
+		dx := rand.Float64()*8 - 8
+		dy := rand.Float64()*8 - 8
 		pc := cmp.NewPos(rand.Float64()*constants.ScreenWidth, rand.Float64()*constants.ScreenHeight, dx, dy)
 		ent.AddComponent(pc)
 		stree := game.NewStateTree()
@@ -49,7 +49,7 @@ func InitGame(engine *game.Engine) {
 		testfsm := game.NewFSM(stree, "fsm1")
 		ai := cmp.NewAI(testfsm, "teststate1")
 		ent.AddComponent(ai)
-		img := ebiten.NewImage(10, 10)
+		img := ebiten.NewImage(20, 20)
 		img.Fill(color.White)
 		dr := cmp.NewDraw(img, constants.ColorF{R: 1, G: 1, B: 1})
 		cl := cmp.NewCollide()
