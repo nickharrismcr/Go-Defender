@@ -1,9 +1,11 @@
 package main
 
 import (
+	"Def/constants"
 	"Def/game"
 	"Def/logger"
 	"errors"
+	_ "image/png"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -50,7 +52,7 @@ func main() {
 	ebiten.SetWindowSize(320*5, 240*5)
 	ebiten.SetWindowTitle("Defender")
 	ebiten.SetFullscreen(true)
-	ebiten.SetMaxTPS(30)
+	ebiten.SetMaxTPS(constants.MaxTPS)
 	if err := ebiten.RunGame(gm); err != nil {
 		logger.Debug(">>> %d %d ", gm.ucount, gm.dcount)
 	}

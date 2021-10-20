@@ -1,6 +1,7 @@
 package graphics
 
 import (
+	"Def/constants"
 	"encoding/json"
 	"image"
 	"os"
@@ -50,7 +51,9 @@ func Load() {
 	}
 
 	for _, v := range spritedata.Frames {
+		v.Ticks_per_frame /= 60 / constants.MaxTPS
 		spriteMap[v.Filename] = v
+
 	}
 
 	f, err := os.Open("graphics/spritesheet.png")

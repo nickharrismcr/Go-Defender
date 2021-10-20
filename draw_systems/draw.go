@@ -4,6 +4,7 @@ import (
 	"Def/cmp"
 	"Def/game"
 	"Def/logger"
+	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -51,15 +52,22 @@ func (drawsys *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
 	drawcmp := e.GetComponent(cmp.DrawType).(*cmp.DrawCmp)
 	poscmp := e.GetComponent(cmp.PosType).(*cmp.PosCmp)
-	drawcmp.Opts.GeoM.Reset()
-	sx, sy := drawcmp.Image.Size()
-	drawcmp.Opts.GeoM.Translate(-float64(sx)/2, -float64(sy)/2)
-	drawcmp.Opts.GeoM.Translate(poscmp.X, poscmp.Y)
-	drawcmp.Opts.GeoM.Scale(drawcmp.Scale, drawcmp.Scale)
-	drawcmp.Opts.ColorM.Reset()
-	drawcmp.Opts.ColorM.Scale(drawcmp.Color.R, drawcmp.Color.G, drawcmp.Color.B, 1)
+	op := drawcmp.Opts
+	op.GeoM.Reset()
+	op.GeoM.Translate(poscmp.X, poscmp.Y)
+	frames := drawcmp.SpriteMap.Anim_frames
+	drawcmp.Counter++
+	if drawcmp.Counter > drawcmp.SpriteMap.Ticks_per_frame {
+		drawcmp.Counter = 0
+		drawcmp.Frame++
+		if drawcmp.Frame == frames {
+			drawcmp.Frame = 0
+		}
+	}
 
-	screen.DrawImage(drawcmp.Image, drawcmp.Opts)
+	fw, fh := drawcmp.SpriteMap.Frame.W/frames, drawcmp.SpriteMap.Frame.H
+	sx, sy := drawcmp.SpriteMap.Frame.X+drawcmp.Frame*fw, drawcmp.SpriteMap.Frame.Y
+	screen.DrawImage(drawcmp.Image.SubImage(image.Rect(sx, sy, sx+fw, sy+fh)).(*ebiten.Image), op)
 
 }
 

@@ -12,3 +12,11 @@ func OffScreen(x, y float64) bool {
 func RandChoiceF(lst []float64) float64 {
 	return lst[rand.Intn(len(lst))]
 }
+
+func RandChoiceI(lst []string) string {
+	return lst[rand.Intn(len(lst))]
+}
+
+func RandChoiceS(lst []string) string {
+	return lst[rand.Intn(len(lst))]
+}

@@ -81,7 +81,7 @@
 		},
 		{
 			"filename": "lander.png",
-			"ticks_per_frame" : 15,
+			"ticks_per_frame" : 10,
 			"frame": {
 				"x": 1668,
 				"y": 10,

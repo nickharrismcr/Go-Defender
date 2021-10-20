@@ -5,6 +5,7 @@ import "math/rand"
 const (
 	ScreenWidth  = 320 * 5
 	ScreenHeight = 240 * 5
+	MaxTPS       = 30
 )
 
 type ColorF struct {
