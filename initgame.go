@@ -3,14 +3,14 @@ package main
 import (
 	"Def/cmp"
 	"Def/constants"
-	"Def/draw_systems"
 	"Def/event"
 	"Def/game"
 	"Def/graphics"
-	"Def/logger"
 	"Def/states"
-	"Def/update_systems"
-	"Def/util"
+	"Def/states/baiter"
+	"Def/states/lander"
+	"Def/systems"
+	"Def/types"
 	"math/rand"
 )
 
@@ -20,42 +20,79 @@ func InitGame(engine *game.Engine) {
 
 	graphics.Load()
 
-	f := func(e event.IEvent) {
-
-		ct := e.GetPayload().(*game.Entity).GetComponent(cmp.PosType)
-		if ct != nil {
-			c := ct.(*cmp.PosCmp)
-			logger.Debug("%T : %f %f ", c, c.X, c.Y)
-			engine.TriggerPS(c.X, c.Y)
+	explodeTrigger := func(e event.IEvent) {
+		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
+			engine.TriggerPS(ct.X, ct.Y)
 		}
 	}
-	event.AddEventListener(event.ExplodeEvent, f)
+	bulletTrigger := func(e event.IEvent) {
+		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
+			engine.TriggerBullet(ct.X, ct.Y, ct.DX*3, ct.DY*3)
+		}
+	}
 
-	engine.AddSystem(update_systems.NewPosSystem(true), game.UPDATE)
-	engine.AddSystem(update_systems.NewAISystem(true), game.UPDATE)
-	engine.AddSystem(update_systems.NewCollideSystem(true), game.UPDATE)
-	engine.AddSystem(draw_systems.NewDrawSystem(true), game.DRAW)
+	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
+	event.AddEventListener(event.FireBulletEvent, bulletTrigger)
+
+	engine.AddSystem(systems.NewPosSystem(true), game.UPDATE)
+	engine.AddSystem(systems.NewAISystem(true), game.UPDATE)
+	engine.AddSystem(systems.NewLifeSystem(true), game.UPDATE)
+	engine.AddSystem(systems.NewCollideSystem(true), game.UPDATE)
+	engine.AddSystem(systems.NewDrawSystem(true), game.DRAW)
+
+	for i := 0; i < 20; i++ {
+		ls := lander.NewLanderSearch()
+		Add(types.Lander, engine, ls, "lander.png", true, 2)
+	}
+	for i := 0; i < 2; i++ {
+		ls := baiter.NewBaiterSearch()
+		Add(types.Baiter, engine, ls, "baiter.png", false, 5)
+	}
+
+	bulletList(engine)
+}
+
+func Add(class types.EntityType, engine *game.Engine, state states.IState, sprite string, collide bool, speed float64) {
+
+	ssheet := graphics.GetSpriteSheet()
+	ent := game.NewEntity(engine, class)
+	ent.SetActive(true)
+	dx := rand.Float64()*speed - speed
+	dy := rand.Float64()*speed - speed
+	pc := cmp.NewPos(rand.Float64()*constants.ScreenWidth, rand.Float64()*constants.ScreenHeight, dx, dy)
+	ent.AddComponent(pc)
+	stree := game.NewStateTree()
+	stree.AddState(state)
+	testfsm := game.NewFSM(stree, "fsm1")
+	ai := cmp.NewAI(testfsm, state.GetName())
+	ent.AddComponent(ai)
+	smap := graphics.GetSpriteMap(sprite)
+	dr := cmp.NewDraw(ssheet, smap, constants.ColorF{R: 1, G: 1, B: 1})
+	ent.AddComponent(dr)
+	if collide {
+		cl := cmp.NewCollide()
+		ent.AddComponent(cl)
+	}
+
+}
+
+func bulletList(engine *game.Engine) {
 
 	ssheet := graphics.GetSpriteSheet()
 
-	for i := 0; i < 20; i++ {
-		ent := game.NewEntity(engine)
-		ent.SetActive(true)
-		dx := rand.Float64()*8 - 8
-		dy := rand.Float64()*8 - 8
-		pc := cmp.NewPos(rand.Float64()*constants.ScreenWidth, rand.Float64()*constants.ScreenHeight, dx, dy)
+	for i := 0; i < 40; i++ {
+		ent := game.NewEntity(engine, types.Bullet)
+		pc := cmp.NewPos(0, 0, 0, 0)
 		ent.AddComponent(pc)
-		stree := game.NewStateTree()
-		teststate1 := states.NewTestState1()
-		stree.AddState(teststate1)
-		testfsm := game.NewFSM(stree, "fsm1")
-		ai := cmp.NewAI(testfsm, "teststate1")
-		ent.AddComponent(ai)
-		smap := graphics.GetSpriteMap(util.RandChoiceS([]string{"lander.png", "baiter.png", "mutant.png"}))
+		smap := graphics.GetSpriteMap("bullet.png")
 		dr := cmp.NewDraw(ssheet, smap, constants.ColorF{R: 1, G: 1, B: 1})
 		cl := cmp.NewCollide()
+		li := cmp.NewLife(120)
 		ent.AddComponent(dr)
 		ent.AddComponent(cl)
+		ent.AddComponent(li)
+
+		engine.Bullets = append(engine.Bullets, ent)
 	}
 
 }
