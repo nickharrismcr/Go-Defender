@@ -1,21 +1,23 @@
 package cmp
 
-type PosCmp struct {
-	componentType CmpType
+import "Def/types"
+
+type Pos struct {
+	componentType types.CmpType
 	X, Y, DX, DY  float64
 }
 
-func NewPos(x, y, dx, dy float64) *PosCmp {
+func NewPos(x, y, dx, dy float64) *Pos {
 
-	return &PosCmp{
+	return &Pos{
 		X:             x,
 		Y:             y,
 		DX:            dx,
 		DY:            dy,
-		componentType: PosType,
+		componentType: types.Pos,
 	}
 }
 
-func (pos *PosCmp) Type() CmpType {
+func (pos *Pos) Type() types.CmpType {
 	return pos.componentType
 }

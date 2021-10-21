@@ -1,32 +1,34 @@
 package cmp
 
+import "Def/types"
+
 var idCounter int
 
 type AICmp struct {
-	componentType CmpType
+	componentType types.CmpType
 	Id            int
 	Counter       int
 	FSMId         int
-	StateName     string
-	NextStateName string
+	StateName     types.StateType
+	NextStateName types.StateType
 }
 
 func init() {
 	idCounter = 0
 }
 
-func NewAI(FSMId int, init_state string) *AICmp {
+func NewAI(FSMId int, initState types.StateType) *AICmp {
 	idCounter++
 	return &AICmp{
 		Id:            idCounter,
 		FSMId:         FSMId,
-		StateName:     "",
-		NextStateName: init_state,
+		StateName:     -1,
+		NextStateName: initState,
 		Counter:       0,
-		componentType: AIType,
+		componentType: types.AI,
 	}
 }
 
-func (ai *AICmp) Type() CmpType {
+func (ai *AICmp) Type() types.CmpType {
 	return ai.componentType
 }

@@ -1,9 +1,10 @@
-package update_systems
+package systems
 
 import (
 	"Def/cmp"
 	"Def/game"
 	"Def/logger"
+	"Def/types"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -20,7 +21,7 @@ type AISystem struct {
 
 func NewAISystem(active bool) *AISystem {
 	f := game.NewFilter()
-	f.Add(cmp.AIType)
+	f.Add(types.AI)
 	return &AISystem{
 		sysname: game.AISystem,
 		active:  active,
@@ -47,7 +48,7 @@ func (ai *AISystem) Update() {
 func (ai *AISystem) Draw(screen *ebiten.Image) {}
 
 func (ai *AISystem) process(e *game.Entity) {
-	aicmp := e.GetComponent(cmp.AIType).(*cmp.AICmp)
+	aicmp := e.GetComponent(types.AI).(*cmp.AICmp)
 	game.GetFSM(aicmp.FSMId).Update(aicmp, e)
 }
 

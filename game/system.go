@@ -9,6 +9,7 @@ const (
 	DrawSystem    SystemName = iota
 	PosSystem     SystemName = iota
 	CollideSystem SystemName = iota
+	LifeSystem    SystemName = iota
 )
 
 func (t SystemName) String() string {
@@ -21,6 +22,8 @@ func (t SystemName) String() string {
 		return "Pos"
 	case CollideSystem:
 		return "Collide"
+	case LifeSystem:
+		return "Life"
 	}
 	return ""
 }

@@ -1,9 +1,10 @@
-package draw_systems
+package systems
 
 import (
 	"Def/cmp"
 	"Def/game"
 	"Def/logger"
+	"Def/types"
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -21,8 +22,8 @@ type DrawSystem struct {
 
 func NewDrawSystem(active bool) *DrawSystem {
 	f := game.NewFilter()
-	f.Add(cmp.DrawType)
-	f.Add(cmp.PosType)
+	f.Add(types.Draw)
+	f.Add(types.Pos)
 	return &DrawSystem{
 		sysname: game.DrawSystem,
 		active:  active,
@@ -50,8 +51,8 @@ func (drawsys *DrawSystem) Draw(screen *ebiten.Image) {
 
 func (drawsys *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
-	drawcmp := e.GetComponent(cmp.DrawType).(*cmp.DrawCmp)
-	poscmp := e.GetComponent(cmp.PosType).(*cmp.PosCmp)
+	drawcmp := e.GetComponent(types.Draw).(*cmp.Draw)
+	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
 	op := drawcmp.Opts
 	op.GeoM.Reset()
 	op.GeoM.Translate(poscmp.X, poscmp.Y)

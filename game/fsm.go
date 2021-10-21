@@ -38,21 +38,21 @@ func GetFSM(id int) FSM {
 func (f FSM) Update(ai *cmp.AICmp, e *Entity) {
 
 	if ai.NextStateName != ai.StateName {
-		if ai.StateName != "" {
+		if ai.StateName != -1 {
 			if !f.statetree.ValidTransition(ai.StateName, ai.NextStateName) {
-				panic(fmt.Sprintf("invalid transition %s -> %s", ai.StateName, ai.NextStateName))
+				panic(fmt.Sprintf("invalid transition %s -> %s", ai.StateName.String(), ai.NextStateName.String()))
 			}
 		}
 		next_state, err := f.statetree.State(ai.NextStateName)
 		if err != nil {
-			panic(fmt.Sprintf("No state defined in FSM %s for %s", f.name, ai.NextStateName))
+			panic(fmt.Sprintf("No state defined in FSM %s for %s", f.name, ai.NextStateName.String()))
 		}
 		next_state.Enter(ai, e)
 		ai.StateName = ai.NextStateName
 	}
 	curr_state, err := f.statetree.State(ai.StateName)
 	if err != nil {
-		panic(fmt.Sprintf("no current state %s in FSM %s ", ai.StateName, f.name))
+		panic(fmt.Sprintf("no current state %s in FSM %s ", ai.StateName.String(), f.name))
 	}
 	curr_state.Update(ai, e)
 }

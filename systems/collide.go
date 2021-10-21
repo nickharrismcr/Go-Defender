@@ -1,10 +1,11 @@
-package update_systems
+package systems
 
 import (
 	"Def/cmp"
 	"Def/event"
 	"Def/game"
 	"Def/logger"
+	"Def/types"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -23,7 +24,7 @@ type CollideSystem struct {
 
 func NewCollideSystem(active bool) *CollideSystem {
 	f := game.NewFilter()
-	f.Add(cmp.CollideType)
+	f.Add(types.Collide)
 	return &CollideSystem{
 		sysname: game.CollideSystem,
 		active:  active,
@@ -51,12 +52,12 @@ func (pos *CollideSystem) Draw(screen *ebiten.Image) {}
 
 func (pos *CollideSystem) process(e *game.Entity) {
 	for _, te := range pos.targets {
-		if te.Active() && te.Id != e.Id {
+		if te.Active() && te.Id != e.Id && te.Class != e.Class {
 
-			ep := e.GetComponent(cmp.PosType).(*cmp.PosCmp)
-			tep := te.GetComponent(cmp.PosType).(*cmp.PosCmp)
+			ep := e.GetComponent(types.Pos).(*cmp.Pos)
+			tep := te.GetComponent(types.Pos).(*cmp.Pos)
 			if math.Abs(ep.X-tep.X) < 25 && math.Abs(ep.Y-tep.Y) < 25 {
-				ev := event.NewExplode(e)
+				ev := event.NewExplode(ep)
 				event.NotifyEvent(ev)
 				e.SetActive(false)
 				te.SetActive(false)

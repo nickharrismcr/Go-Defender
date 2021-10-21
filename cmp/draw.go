@@ -3,12 +3,13 @@ package cmp
 import (
 	"Def/constants"
 	"Def/graphics"
+	"Def/types"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type DrawCmp struct {
-	componentType CmpType
+type Draw struct {
+	componentType types.CmpType
 	Image         *ebiten.Image
 	Opts          *ebiten.DrawImageOptions
 	Color         constants.ColorF
@@ -18,13 +19,13 @@ type DrawCmp struct {
 	Frame         int
 }
 
-func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color constants.ColorF) *DrawCmp {
+func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color constants.ColorF) *Draw {
 
-	return &DrawCmp{
+	return &Draw{
 		Image:         image,
 		Opts:          &ebiten.DrawImageOptions{},
 		Color:         color,
-		componentType: DrawType,
+		componentType: types.Draw,
 		Scale:         1,
 		SpriteMap:     smap,
 		Counter:       0,
@@ -32,6 +33,6 @@ func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color constants.ColorF
 	}
 }
 
-func (Draw *DrawCmp) Type() CmpType {
-	return Draw.componentType
+func (d *Draw) Type() types.CmpType {
+	return d.componentType
 }

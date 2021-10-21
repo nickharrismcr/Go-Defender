@@ -2,9 +2,10 @@ package graphics
 
 import (
 	"Def/constants"
+	"bytes"
+	_ "embed"
 	"encoding/json"
 	"image"
-	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -35,16 +36,18 @@ func GetSpriteMap(k string) GFXFrame {
 	return spriteMap[k]
 }
 
+//go:embed spritesheet.json
+var spritedataJSON []byte
+
+//go:embed spritesheet.png
+var spritesheetPNG []byte
+
 func Load() {
 
 	spriteMap = make(map[string]GFXFrame)
 	spritedata := &Data{}
 
-	dat, err := os.ReadFile("graphics/spritesheet.json")
-	if err != nil {
-		panic(err)
-	}
-	err = json.Unmarshal([]byte(dat), spritedata)
+	err := json.Unmarshal(spritedataJSON, spritedata)
 
 	if err != nil {
 		panic(err)
@@ -53,15 +56,9 @@ func Load() {
 	for _, v := range spritedata.Frames {
 		v.Ticks_per_frame /= 60 / constants.MaxTPS
 		spriteMap[v.Filename] = v
-
 	}
 
-	f, err := os.Open("graphics/spritesheet.png")
-	if err != nil {
-		panic(err)
-	}
-
-	sheetimg, _, err := image.Decode(f)
+	sheetimg, _, err := image.Decode(bytes.NewReader(spritesheetPNG))
 	if err != nil {
 		panic(err)
 	}

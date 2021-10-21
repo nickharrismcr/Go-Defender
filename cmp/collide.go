@@ -1,16 +1,18 @@
 package cmp
 
+import "Def/types"
+
 type CollideCmp struct {
-	componentType CmpType
+	componentType types.CmpType
 }
 
 func NewCollide() *CollideCmp {
 
 	return &CollideCmp{
-		componentType: CollideType,
+		componentType: types.Collide,
 	}
 }
 
-func (pos *CollideCmp) Type() CmpType {
+func (pos *CollideCmp) Type() types.CmpType {
 	return pos.componentType
 }

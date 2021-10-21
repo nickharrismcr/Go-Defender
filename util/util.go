@@ -13,7 +13,7 @@ func RandChoiceF(lst []float64) float64 {
 	return lst[rand.Intn(len(lst))]
 }
 
-func RandChoiceI(lst []string) string {
+func RandChoiceI(lst []int) int {
 	return lst[rand.Intn(len(lst))]
 }
 

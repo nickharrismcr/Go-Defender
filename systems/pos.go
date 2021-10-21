@@ -1,10 +1,10 @@
-package update_systems
+package systems
 
 import (
 	"Def/cmp"
-	"Def/constants"
 	"Def/game"
 	"Def/logger"
+	"Def/types"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -21,7 +21,7 @@ type PosSystem struct {
 
 func NewPosSystem(active bool) *PosSystem {
 	f := game.NewFilter()
-	f.Add(cmp.PosType)
+	f.Add(types.Pos)
 	return &PosSystem{
 		sysname: game.PosSystem,
 		active:  active,
@@ -48,16 +48,10 @@ func (pos *PosSystem) Update() {
 func (pos *PosSystem) Draw(screen *ebiten.Image) {}
 
 func (pos *PosSystem) process(e *game.Entity) {
-	poscmp := e.GetComponent(cmp.PosType).(*cmp.PosCmp)
+	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
 	poscmp.X += poscmp.DX
 	poscmp.Y += poscmp.DY
 
-	if poscmp.X < 0 || poscmp.X > constants.ScreenWidth {
-		poscmp.DX = -poscmp.DX
-	}
-	if poscmp.Y < 0 || poscmp.Y > constants.ScreenHeight {
-		poscmp.DY = -poscmp.DY
-	}
 }
 
 func (pos *PosSystem) Active() bool {

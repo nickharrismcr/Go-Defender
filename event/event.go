@@ -12,26 +12,17 @@ type IEvent interface {
 }
 
 const (
-	// test events
-	EnterState1Event  EventType = iota
-	EnterState2Event  EventType = iota
-	UpdateState1Event EventType = iota
-	UpdateState2Event EventType = iota
-	ExplodeEvent      EventType = iota
+	FireBulletEvent EventType = iota
+	ExplodeEvent    EventType = iota
 )
 
 func (ev EventType) String() string {
 	switch ev {
-	case EnterState1Event:
-		return "EnterState1"
-	case EnterState2Event:
-		return "EnterState2"
-	case UpdateState1Event:
-		return "UpdateState1"
-	case UpdateState2Event:
-		return "UpdateState2"
+
 	case ExplodeEvent:
 		return "Explode"
+	case FireBulletEvent:
+		return "FireBullet"
 	}
 
 	return ""
