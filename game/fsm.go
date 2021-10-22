@@ -35,7 +35,7 @@ func GetFSM(id int) FSM {
 	return fsmList[id]
 }
 
-func (f FSM) Update(ai *cmp.AICmp, e *Entity) {
+func (f FSM) Update(ai *cmp.AI, e *Entity) {
 
 	if ai.NextStateName != ai.StateName {
 		if ai.StateName != -1 {

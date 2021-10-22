@@ -2,7 +2,7 @@
 package game
 
 import (
-	"Def/states"
+	"Def/state"
 	"Def/types"
 	"errors"
 	"fmt"
@@ -10,25 +10,25 @@ import (
 
 // contains a tree of FSM state structs and allowed transitions between them
 type StateTree struct {
-	states      map[types.StateType]states.IState
+	states      map[types.StateType]state.IState
 	transitions map[types.StateType]map[types.StateType]bool
 	last_added  types.StateType
 }
 
 func NewStateTree() *StateTree {
 	return &StateTree{
-		states:      make(map[types.StateType]states.IState),
+		states:      make(map[types.StateType]state.IState),
 		transitions: make(map[types.StateType]map[types.StateType]bool),
 		last_added:  -1,
 	}
 }
 
-func (st *StateTree) AddState(s states.IState) {
+func (st *StateTree) AddState(s state.IState) {
 	st.states[s.GetName()] = s
 	st.last_added = s.GetName()
 }
 
-func (st *StateTree) State(name types.StateType) (states.IState, error) {
+func (st *StateTree) State(name types.StateType) (state.IState, error) {
 	if _, ok := st.states[name]; !ok {
 		return nil, errors.New(fmt.Sprintf("Invalid state name %s", name.String()))
 	}

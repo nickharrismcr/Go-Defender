@@ -4,7 +4,7 @@ import "Def/types"
 
 var idCounter int
 
-type AICmp struct {
+type AI struct {
 	componentType types.CmpType
 	Id            int
 	Counter       int
@@ -17,9 +17,9 @@ func init() {
 	idCounter = 0
 }
 
-func NewAI(FSMId int, initState types.StateType) *AICmp {
+func NewAI(FSMId int, initState types.StateType) *AI {
 	idCounter++
-	return &AICmp{
+	return &AI{
 		Id:            idCounter,
 		FSMId:         FSMId,
 		StateName:     -1,
@@ -29,6 +29,6 @@ func NewAI(FSMId int, initState types.StateType) *AICmp {
 	}
 }
 
-func (ai *AICmp) Type() types.CmpType {
+func (ai *AI) Type() types.CmpType {
 	return ai.componentType
 }

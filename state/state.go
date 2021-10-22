@@ -1,4 +1,4 @@
-package states
+package state
 
 import (
 	"Def/cmp"
@@ -8,6 +8,6 @@ import (
 // interface for an FSM state used by the AI ECS
 type IState interface {
 	GetName() types.StateType
-	Enter(ai *cmp.AICmp, e types.EntityGetter)
-	Update(ai *cmp.AICmp, e types.EntityGetter)
+	Enter(ai *cmp.AI, e types.IEntity)
+	Update(ai *cmp.AI, e types.IEntity)
 }

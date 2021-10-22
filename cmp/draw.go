@@ -1,7 +1,6 @@
 package cmp
 
 import (
-	"Def/constants"
 	"Def/graphics"
 	"Def/types"
 
@@ -12,14 +11,14 @@ type Draw struct {
 	componentType types.CmpType
 	Image         *ebiten.Image
 	Opts          *ebiten.DrawImageOptions
-	Color         constants.ColorF
+	Color         types.ColorF
 	Scale         float64
 	SpriteMap     graphics.GFXFrame
 	Counter       int
 	Frame         int
 }
 
-func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color constants.ColorF) *Draw {
+func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color types.ColorF) *Draw {
 
 	return &Draw{
 		Image:         image,

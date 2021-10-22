@@ -22,11 +22,11 @@ func (s *LanderSearch) GetName() types.StateType {
 	return s.Name
 }
 
-func (s *LanderSearch) Enter(ai *cmp.AICmp, e types.EntityGetter) {
+func (s *LanderSearch) Enter(ai *cmp.AI, e types.IEntity) {
 
 }
 
-func (s *LanderSearch) Update(ai *cmp.AICmp, e types.EntityGetter) {
+func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 

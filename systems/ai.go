@@ -48,7 +48,8 @@ func (ai *AISystem) Update() {
 func (ai *AISystem) Draw(screen *ebiten.Image) {}
 
 func (ai *AISystem) process(e *game.Entity) {
-	aicmp := e.GetComponent(types.AI).(*cmp.AICmp)
+	aicmp := e.GetComponent(types.AI).(*cmp.AI)
+	// TODO should fsms be held in AISystem?
 	game.GetFSM(aicmp.FSMId).Update(aicmp, e)
 }
 

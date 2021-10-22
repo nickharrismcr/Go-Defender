@@ -6,9 +6,9 @@ import (
 	"Def/event"
 	"Def/game"
 	"Def/graphics"
-	"Def/states"
-	"Def/states/baiter"
-	"Def/states/lander"
+	"Def/state"
+	"Def/state/baiter"
+	"Def/state/lander"
 	"Def/systems"
 	"Def/types"
 	"math/rand"
@@ -27,7 +27,7 @@ func InitGame(engine *game.Engine) {
 	}
 	bulletTrigger := func(e event.IEvent) {
 		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
-			engine.TriggerBullet(ct.X, ct.Y, ct.DX*3, ct.DY*3)
+			engine.TriggerBullet(ct.X, ct.Y, ct.DX, ct.DY)
 		}
 	}
 
@@ -52,7 +52,7 @@ func InitGame(engine *game.Engine) {
 	bulletList(engine)
 }
 
-func Add(class types.EntityType, engine *game.Engine, state states.IState, sprite string, collide bool, speed float64) {
+func Add(class types.EntityType, engine *game.Engine, state state.IState, sprite string, collide bool, speed float64) {
 
 	ssheet := graphics.GetSpriteSheet()
 	ent := game.NewEntity(engine, class)
@@ -67,7 +67,7 @@ func Add(class types.EntityType, engine *game.Engine, state states.IState, sprit
 	ai := cmp.NewAI(testfsm, state.GetName())
 	ent.AddComponent(ai)
 	smap := graphics.GetSpriteMap(sprite)
-	dr := cmp.NewDraw(ssheet, smap, constants.ColorF{R: 1, G: 1, B: 1})
+	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
 	ent.AddComponent(dr)
 	if collide {
 		cl := cmp.NewCollide()
@@ -85,7 +85,7 @@ func bulletList(engine *game.Engine) {
 		pc := cmp.NewPos(0, 0, 0, 0)
 		ent.AddComponent(pc)
 		smap := graphics.GetSpriteMap("bullet.png")
-		dr := cmp.NewDraw(ssheet, smap, constants.ColorF{R: 1, G: 1, B: 1})
+		dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
 		cl := cmp.NewCollide()
 		li := cmp.NewLife(120)
 		ent.AddComponent(dr)

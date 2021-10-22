@@ -34,6 +34,10 @@ func NewEntity(engine *Engine, class types.EntityType) *Entity {
 	return rv
 }
 
+func (e *Entity) GetEngine() types.IEngine {
+	return e.engine
+}
+
 func (e *Entity) Active() bool {
 	return e.active
 }

@@ -1,7 +1,7 @@
 package game
 
 import (
-	"Def/constants"
+	"Def/types"
 	"Def/util"
 	"image/color"
 	"math"
@@ -17,7 +17,7 @@ type particle struct {
 	active              bool
 	ticksToLive         int
 	x, y, dx, dy, scale float64
-	color               constants.ColorF
+	color               types.ColorF
 	update              *func(p *particle)
 	image               *ebiten.Image
 	opts                *ebiten.DrawImageOptions
@@ -45,9 +45,9 @@ var update1 = func(p *particle) {
 	}
 }
 
-var col constants.ColorF
+var col types.ColorF
 
-func new1(p *particle, x, y float64, col constants.ColorF) {
+func new1(p *particle, x, y float64, col types.ColorF) {
 	p.active = true
 	p.ticksToLive = 90
 	p.x = x
@@ -75,7 +75,7 @@ func NewParticleSystem() *ParticleSystem {
 			x:           0,
 			y:           0,
 			scale:       1,
-			color:       constants.ColorF{R: 1, G: 1, B: 1, A: 1},
+			color:       types.ColorF{R: 1, G: 1, B: 1, A: 1},
 			image:       img,
 			opts:        &ebiten.DrawImageOptions{},
 		}
@@ -88,7 +88,7 @@ func NewParticleSystem() *ParticleSystem {
 
 func (s *ParticleSystem) Trigger(x, y float64) {
 	c := 0
-	col = constants.ColorF{R: 1, G: 1, B: 1, A: 1}
+	col = types.ColorF{R: 1, G: 1, B: 1, A: 1}
 	col.Randomize()
 	for _, p := range s.plist {
 		if !p.active {

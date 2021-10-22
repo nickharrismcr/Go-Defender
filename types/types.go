@@ -1,5 +1,7 @@
 package types
 
+import "math/rand"
+
 type StateType int
 type EntityType int
 
@@ -54,7 +56,22 @@ type ICmp interface {
 	Type() CmpType
 }
 
-type EntityGetter interface {
+type IEngine interface {
+	GetActiveEntityOfClass(EntityType) (IEntity, error)
+}
+
+type IEntity interface {
 	GetComponent(c CmpType) ICmp
 	SetActive(bool)
+	GetEngine() IEngine
+}
+
+type ColorF struct {
+	R, G, B, A float64
+}
+
+func (c *ColorF) Randomize() {
+	c.R = rand.Float64()
+	c.G = rand.Float64()
+	c.B = rand.Float64()
 }
