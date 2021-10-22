@@ -3,6 +3,7 @@ package systems
 import (
 	"Def/cmp"
 	"Def/game"
+	"Def/global"
 	"Def/logger"
 	"Def/types"
 
@@ -16,7 +17,7 @@ type PosSystem struct {
 	filter  *game.Filter
 	active  bool
 	engine  *game.Engine
-	targets map[game.EntityID]*game.Entity
+	targets map[types.EntityID]*game.Entity
 }
 
 func NewPosSystem(active bool) *PosSystem {
@@ -26,7 +27,7 @@ func NewPosSystem(active bool) *PosSystem {
 		sysname: game.PosSystem,
 		active:  active,
 		filter:  f,
-		targets: make(map[game.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]*game.Entity),
 	}
 }
 
@@ -50,6 +51,11 @@ func (pos *PosSystem) Draw(screen *ebiten.Image) {}
 func (pos *PosSystem) process(e *game.Entity) {
 	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
 	poscmp.X += poscmp.DX
+	if poscmp.X < 0 {
+		poscmp.X += global.WorldWidth
+	} else if poscmp.X > global.WorldWidth {
+		poscmp.X -= global.WorldWidth
+	}
 	poscmp.Y += poscmp.DY
 
 }

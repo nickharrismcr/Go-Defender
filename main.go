@@ -1,13 +1,15 @@
 package main
 
 import (
-	"Def/constants"
 	"Def/game"
+	"Def/global"
 	"Def/logger"
 	"errors"
+	"fmt"
 	_ "image/png"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Game struct {
@@ -31,7 +33,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.dcount++
 	engine.Draw(screen)
-	//ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", ebiten.CurrentTPS()))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", global.CameraX))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -52,7 +54,7 @@ func main() {
 	ebiten.SetWindowSize(320*5, 240*5)
 	ebiten.SetWindowTitle("Defender")
 	ebiten.SetFullscreen(true)
-	ebiten.SetMaxTPS(constants.MaxTPS)
+	ebiten.SetMaxTPS(global.MaxTPS)
 	if err := ebiten.RunGame(gm); err != nil {
 		logger.Debug(">>> %d %d ", gm.ucount, gm.dcount)
 	}

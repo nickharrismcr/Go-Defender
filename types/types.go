@@ -4,6 +4,7 @@ import "math/rand"
 
 type StateType int
 type EntityType int
+type EntityID int
 
 const (
 	Lander EntityType = iota
@@ -29,11 +30,12 @@ func (st StateType) String() string {
 type CmpType int
 
 const (
-	AI      CmpType = iota
-	Pos     CmpType = iota
-	Draw    CmpType = iota
-	Collide CmpType = iota
-	Life    CmpType = iota
+	AI        CmpType = iota
+	Pos       CmpType = iota
+	Draw      CmpType = iota
+	Collide   CmpType = iota
+	Life      CmpType = iota
+	RadarDraw CmpType = iota
 )
 
 func (t CmpType) String() string {
@@ -48,6 +50,8 @@ func (t CmpType) String() string {
 		return "Collide"
 	case Life:
 		return "Life"
+	case RadarDraw:
+		return "RadarDraw"
 	}
 	return ""
 }
@@ -58,12 +62,15 @@ type ICmp interface {
 
 type IEngine interface {
 	GetActiveEntityOfClass(EntityType) (IEntity, error)
+	GetEntity(EntityID) IEntity
 }
 
 type IEntity interface {
 	GetComponent(c CmpType) ICmp
 	SetActive(bool)
 	GetEngine() IEngine
+	GetID() EntityID
+	Active() bool
 }
 
 type ColorF struct {

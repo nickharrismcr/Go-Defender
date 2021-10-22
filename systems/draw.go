@@ -3,6 +3,7 @@ package systems
 import (
 	"Def/cmp"
 	"Def/game"
+	"Def/global"
 	"Def/logger"
 	"Def/types"
 	"image"
@@ -17,7 +18,7 @@ type DrawSystem struct {
 	filter  *game.Filter
 	active  bool
 	engine  *game.Engine
-	targets map[game.EntityID]*game.Entity
+	targets map[types.EntityID]*game.Entity
 }
 
 func NewDrawSystem(active bool) *DrawSystem {
@@ -28,7 +29,7 @@ func NewDrawSystem(active bool) *DrawSystem {
 		sysname: game.DrawSystem,
 		active:  active,
 		filter:  f,
-		targets: make(map[game.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]*game.Entity),
 	}
 }
 
@@ -55,7 +56,8 @@ func (drawsys *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
 	op := drawcmp.Opts
 	op.GeoM.Reset()
-	op.GeoM.Translate(poscmp.X, poscmp.Y)
+	screenx := poscmp.X - global.CameraX
+	op.GeoM.Translate(screenx, poscmp.Y)
 	frames := drawcmp.SpriteMap.Anim_frames
 	drawcmp.Counter++
 	if drawcmp.Counter > drawcmp.SpriteMap.Ticks_per_frame {

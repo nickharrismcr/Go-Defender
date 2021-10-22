@@ -16,7 +16,7 @@ type LifeSystem struct {
 	filter  *game.Filter
 	active  bool
 	engine  *game.Engine
-	targets map[game.EntityID]*game.Entity
+	targets map[types.EntityID]*game.Entity
 }
 
 func NewLifeSystem(active bool) *LifeSystem {
@@ -26,7 +26,7 @@ func NewLifeSystem(active bool) *LifeSystem {
 		sysname: game.LifeSystem,
 		active:  active,
 		filter:  f,
-		targets: make(map[game.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]*game.Entity),
 	}
 }
 

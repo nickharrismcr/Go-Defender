@@ -12,8 +12,10 @@ type IEvent interface {
 }
 
 const (
-	FireBulletEvent EventType = iota
-	ExplodeEvent    EventType = iota
+	FireBulletEvent    EventType = iota
+	ExplodeEvent       EventType = iota
+	EntityDieEvent     EventType = iota
+	LanderClearedEvent EventType = iota
 )
 
 func (ev EventType) String() string {
@@ -23,6 +25,10 @@ func (ev EventType) String() string {
 		return "Explode"
 	case FireBulletEvent:
 		return "FireBullet"
+	case EntityDieEvent:
+		return "EntityDie"
+	case LanderClearedEvent:
+		return "LanderCleared"
 	}
 
 	return ""

@@ -2,7 +2,7 @@ package lander
 
 import (
 	"Def/cmp"
-	"Def/constants"
+	"Def/global"
 	"Def/types"
 )
 
@@ -32,10 +32,8 @@ func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 
 	pc.X += pc.DX
 	pc.Y += pc.DY
-	if pc.X < 0 || pc.X > constants.ScreenWidth {
-		pc.DX = -pc.DX
-	}
-	if pc.Y < 0 || pc.Y > constants.ScreenHeight {
+
+	if pc.Y < global.ScreenHeight-global.WorldHeight || pc.Y > global.ScreenHeight {
 		pc.DY = -pc.DY
 	}
 }

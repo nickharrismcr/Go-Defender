@@ -19,7 +19,7 @@ type CollideSystem struct {
 	filter  *game.Filter
 	active  bool
 	engine  *game.Engine
-	targets map[game.EntityID]*game.Entity
+	targets map[types.EntityID]*game.Entity
 }
 
 func NewCollideSystem(active bool) *CollideSystem {
@@ -29,7 +29,7 @@ func NewCollideSystem(active bool) *CollideSystem {
 		sysname: game.CollideSystem,
 		active:  active,
 		filter:  f,
-		targets: make(map[game.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]*game.Entity),
 	}
 }
 
@@ -61,8 +61,11 @@ func (pos *CollideSystem) process(e *game.Entity) {
 				event.NotifyEvent(ev)
 				e.SetActive(false)
 				te.SetActive(false)
+				ed := event.NewEntityDie(e)
+				event.NotifyEvent(ed)
+				ed = event.NewEntityDie(te)
+				event.NotifyEvent(ed)
 			}
-
 		}
 	}
 

@@ -2,8 +2,8 @@ package game
 
 import (
 	"Def/cmp"
-	"Def/constants"
 	"Def/event"
+	"Def/global"
 	"Def/types"
 	"Def/util"
 	"math"
@@ -48,10 +48,10 @@ func (s *BaiterSearch) Update(ai *cmp.AI, e types.IEntity) {
 
 	pc.X += pc.DX
 	pc.Y += pc.DY
-	if pc.X < 0 || pc.X > constants.ScreenWidth {
+	if pc.X < 0 || pc.X > global.ScreenWidth {
 		pc.DX = -pc.DX
 	}
-	if pc.Y < 0 || pc.Y > constants.ScreenHeight {
+	if pc.Y < 0 || pc.Y > global.ScreenHeight {
 		pc.DY = -pc.DY
 	}
 }

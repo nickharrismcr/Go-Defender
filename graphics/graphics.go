@@ -1,7 +1,7 @@
 package graphics
 
 import (
-	"Def/constants"
+	"Def/global"
 	"bytes"
 	_ "embed"
 	"encoding/json"
@@ -54,7 +54,7 @@ func Load() {
 	}
 
 	for _, v := range spritedata.Frames {
-		v.Ticks_per_frame /= 60 / constants.MaxTPS
+		v.Ticks_per_frame /= 60 / global.MaxTPS
 		spriteMap[v.Filename] = v
 	}
 

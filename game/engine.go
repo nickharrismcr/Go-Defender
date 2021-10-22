@@ -15,23 +15,25 @@ const (
 )
 
 type Engine struct {
-	entities              map[EntityID]*Entity
-	entitiesWithComponent map[types.CmpType]map[EntityID]*Entity
+	entities              map[types.EntityID]*Entity
+	entitiesWithComponent map[types.CmpType]map[types.EntityID]*Entity
 	systems               map[SystemName]ISystem
 	update_systems        []ISystem
 	draw_systems          []ISystem
 	particle_system       *ParticleSystem
-	Bullets               []*Entity
+	world                 *World
+	BulletPool            []*Entity
 }
 
 func NewEngine() *Engine {
 
 	return &Engine{
-		entities:              make(map[EntityID]*Entity),
-		entitiesWithComponent: make(map[types.CmpType]map[EntityID]*Entity),
+		entities:              make(map[types.EntityID]*Entity),
+		entitiesWithComponent: make(map[types.CmpType]map[types.EntityID]*Entity),
 		systems:               make(map[SystemName]ISystem),
 		particle_system:       NewParticleSystem(),
-		Bullets:               []*Entity{},
+		world:                 NewWorld(),
+		BulletPool:            []*Entity{},
 	}
 }
 
@@ -67,10 +69,9 @@ func (eng *Engine) AddEntity(e *Entity) {
 			s.AddEntityIfRequired(e)
 		}
 	}
-
 }
 
-func (eng *Engine) GetEntity(id EntityID) *Entity {
+func (eng *Engine) GetEntity(id types.EntityID) types.IEntity {
 	return eng.entities[id]
 }
 
@@ -83,7 +84,7 @@ func (eng *Engine) GetActiveEntityOfClass(et types.EntityType) (types.IEntity, e
 	return nil, errors.New("Not found")
 }
 
-func (eng *Engine) GetEntities() map[EntityID]*Entity {
+func (eng *Engine) GetEntities() map[types.EntityID]*Entity {
 	return eng.entities
 }
 
@@ -112,7 +113,7 @@ func (eng *Engine) RemoveComponent(e *Entity, ct types.CmpType) {
 func (eng *Engine) addToEntitiesWithComponent(e *Entity, c types.ICmp) {
 	_, ok := eng.entitiesWithComponent[c.Type()]
 	if !ok {
-		eng.entitiesWithComponent[c.Type()] = map[EntityID]*Entity{}
+		eng.entitiesWithComponent[c.Type()] = map[types.EntityID]*Entity{}
 	}
 	eng.entitiesWithComponent[c.Type()][e.Id] = e
 }
@@ -124,7 +125,7 @@ func (eng *Engine) removeFromEntitiesWithComponent(e *Entity, ct types.CmpType) 
 	}
 }
 
-func (eng *Engine) GetEntitiesWithComponent(ct types.CmpType) map[EntityID]*Entity {
+func (eng *Engine) GetEntitiesWithComponent(ct types.CmpType) map[types.EntityID]*Entity {
 	list, ok := eng.entitiesWithComponent[ct]
 	if ok {
 		return list
@@ -144,6 +145,7 @@ func (eng *Engine) Draw(screen *ebiten.Image) {
 		s.Draw(screen)
 	}
 	eng.particle_system.Draw(screen)
+	eng.world.Draw(screen)
 }
 
 func (eng *Engine) TriggerPS(x, y float64) {
@@ -151,7 +153,7 @@ func (eng *Engine) TriggerPS(x, y float64) {
 }
 
 func (eng *Engine) TriggerBullet(x, y, dx, dy float64) {
-	for _, v := range eng.Bullets {
+	for _, v := range eng.BulletPool {
 		if !v.Active() {
 			v.SetActive(true)
 			pc := v.GetComponent(types.Pos).(*cmp.Pos)

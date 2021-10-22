@@ -11,6 +11,7 @@ type AI struct {
 	FSMId         int
 	StateName     types.StateType
 	NextStateName types.StateType
+	TargetId      types.EntityID
 }
 
 func init() {

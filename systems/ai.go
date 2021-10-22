@@ -16,7 +16,7 @@ type AISystem struct {
 	filter  *game.Filter
 	active  bool
 	engine  *game.Engine
-	targets map[game.EntityID]*game.Entity
+	targets map[types.EntityID]*game.Entity
 }
 
 func NewAISystem(active bool) *AISystem {
@@ -26,7 +26,7 @@ func NewAISystem(active bool) *AISystem {
 		sysname: game.AISystem,
 		active:  active,
 		filter:  f,
-		targets: make(map[game.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]*game.Entity),
 	}
 }
 

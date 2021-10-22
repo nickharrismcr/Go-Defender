@@ -5,16 +5,14 @@ import (
 	"Def/types"
 )
 
-type EntityID int
-
-var idCounter EntityID
+var idCounter types.EntityID
 
 func init() {
 	idCounter = 0
 }
 
 type Entity struct {
-	Id     EntityID
+	Id     types.EntityID
 	Class  types.EntityType
 	comps  map[types.CmpType]types.ICmp
 	active bool
@@ -32,6 +30,10 @@ func NewEntity(engine *Engine, class types.EntityType) *Entity {
 	engine.AddEntity(rv)
 	idCounter++
 	return rv
+}
+
+func (e *Entity) GetID() types.EntityID {
+	return e.Id
 }
 
 func (e *Entity) GetEngine() types.IEngine {

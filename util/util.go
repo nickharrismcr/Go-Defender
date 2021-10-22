@@ -2,12 +2,14 @@ package util
 
 import (
 	"Def/cmp"
-	"Def/constants"
+	"Def/global"
 	"math/rand"
 )
 
 func OffScreen(x, y float64) bool {
-	return (x < 0 || x > constants.ScreenWidth || y < 0 || y > constants.ScreenHeight)
+
+	screenX := x - global.CameraX
+	return (screenX < 0 || screenX > global.ScreenWidth || y < 0 || y > global.ScreenHeight)
 }
 
 func RandChoiceF(lst []float64) float64 {

@@ -5,11 +5,12 @@ import "github.com/hajimehoshi/ebiten/v2"
 type SystemName int
 
 const (
-	AISystem      SystemName = iota
-	DrawSystem    SystemName = iota
-	PosSystem     SystemName = iota
-	CollideSystem SystemName = iota
-	LifeSystem    SystemName = iota
+	AISystem        SystemName = iota
+	DrawSystem      SystemName = iota
+	PosSystem       SystemName = iota
+	CollideSystem   SystemName = iota
+	LifeSystem      SystemName = iota
+	RadarDrawSystem SystemName = iota
 )
 
 func (t SystemName) String() string {
@@ -24,6 +25,8 @@ func (t SystemName) String() string {
 		return "Collide"
 	case LifeSystem:
 		return "Life"
+	case RadarDrawSystem:
+		return "RadarDrawSystem"
 	}
 	return ""
 }
