@@ -89,7 +89,9 @@ func (w *World) Draw(scr *ebiten.Image) {
 		h := w.points[ind]
 		sx := rs + rw*(float64(j)/float64(ww))
 		w.ops.GeoM.Reset()
+		w.ops.GeoM.Scale(0.5, 0.5)
 		w.ops.GeoM.Translate(sx, float64(scrtop)-(float64(h*(scrtop/scrh))))
+
 		scr.DrawImage(w.img, w.ops)
 	}
 }
