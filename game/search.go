@@ -18,7 +18,7 @@ type BaiterSearch struct {
 
 func NewBaiterSearch() *BaiterSearch {
 	return &BaiterSearch{
-		Name: types.BaiterSearch,
+		Name: types.BaiterHunt,
 	}
 }
 

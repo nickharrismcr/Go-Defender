@@ -6,6 +6,7 @@ import (
 	"Def/global"
 	"Def/logger"
 	"Def/types"
+	"Def/util"
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -54,10 +55,25 @@ func (drawsys *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
 	drawcmp := e.GetComponent(types.Draw).(*cmp.Draw)
 	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
+
 	op := drawcmp.Opts
 	op.GeoM.Reset()
-	screenx := poscmp.X - global.CameraX
-	op.GeoM.Translate(screenx, poscmp.Y)
+	px := poscmp.X
+
+	camx := global.CameraX
+	ww := float64(global.WorldWidth)
+	sw := float64(global.ScreenWidth)
+	translate := px - camx
+
+	if px < (sw - (ww - camx)) {
+		translate += ww
+	}
+
+	if util.OffScreen(translate, poscmp.Y) {
+		return
+	}
+
+	op.GeoM.Translate(translate, poscmp.Y)
 	frames := drawcmp.SpriteMap.Anim_frames
 	drawcmp.Counter++
 	if drawcmp.Counter > drawcmp.SpriteMap.Ticks_per_frame {
@@ -70,7 +86,26 @@ func (drawsys *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
 	fw, fh := drawcmp.SpriteMap.Frame.W/frames, drawcmp.SpriteMap.Frame.H
 	sx, sy := drawcmp.SpriteMap.Frame.X+drawcmp.Frame*fw, drawcmp.SpriteMap.Frame.Y
-	screen.DrawImage(drawcmp.Image.SubImage(image.Rect(sx, sy, sx+fw, sy+fh)).(*ebiten.Image), op)
+
+	si := drawcmp.Image.SubImage(image.Rect(sx, sy, sx+fw, sy+fh)).(*ebiten.Image)
+	if drawcmp.Disperse == 0 {
+		screen.DrawImage(si, op)
+	} else {
+		for i := 0; i < 9; i++ {
+			for j := 0; j < 9; j++ {
+				x := translate + (float64(i-2) * drawcmp.Disperse)
+				y := poscmp.Y + (float64(j-2) * drawcmp.Disperse)
+				op.GeoM.Reset()
+				op.GeoM.Translate(x, y)
+				x1 := sx + i*(fw/9)
+				x2 := x1 + fw/9
+				y1 := sy + j*(fh/9)
+				y2 := y1 + fh/9
+				ssi := drawcmp.Image.SubImage(image.Rect(x1, y1, x2, y2)).(*ebiten.Image)
+				screen.DrawImage(ssi, op)
+			}
+		}
+	}
 
 }
 

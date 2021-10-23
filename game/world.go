@@ -8,8 +8,11 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+var scrh = float64(global.ScreenHeight)
+var scrtop = float64(global.ScreenTop)
+
 type World struct {
-	points []int
+	points []float64
 	img    *ebiten.Image
 	ops    *ebiten.DrawImageOptions
 }
@@ -17,21 +20,42 @@ type World struct {
 func NewWorld() *World {
 
 	w := &World{}
-	w.points = make([]int, global.WorldWidth+1)
-	var y int = 0
-	var dy int = 1
+	w.points = make([]float64, global.WorldWidth+1)
+	var y float64 = 0
+	var dy float64 = 1
 	for i := 0; i <= global.WorldWidth; i++ {
 		w.points[i] = y
 		y += dy
-		if y == 0 || y > global.ScreenHeight/4 || rand.Intn(10) == 1 {
+		if i > 100 && (y < 100 || y > global.ScreenHeight/4 || rand.Intn(10) == 1) {
 			dy = -dy
 		}
+	}
+	y = 0
+	dy = 1
+	for i := global.WorldWidth; i > 0; i-- {
+		if y == w.points[i] {
+			break
+		}
+		w.points[i] = y
+		y += dy
+
 	}
 	w.img = ebiten.NewImage(2, 2)
 	w.ops = &ebiten.DrawImageOptions{}
 	w.img.Fill(color.White)
 	w.ops.ColorM.Scale(0.5, 0.3, 0, 1)
 	return w
+}
+
+func (w *World) At(wx float64) float64 {
+
+	if wx < 0 {
+		wx = 0
+	}
+	if wx > global.WorldWidth {
+		wx = global.WorldWidth
+	}
+	return w.points[int(wx)]
 }
 
 func (w *World) Draw(scr *ebiten.Image) {
@@ -65,7 +89,7 @@ func (w *World) Draw(scr *ebiten.Image) {
 		h := w.points[ind]
 		sx := rs + rw*(float64(j)/float64(ww))
 		w.ops.GeoM.Reset()
-		w.ops.GeoM.Translate(sx, float64(global.ScreenHeight/10)-(float64(h)/10))
+		w.ops.GeoM.Translate(sx, float64(scrtop)-(float64(h*(scrtop/scrh))))
 		scr.DrawImage(w.img, w.ops)
 	}
 }

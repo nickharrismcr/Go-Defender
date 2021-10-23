@@ -6,17 +6,22 @@ import (
 	"Def/global"
 	"Def/logger"
 	"Def/types"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var sw = float64(global.ScreenWidth)
 var sh = float64(global.ScreenHeight)
+var st = float64(global.ScreenTop)
 var rxs = sw * 0.25
 var rxe = sw * 0.75
 var rw = rxe - rxs
 var ww = float64(global.WorldWidth)
 var rsw = rw * (sw / ww)
+
+var lineImg = ebiten.NewImage(1, 1)
+var lineOpts = &ebiten.DrawImageOptions{}
 
 // implements ISystem
 
@@ -32,6 +37,7 @@ func NewRadarDrawSystem(active bool) *RadarDrawSystem {
 	f := game.NewFilter()
 	f.Add(types.RadarDraw)
 	f.Add(types.Pos)
+	lineImg.Fill(color.White)
 	return &RadarDrawSystem{
 		sysname: game.RadarDrawSystem,
 		active:  active,
@@ -46,10 +52,32 @@ func (drawsys *RadarDrawSystem) GetName() game.SystemName {
 
 func (drawsys *RadarDrawSystem) Update() {}
 
+func (drawsys *RadarDrawSystem) HUD(screen *ebiten.Image) {
+
+	col := global.Cols[global.HudCol]
+	lineOpts.ColorM.Scale(col.R, col.G, col.B, col.A)
+	lineOpts.GeoM.Reset()
+	lineOpts.GeoM.Scale(global.ScreenWidth, 2)
+	lineOpts.GeoM.Translate(0, global.ScreenTop)
+	screen.DrawImage(lineImg, lineOpts)
+	lineOpts.GeoM.Reset()
+	lineOpts.GeoM.Scale(2, global.ScreenTop)
+	lineOpts.GeoM.Translate(rxs, 0)
+	screen.DrawImage(lineImg, lineOpts)
+	lineOpts.GeoM.Reset()
+	lineOpts.GeoM.Scale(2, global.ScreenTop)
+	lineOpts.GeoM.Translate(rxe, 0)
+	screen.DrawImage(lineImg, lineOpts)
+
+}
+
 func (drawsys *RadarDrawSystem) Draw(screen *ebiten.Image) {
 	if !drawsys.active {
 		return
 	}
+
+	drawsys.HUD(screen)
+
 	for _, e := range drawsys.targets {
 		if e.Active() {
 			drawsys.process(e, screen)
@@ -73,7 +101,7 @@ func (drawsys *RadarDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	}
 	screenx := rxs + rw*(posx/ww)
 
-	op.GeoM.Translate(screenx, poscmp.Y/10)
+	op.GeoM.Translate(screenx, poscmp.Y*(st/sh))
 	c := drawcmp.Color
 	op.ColorM.Scale(c.R, c.G, c.B, c.A)
 	screen.DrawImage(drawcmp.Image, op)

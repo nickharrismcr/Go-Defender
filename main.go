@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	_ "image/png"
+	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -26,6 +28,18 @@ func (g *Game) Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return errors.New("escape pressed")
 	}
+	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+		global.CameraX -= 20
+		if global.CameraX < 0 {
+			global.CameraX += global.WorldWidth
+		}
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+		global.CameraX += 20
+		if global.CameraX > global.WorldWidth {
+			global.CameraX -= global.WorldWidth
+		}
+	}
 
 	return nil
 }
@@ -42,8 +56,9 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func main() {
 
-	engine = game.NewEngine()
+	rand.Seed(time.Now().UTC().UnixNano())
 
+	engine = game.NewEngine()
 	InitGame(engine)
 
 	gm := &Game{

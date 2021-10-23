@@ -2,11 +2,9 @@ package baiter
 
 import (
 	"Def/cmp"
-	"Def/event"
 	"Def/global"
 	"Def/types"
 	"Def/util"
-	"math"
 	"math/rand"
 )
 
@@ -18,7 +16,7 @@ type BaiterHunt struct {
 
 func NewBaiterSearch() *BaiterHunt {
 	return &BaiterHunt{
-		Name: types.BaiterSearch,
+		Name: types.BaiterHunt,
 	}
 }
 
@@ -63,21 +61,21 @@ func (s *BaiterHunt) Update(ai *cmp.AI, e types.IEntity) {
 			ai.Counter = rand.Intn(20) + 20
 			pc.DY = util.RandChoiceF([]float64{-3, 0, 3})
 
-			dx, dy := util.ComputeBullet(pc, tpos, 60)
-			if math.Abs(dx) < 6 {
-				ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
-				event.NotifyEvent(ev)
-			}
+			//dx, dy := util.ComputeBullet(pc, tpos, 60)
+			//if math.Abs(dx) < 6 {
+			//ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
+			//event.NotifyEvent(ev)
+			//}
 		}
 	}
 
-	if pc.Y < global.ScreenHeight-global.WorldHeight || pc.Y > global.ScreenHeight-100 {
+	if pc.Y < global.ScreenTop || pc.Y > global.ScreenHeight-100 {
 		pc.DY = -pc.DY
 	}
 
 	pc.X += pc.DX
 	pc.Y += pc.DY
 
-	global.CameraX = pc.X - global.ScreenWidth/2
+	//global.CameraX = pc.X - global.ScreenWidth/2
 
 }

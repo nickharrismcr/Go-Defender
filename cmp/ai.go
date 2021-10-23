@@ -9,9 +9,10 @@ type AI struct {
 	Id            int
 	Counter       int
 	FSMId         int
-	StateName     types.StateType
-	NextStateName types.StateType
+	State         types.StateType
+	NextState     types.StateType
 	TargetId      types.EntityID
+	Scratch       int
 }
 
 func init() {
@@ -23,10 +24,11 @@ func NewAI(FSMId int, initState types.StateType) *AI {
 	return &AI{
 		Id:            idCounter,
 		FSMId:         FSMId,
-		StateName:     -1,
-		NextStateName: initState,
+		State:         -1,
+		NextState:     initState,
 		Counter:       0,
 		componentType: types.AI,
+		Scratch:       0,
 	}
 }
 

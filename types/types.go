@@ -13,15 +13,33 @@ const (
 )
 
 const (
-	LanderSearch StateType = iota
-	BaiterSearch StateType = iota
+	LanderMaterialise StateType = iota
+	LanderSearch      StateType = iota
+	LanderDrop        StateType = iota
+	LanderGrab        StateType = iota
+	LanderMutate      StateType = iota
+	LanderDie         StateType = iota
+	BaiterMaterialise StateType = iota
+	BaiterHunt        StateType = iota
 )
 
 func (st StateType) String() string {
 	switch st {
+	case LanderMaterialise:
+		return "Lander-Materialise"
 	case LanderSearch:
 		return "Lander-Search"
-	case BaiterSearch:
+	case LanderDrop:
+		return "Lander-Drop"
+	case LanderGrab:
+		return "Lander-Grab"
+	case LanderMutate:
+		return "Lander-Mutate"
+	case LanderDie:
+		return "Lander-Die"
+	case BaiterMaterialise:
+		return "Baiter-Materialise"
+	case BaiterHunt:
 		return "Baiter-Search"
 	}
 	return ""
@@ -51,7 +69,7 @@ func (t CmpType) String() string {
 	case Life:
 		return "Life"
 	case RadarDraw:
-		return "RadarDraw"
+		return ""
 	}
 	return ""
 }
@@ -63,6 +81,7 @@ type ICmp interface {
 type IEngine interface {
 	GetActiveEntityOfClass(EntityType) (IEntity, error)
 	GetEntity(EntityID) IEntity
+	MountainHeight(float64) float64
 }
 
 type IEntity interface {

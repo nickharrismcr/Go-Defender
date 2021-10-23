@@ -7,12 +7,9 @@ import (
 	"Def/global"
 	"Def/graphics"
 	"Def/logger"
-	"Def/state"
-	"Def/state/baiter"
 	"Def/state/lander"
 	"Def/systems"
 	"Def/types"
-	"Def/util"
 	"image/color"
 	"math/rand"
 
@@ -43,10 +40,10 @@ func bulletPool(engine *game.Engine) {
 		ent.AddComponent(pc)
 		smap := graphics.GetSpriteMap("bullet.png")
 		dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
-		cl := cmp.NewCollide()
+		//cl := cmp.NewCollide()
 		li := cmp.NewLife(120)
 		ent.AddComponent(dr)
-		ent.AddComponent(cl)
+		//ent.AddComponent(cl)
 		ent.AddComponent(li)
 
 		engine.BulletPool = append(engine.BulletPool, ent)
@@ -106,48 +103,46 @@ func InitEntities(engine *game.Engine) {
 	radarImg.Fill(color.White)
 
 	for i := 0; i < 10; i++ {
-		ls := lander.NewLanderSearch()
-		Add(types.Lander, engine, ls, "lander.png", true, 2)
+
+		AddLander(engine, i)
 		landerCount++
 	}
-	for i := 0; i < 1; i++ {
-		ls := baiter.NewBaiterSearch()
-		Add(types.Baiter, engine, ls, "baiter.png", false, 5)
-	}
+	//for i := 0; i < 1; i++ {
+	//	ls := baiter.NewBaiterSearch()
+	//	Add(types.Baiter, engine, ls, "baiter.png", false, 5)
+	//}
 }
 
-func Add(class types.EntityType, engine *game.Engine, state state.IState, sprite string, collide bool, speed float64) {
+func AddLander(engine *game.Engine, count int) {
 
 	ssheet := graphics.GetSpriteSheet()
-	ent := game.NewEntity(engine, class)
+	ent := game.NewEntity(engine, types.Lander)
 	ent.SetActive(true)
-	dx := speed * util.RandChoiceF([]float64{-1, 1})
-	dy := speed * util.RandChoiceF([]float64{-1, 1})
 
-	pc := cmp.NewPos(rand.Float64()*global.WorldWidth, global.ScreenHeight-global.WorldHeight*rand.Float64(), dx, dy)
+	x := rand.Float64() * global.WorldWidth
+	if count < 2 {
+		x = rand.Float64()*global.ScreenWidth + global.CameraX
+	}
+	pc := cmp.NewPos(x, global.ScreenTop+500*rand.Float64(), 0, 0)
 	ent.AddComponent(pc)
 	stree := game.NewStateTree()
-	stree.AddState(state)
+	stree.AddState(lander.NewLanderSearch())
+	stree.AddState(lander.NewLanderMaterialise())
+	stree.AddState(lander.NewLanderDrop())
+	stree.AddState(lander.NewLanderGrab())
+	stree.AddState(lander.NewLanderMutate())
+	stree.AddState(lander.NewLanderDie())
+
 	testfsm := game.NewFSM(stree, "fsm1")
-	ai := cmp.NewAI(testfsm, state.GetName())
+	ai := cmp.NewAI(testfsm, types.LanderMaterialise)
 	ent.AddComponent(ai)
-	smap := graphics.GetSpriteMap(sprite)
+	smap := graphics.GetSpriteMap("lander.png")
 	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
 	ent.AddComponent(dr)
 
-	var col types.ColorF
-	switch class {
-	case types.Baiter:
-		col = types.ColorF{R: 1, G: 1, B: 0, A: 1}
-	case types.Lander:
-		col = types.ColorF{R: 0, G: 1, B: 0, A: 1}
-	}
+	col := types.ColorF{R: 0, G: 1, B: 0, A: 1}
 	rd := cmp.NewRadarDraw(radarImg, col)
 	ent.AddComponent(rd)
-
-	if collide {
-		cl := cmp.NewCollide()
-		ent.AddComponent(cl)
-	}
-
+	cl := cmp.NewCollide()
+	ent.AddComponent(cl)
 }

@@ -16,6 +16,7 @@ type Draw struct {
 	SpriteMap     graphics.GFXFrame
 	Counter       int
 	Frame         int
+	Disperse      float64
 }
 
 func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color types.ColorF) *Draw {
@@ -29,6 +30,7 @@ func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color types.ColorF) *D
 		SpriteMap:     smap,
 		Counter:       0,
 		Frame:         0,
+		Disperse:      0,
 	}
 }
 

@@ -2,37 +2,34 @@ package lander
 
 import (
 	"Def/cmp"
-	"Def/event"
 	"Def/global"
 	"Def/types"
-	"Def/util"
-	"math/rand"
 )
 
 // NB States should not contain entity state ;) they should act on cmp
 
-type LanderSearch struct {
+type LanderMutate struct {
 	Name types.StateType
 }
 
-func NewLanderSearch() *LanderSearch {
-	return &LanderSearch{
-		Name: types.LanderSearch,
+func NewLanderMutate() *LanderMutate {
+	return &LanderMutate{
+		Name: types.LanderMutate,
 	}
 }
 
-func (s *LanderSearch) GetName() types.StateType {
+func (s *LanderMutate) GetName() types.StateType {
 	return s.Name
 }
 
-func (s *LanderSearch) Enter(ai *cmp.AI, e types.IEntity) {
+func (s *LanderMutate) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pc.DX = global.LanderSpeed
 	pc.DY = 0
 	ai.Counter = 0
 }
 
-func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
+func (s *LanderMutate) Update(ai *cmp.AI, e types.IEntity) {
 
 	ai.Counter++
 
@@ -44,7 +41,7 @@ func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 	if ai.Counter > 5 {
 		ai.Counter = 0
 		mh := e.GetEngine().MountainHeight(pc.X)
-		if pc.Y+200 < global.ScreenHeight-mh {
+		if pc.Y+300 < global.ScreenHeight-mh {
 			ai.Scratch++
 		} else {
 			ai.Scratch--
@@ -64,12 +61,4 @@ func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 	case 5:
 		pc.DY = global.LanderSpeed
 	}
-
-	if rand.Intn(200) == 0 {
-		tc := cmp.NewPos(pc.X+400, pc.Y, 1, 1)
-		dx, dy := util.ComputeBullet(pc, tc, 60)
-		ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
-		event.NotifyEvent(ev)
-	}
-
 }

@@ -8,8 +8,7 @@ import (
 
 func OffScreen(x, y float64) bool {
 
-	screenX := x - global.CameraX
-	return (screenX < 0 || screenX > global.ScreenWidth || y < 0 || y > global.ScreenHeight)
+	return (x < -100 || x > global.ScreenWidth+100 || y < 0 || y > global.ScreenHeight)
 }
 
 func RandChoiceF(lst []float64) float64 {

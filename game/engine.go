@@ -22,6 +22,7 @@ type Engine struct {
 	draw_systems          []ISystem
 	particle_system       *ParticleSystem
 	world                 *World
+	stars                 *Stars
 	BulletPool            []*Entity
 }
 
@@ -33,6 +34,7 @@ func NewEngine() *Engine {
 		systems:               make(map[SystemName]ISystem),
 		particle_system:       NewParticleSystem(),
 		world:                 NewWorld(),
+		stars:                 NewStars(),
 		BulletPool:            []*Entity{},
 	}
 }
@@ -138,6 +140,7 @@ func (eng *Engine) Update() {
 		s.Update()
 	}
 	eng.particle_system.Update()
+	eng.stars.Update()
 }
 
 func (eng *Engine) Draw(screen *ebiten.Image) {
@@ -146,6 +149,7 @@ func (eng *Engine) Draw(screen *ebiten.Image) {
 	}
 	eng.particle_system.Draw(screen)
 	eng.world.Draw(screen)
+	eng.stars.Draw(screen)
 }
 
 func (eng *Engine) TriggerPS(x, y float64) {
@@ -163,4 +167,8 @@ func (eng *Engine) TriggerBullet(x, y, dx, dy float64) {
 			break
 		}
 	}
+}
+
+func (eng *Engine) MountainHeight(wx float64) float64 {
+	return eng.world.At(wx)
 }

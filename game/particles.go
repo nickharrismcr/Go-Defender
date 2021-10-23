@@ -13,6 +13,8 @@ import (
 
 const MAX int = 200
 
+var pImage *ebiten.Image
+
 // individual particle. system has a pool of these size = MAX
 type particle struct {
 	active              bool
@@ -66,10 +68,11 @@ func new1(p *particle, x, y float64, col types.ColorF) {
 
 // init with pool of MAX particles
 func NewParticleSystem() *ParticleSystem {
+	pImage := ebiten.NewImage(20, 20)
+	pImage.Fill(color.White)
 	s := &ParticleSystem{}
 	for i := 0; i < MAX; i++ {
-		img := ebiten.NewImage(10, 10)
-		img.Fill(color.White)
+
 		p := &particle{
 			active:      false,
 			ticksToLive: 0,
@@ -77,7 +80,7 @@ func NewParticleSystem() *ParticleSystem {
 			y:           0,
 			scale:       1,
 			color:       types.ColorF{R: 1, G: 1, B: 1, A: 1},
-			image:       img,
+			image:       pImage,
 			opts:        &ebiten.DrawImageOptions{},
 		}
 		s.plist = append(s.plist, p)
