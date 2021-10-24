@@ -12,6 +12,14 @@ import (
 
 const MAXSTARS int = 200
 
+var starsImg *ebiten.Image
+
+// background stars
+type Stars struct {
+	plist  []*star
+	engine *Engine
+}
+
 // individual star. system has a pool of these size = MAX
 type star struct {
 	active      bool
@@ -22,17 +30,13 @@ type star struct {
 	opts        *ebiten.DrawImageOptions
 }
 
-type Stars struct {
-	plist []*star
-}
-
-var starsImg *ebiten.Image
-
 // init with pool of MAXSTARS stars
-func NewStars() *Stars {
+func NewStars(engine *Engine) *Stars {
 	starsImg := ebiten.NewImage(4, 4)
 	starsImg.Fill(color.White)
-	s := &Stars{}
+	s := &Stars{
+		engine: engine,
+	}
 	for i := 0; i < MAXSTARS; i++ {
 
 		p := &star{
@@ -40,7 +44,7 @@ func NewStars() *Stars {
 			ticksToLive: rand.Intn(30),
 			x:           rand.Float64() * global.WorldWidth,
 			y:           global.ScreenTop + rand.Float64()*(global.ScreenHeight/2),
-			color:       global.Cols[rand.Intn(4)],
+			color:       global.Cols[rand.Intn(5)],
 			image:       starsImg,
 			opts:        &ebiten.DrawImageOptions{},
 		}
@@ -52,7 +56,6 @@ func NewStars() *Stars {
 func (s *Stars) Update() {
 
 	for _, p := range s.plist {
-
 		p.ticksToLive--
 		if p.ticksToLive == 0 {
 			p.x = rand.Float64() * global.WorldWidth
@@ -65,17 +68,14 @@ func (s *Stars) Update() {
 func (s *Stars) Draw(screen *ebiten.Image) {
 
 	for _, p := range s.plist {
-
 		p.opts.GeoM.Reset()
-
-		screenX := p.x - global.CameraX/4
+		screenX := p.x - s.engine.CameraX/4
 		if util.OffScreen(screenX, p.y) {
 			continue
 		}
 		p.opts.GeoM.Translate(screenX, p.y)
 		p.opts.ColorM.Reset()
 		p.opts.ColorM.Scale(p.color.R, p.color.G, p.color.B, 1)
-
 		screen.DrawImage(p.image, p.opts)
 	}
 }

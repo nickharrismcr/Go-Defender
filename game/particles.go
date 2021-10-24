@@ -1,7 +1,6 @@
 package game
 
 import (
-	"Def/global"
 	"Def/types"
 	"Def/util"
 	"image/color"
@@ -32,6 +31,7 @@ type particle struct {
 type ParticleSystem struct {
 	plist      []*particle
 	activeList []*particle
+	engine     *Engine
 }
 
 var update1 = func(p *particle) {
@@ -67,10 +67,12 @@ func new1(p *particle, x, y float64, col types.ColorF) {
 }
 
 // init with pool of MAX particles
-func NewParticleSystem() *ParticleSystem {
+func NewParticleSystem(engine *Engine) *ParticleSystem {
 	pImage := ebiten.NewImage(20, 20)
 	pImage.Fill(color.White)
-	s := &ParticleSystem{}
+	s := &ParticleSystem{
+		engine: engine,
+	}
 	for i := 0; i < MAX; i++ {
 
 		p := &particle{
@@ -93,7 +95,6 @@ func NewParticleSystem() *ParticleSystem {
 func (s *ParticleSystem) Trigger(x, y float64) {
 	c := 0
 	col = types.ColorF{R: 1, G: 1, B: 1, A: 1}
-	col.Randomize()
 	for _, p := range s.plist {
 		if !p.active {
 			c++
@@ -126,7 +127,7 @@ func (s *ParticleSystem) Draw(screen *ebiten.Image) {
 
 		p.opts.GeoM.Reset()
 		p.opts.GeoM.Scale(p.scale, p.scale)
-		screenX := p.x - global.CameraX
+		screenX := p.x - s.engine.CameraX
 		p.opts.GeoM.Translate(screenX, p.y)
 		p.opts.ColorM.Reset()
 		p.opts.ColorM.Scale(p.color.R, p.color.G, p.color.B, 1)

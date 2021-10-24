@@ -76,6 +76,4 @@ func (s *BaiterHunt) Update(ai *cmp.AI, e types.IEntity) {
 	pc.X += pc.DX
 	pc.Y += pc.DY
 
-	//global.CameraX = pc.X - global.ScreenWidth/2
-
 }

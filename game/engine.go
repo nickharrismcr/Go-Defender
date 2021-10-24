@@ -2,6 +2,7 @@ package game
 
 import (
 	"Def/cmp"
+	"Def/global"
 	"Def/logger"
 	"Def/types"
 	"errors"
@@ -18,25 +19,30 @@ type Engine struct {
 	entities              map[types.EntityID]*Entity
 	entitiesWithComponent map[types.CmpType]map[types.EntityID]*Entity
 	systems               map[SystemName]ISystem
-	update_systems        []ISystem
-	draw_systems          []ISystem
-	particle_system       *ParticleSystem
+	updateSystems         []ISystem
+	drawSystems           []ISystem
+	particleSystem        *ParticleSystem
 	world                 *World
 	stars                 *Stars
+	chars                 *Characters
 	BulletPool            []*Entity
+	CameraX               float64
 }
 
 func NewEngine() *Engine {
 
-	return &Engine{
+	e := &Engine{
 		entities:              make(map[types.EntityID]*Entity),
 		entitiesWithComponent: make(map[types.CmpType]map[types.EntityID]*Entity),
 		systems:               make(map[SystemName]ISystem),
-		particle_system:       NewParticleSystem(),
-		world:                 NewWorld(),
-		stars:                 NewStars(),
+		chars:                 nil,
 		BulletPool:            []*Entity{},
+		CameraX:               global.WorldWidth * 0.8,
 	}
+	e.particleSystem = NewParticleSystem(e)
+	e.stars = NewStars(e)
+	e.world = NewWorld(e)
+	return e
 }
 
 func (eng *Engine) AddSystem(s ISystem, systype int) {
@@ -44,10 +50,10 @@ func (eng *Engine) AddSystem(s ISystem, systype int) {
 	switch systype {
 	case UPDATE:
 		logger.Debug("Engine added update system %T ", s)
-		eng.update_systems = append(eng.update_systems, s)
+		eng.updateSystems = append(eng.updateSystems, s)
 	case DRAW:
 		logger.Debug("Engine added draw system %T ", s)
-		eng.draw_systems = append(eng.draw_systems, s)
+		eng.drawSystems = append(eng.drawSystems, s)
 	}
 }
 
@@ -64,10 +70,10 @@ func (eng *Engine) AddEntity(e *Entity) {
 	eng.entities[e.Id] = e
 	for _, c := range e.GetComponents() {
 		eng.addToEntitiesWithComponent(e, c)
-		for _, s := range eng.update_systems {
+		for _, s := range eng.updateSystems {
 			s.AddEntityIfRequired(e)
 		}
-		for _, s := range eng.draw_systems {
+		for _, s := range eng.drawSystems {
 			s.AddEntityIfRequired(e)
 		}
 	}
@@ -136,24 +142,26 @@ func (eng *Engine) GetEntitiesWithComponent(ct types.CmpType) map[types.EntityID
 }
 
 func (eng *Engine) Update() {
-	for _, s := range eng.update_systems {
+	for _, s := range eng.updateSystems {
 		s.Update()
 	}
-	eng.particle_system.Update()
+	eng.particleSystem.Update()
 	eng.stars.Update()
+	eng.chars.Update()
 }
 
 func (eng *Engine) Draw(screen *ebiten.Image) {
-	for _, s := range eng.draw_systems {
+	for _, s := range eng.drawSystems {
 		s.Draw(screen)
 	}
-	eng.particle_system.Draw(screen)
+	eng.particleSystem.Draw(screen)
 	eng.world.Draw(screen)
 	eng.stars.Draw(screen)
+	eng.chars.Draw(screen)
 }
 
 func (eng *Engine) TriggerPS(x, y float64) {
-	eng.particle_system.Trigger(x, y)
+	eng.particleSystem.Trigger(x, y)
 }
 
 func (eng *Engine) TriggerBullet(x, y, dx, dy float64) {
@@ -171,4 +179,19 @@ func (eng *Engine) TriggerBullet(x, y, dx, dy float64) {
 
 func (eng *Engine) MountainHeight(wx float64) float64 {
 	return eng.world.At(wx)
+}
+
+func (eng *Engine) GetCameraX() float64 {
+	return eng.CameraX
+}
+
+func (eng *Engine) AddString(s string, x, y float64) {
+	if eng.chars == nil {
+		eng.chars = NewCharacters()
+	}
+	eng.chars.Add(s, x, y)
+}
+
+func (eng *Engine) ClearChars() {
+	eng.chars.Clear()
 }

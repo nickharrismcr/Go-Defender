@@ -8,24 +8,24 @@ import (
 	"fmt"
 )
 
-// contains a tree of FSM state structs and allowed transitions between them
+// contains a map of FSM state structs and allowed transitions between them
 type StateTree struct {
 	states      map[types.StateType]state.IState
 	transitions map[types.StateType]map[types.StateType]bool
-	last_added  types.StateType
+	lastAdded   types.StateType
 }
 
 func NewStateTree() *StateTree {
 	return &StateTree{
 		states:      make(map[types.StateType]state.IState),
 		transitions: make(map[types.StateType]map[types.StateType]bool),
-		last_added:  -1,
+		lastAdded:   -1,
 	}
 }
 
 func (st *StateTree) AddState(s state.IState) {
 	st.states[s.GetName()] = s
-	st.last_added = s.GetName()
+	st.lastAdded = s.GetName()
 }
 
 func (st *StateTree) State(name types.StateType) (state.IState, error) {

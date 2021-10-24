@@ -10,6 +10,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// loads a spritesheet and JSON sprite map from embedded files
+
+// define structs mapping to JSON layout
 type SourceFrame struct {
 	X, Y, W, H int
 }

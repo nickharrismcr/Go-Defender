@@ -5,7 +5,7 @@ import (
 	"Def/types"
 )
 
-// NB States should not contain entity state ;) they should act on cmp
+// NB States should not contain entity state ;) they should act on passed components
 
 type LanderMaterialise struct {
 	Name types.StateType

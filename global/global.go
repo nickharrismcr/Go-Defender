@@ -11,12 +11,11 @@ const (
 	LanderSpeed  = 2
 )
 
-var CameraX float64 = WorldWidth * 0.8
-
 var Blue = types.ColorF{R: 0, G: 0, B: 1, A: 1}
 var Red = types.ColorF{R: 1, G: 0, B: 0, A: 1}
 var Green = types.ColorF{R: 0, G: 1, B: 0, A: 1}
 var Yellow = types.ColorF{R: 1, G: 1, B: 0, A: 1}
+var Magenta = types.ColorF{R: 1, G: 0, B: 1, A: 1}
 
-var Cols = []types.ColorF{Blue, Green, Red, Yellow}
+var Cols = []types.ColorF{Blue, Green, Yellow, Red, Magenta}
 var HudCol int = 0

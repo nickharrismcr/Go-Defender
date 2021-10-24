@@ -60,7 +60,7 @@ func (drawsys *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	op.GeoM.Reset()
 	px := poscmp.X
 
-	camx := global.CameraX
+	camx := e.GetEngine().GetCameraX()
 	ww := float64(global.WorldWidth)
 	sw := float64(global.ScreenWidth)
 	translate := px - camx

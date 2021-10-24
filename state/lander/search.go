@@ -65,6 +65,7 @@ func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 		pc.DY = global.LanderSpeed
 	}
 
+	// TODO check player is in range
 	if rand.Intn(200) == 0 {
 		tc := cmp.NewPos(pc.X+400, pc.Y, 1, 1)
 		dx, dy := util.ComputeBullet(pc, tc, 60)

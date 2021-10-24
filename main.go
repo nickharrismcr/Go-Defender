@@ -29,15 +29,15 @@ func (g *Game) Update() error {
 		return errors.New("escape pressed")
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		global.CameraX -= 20
-		if global.CameraX < 0 {
-			global.CameraX += global.WorldWidth
+		engine.CameraX -= 20
+		if engine.CameraX < 0 {
+			engine.CameraX += global.WorldWidth
 		}
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		global.CameraX += 20
-		if global.CameraX > global.WorldWidth {
-			global.CameraX -= global.WorldWidth
+		engine.CameraX += 20
+		if engine.CameraX > global.WorldWidth {
+			engine.CameraX -= global.WorldWidth
 		}
 	}
 
@@ -47,7 +47,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.dcount++
 	engine.Draw(screen)
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", global.CameraX))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", engine.CameraX))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

@@ -92,7 +92,7 @@ func (drawsys *RadarDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	op := drawcmp.Opts
 	op.GeoM.Reset()
 
-	var posx = ww/2 + poscmp.X - global.CameraX - sw/2
+	var posx = ww/2 + poscmp.X - e.GetEngine().GetCameraX() - sw/2
 	if posx > ww {
 		posx = posx - ww
 	}

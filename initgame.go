@@ -28,6 +28,8 @@ func InitGame(engine *game.Engine) {
 	InitSystems(engine)
 	InitEntities(engine)
 	bulletPool(engine)
+
+	engine.AddString("00000000", 100, 40)
 }
 
 func bulletPool(engine *game.Engine) {
@@ -121,7 +123,7 @@ func AddLander(engine *game.Engine, count int) {
 
 	x := rand.Float64() * global.WorldWidth
 	if count < 2 {
-		x = rand.Float64()*global.ScreenWidth + global.CameraX
+		x = rand.Float64()*global.ScreenWidth + engine.CameraX
 	}
 	pc := cmp.NewPos(x, global.ScreenTop+500*rand.Float64(), 0, 0)
 	ent.AddComponent(pc)

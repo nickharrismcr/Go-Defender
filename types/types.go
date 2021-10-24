@@ -1,7 +1,5 @@
 package types
 
-import "math/rand"
-
 type StateType int
 type EntityType int
 type EntityID int
@@ -82,6 +80,7 @@ type IEngine interface {
 	GetActiveEntityOfClass(EntityType) (IEntity, error)
 	GetEntity(EntityID) IEntity
 	MountainHeight(float64) float64
+	GetCameraX() float64
 }
 
 type IEntity interface {
@@ -96,8 +95,30 @@ type ColorF struct {
 	R, G, B, A float64
 }
 
-func (c *ColorF) Randomize() {
-	c.R = rand.Float64()
-	c.G = rand.Float64()
-	c.B = rand.Float64()
+func (c ColorF) Add(oth ColorF) ColorF {
+	return ColorF{
+		R: c.R + oth.R,
+		G: c.G + oth.G,
+		B: c.B + oth.B,
+		A: c.A + oth.A,
+	}
+
+}
+
+func (c ColorF) Subtract(oth ColorF) ColorF {
+	return ColorF{
+		R: c.R - oth.R,
+		G: c.G - oth.G,
+		B: c.B - oth.B,
+		A: c.A - oth.A,
+	}
+}
+
+func (c ColorF) Multiply(f float64) ColorF {
+	return ColorF{
+		R: c.R * f,
+		B: c.B * f,
+		A: c.A * f,
+		G: c.G * f,
+	}
 }

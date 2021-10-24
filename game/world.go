@@ -15,11 +15,14 @@ type World struct {
 	points []float64
 	img    *ebiten.Image
 	ops    *ebiten.DrawImageOptions
+	engine *Engine
 }
 
-func NewWorld() *World {
+func NewWorld(engine *Engine) *World {
 
-	w := &World{}
+	w := &World{
+		engine: engine,
+	}
 	w.points = make([]float64, global.WorldWidth+1)
 	var y float64 = 0
 	var dy float64 = 1
@@ -60,7 +63,7 @@ func (w *World) At(wx float64) float64 {
 
 func (w *World) Draw(scr *ebiten.Image) {
 	ww := global.WorldWidth
-	i := int(global.CameraX)
+	i := int(w.engine.CameraX)
 	for x := 0; x < global.ScreenWidth; x++ {
 		if i < 0 {
 			i += ww
@@ -73,7 +76,7 @@ func (w *World) Draw(scr *ebiten.Image) {
 		scr.DrawImage(w.img, w.ops)
 		i++
 	}
-	cx := global.CameraX - float64(ww/2)
+	cx := w.engine.CameraX - float64(ww/2)
 
 	sw := float64(global.ScreenWidth)
 	rs := sw / 4
