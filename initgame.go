@@ -18,6 +18,7 @@ import (
 
 var landerCount int
 var radarImg *ebiten.Image
+var ScoreId int
 
 // game setup
 
@@ -29,7 +30,7 @@ func InitGame(engine *game.Engine) {
 	InitEntities(engine)
 	bulletPool(engine)
 
-	engine.AddString("00000000", 100, 40)
+	ScoreId = engine.AddString("       0", 100, 40)
 }
 
 func bulletPool(engine *game.Engine) {

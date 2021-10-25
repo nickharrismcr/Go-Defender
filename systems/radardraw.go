@@ -55,18 +55,30 @@ func (drawsys *RadarDrawSystem) Update() {}
 func (drawsys *RadarDrawSystem) HUD(screen *ebiten.Image) {
 
 	col := global.Cols[global.HudCol]
+
 	lineOpts.ColorM.Scale(col.R, col.G, col.B, col.A)
 	lineOpts.GeoM.Reset()
-	lineOpts.GeoM.Scale(global.ScreenWidth, 2)
-	lineOpts.GeoM.Translate(0, global.ScreenTop)
+	lineOpts.GeoM.Scale(sw, 2)
+	lineOpts.GeoM.Translate(0, st)
 	screen.DrawImage(lineImg, lineOpts)
 	lineOpts.GeoM.Reset()
-	lineOpts.GeoM.Scale(2, global.ScreenTop)
+	lineOpts.GeoM.Scale(2, st)
 	lineOpts.GeoM.Translate(rxs, 0)
 	screen.DrawImage(lineImg, lineOpts)
 	lineOpts.GeoM.Reset()
-	lineOpts.GeoM.Scale(2, global.ScreenTop)
+	lineOpts.GeoM.Scale(2, st)
 	lineOpts.GeoM.Translate(rxe, 0)
+	screen.DrawImage(lineImg, lineOpts)
+
+	lineOpts.ColorM.Reset()
+	lineOpts.ColorM.Scale(1, 1, 1, 1)
+	lineOpts.GeoM.Reset()
+	lineOpts.GeoM.Scale(2, st)
+	lineOpts.GeoM.Translate(sw/2-rsw/2, 0)
+	screen.DrawImage(lineImg, lineOpts)
+	lineOpts.GeoM.Reset()
+	lineOpts.GeoM.Scale(2, st)
+	lineOpts.GeoM.Translate(sw/2+rsw/2, 0)
 	screen.DrawImage(lineImg, lineOpts)
 
 }

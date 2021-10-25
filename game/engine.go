@@ -185,11 +185,15 @@ func (eng *Engine) GetCameraX() float64 {
 	return eng.CameraX
 }
 
-func (eng *Engine) AddString(s string, x, y float64) {
+func (eng *Engine) AddString(s string, x, y float64) int {
 	if eng.chars == nil {
 		eng.chars = NewCharacters()
 	}
-	eng.chars.Add(s, x, y)
+	return eng.chars.Add(s, x, y)
+}
+
+func (eng *Engine) ChangeString(id int, s string) {
+	eng.chars.Change(id, s)
 }
 
 func (eng *Engine) ClearChars() {

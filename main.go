@@ -41,6 +41,7 @@ func (g *Game) Update() error {
 		}
 	}
 
+	engine.ChangeString(ScoreId, fmt.Sprintf("%8d", g.ucount))
 	return nil
 }
 

@@ -18,7 +18,8 @@ type Char struct {
 }
 
 type Characters struct {
-	chars  []Char
+	chars  [][]Char
+	sIdx   int
 	ops    *ebiten.DrawImageOptions
 	col    types.ColorF
 	colIdx int
@@ -32,11 +33,12 @@ func NewCharacters() *Characters {
 
 	w := &Characters{
 
-		chars:  []Char{},
+		chars:  [][]Char{},
 		ops:    &ebiten.DrawImageOptions{},
 		colIdx: 0,
 		colCtr: 0,
 		speed:  1,
+		sIdx:   0,
 		img:    graphics.GetSpriteSheet(),
 		smap:   graphics.GetSpriteMap("font.png"),
 	}
@@ -50,22 +52,41 @@ func (w *Characters) SetSpeed(s float64) {
 }
 
 func (w *Characters) Clear() {
-	w.chars = []Char{}
+	w.chars = [][]Char{}
 }
 
-func (w *Characters) Add(s string, x, y float64) {
+func (w *Characters) Add(s string, x, y float64) int {
+
+	idx := w.sIdx
+	chs := []Char{}
 	for i, c := range s {
 		ch := Char{
 			offset: w.getOffset(string(c)),
 			x:      x + float64(i*31),
 			y:      y,
 		}
-		w.chars = append(w.chars, ch)
+		chs = append(chs, ch)
+	}
+	w.chars = append(w.chars, chs)
+	w.sIdx++
+	return idx
+}
+
+func (w *Characters) Change(idx int, s string) {
+	chs := w.chars[idx]
+	for i, c := range s {
+		if i >= len(chs) {
+			break
+		}
+		chs[i].offset = w.getOffset(string(c))
 	}
 }
 
 func (w *Characters) getOffset(c string) int {
 
+	if c == " " {
+		return -1
+	}
 	return strings.Index(charlist, c) * w.smap.Frame.H
 }
 
@@ -87,15 +108,20 @@ func (w *Characters) Update() {
 }
 
 func (w *Characters) Draw(scr *ebiten.Image) {
-	for _, c := range w.chars {
-		sx := w.smap.Frame.X
-		sy := w.smap.Frame.Y
-		sh := w.smap.Frame.H
-		si := w.img.SubImage(image.Rect(sx+c.offset, sy, sx+c.offset+sh, sy+sh)).(*ebiten.Image)
-		w.ops.GeoM.Reset()
-		w.ops.GeoM.Translate(c.x, c.y)
-		w.ops.ColorM.Reset()
-		w.ops.ColorM.Scale(w.col.R, w.col.G, w.col.B, w.col.A)
-		scr.DrawImage(si, w.ops)
+	for _, chs := range w.chars {
+		for _, c := range chs {
+			if c.offset == -1 {
+				continue
+			}
+			sx := w.smap.Frame.X
+			sy := w.smap.Frame.Y
+			sh := w.smap.Frame.H
+			si := w.img.SubImage(image.Rect(sx+c.offset, sy, sx+c.offset+sh, sy+sh)).(*ebiten.Image)
+			w.ops.GeoM.Reset()
+			w.ops.GeoM.Translate(c.x, c.y)
+			w.ops.ColorM.Reset()
+			w.ops.ColorM.Scale(w.col.R, w.col.G, w.col.B, w.col.A)
+			scr.DrawImage(si, w.ops)
+		}
 	}
 }

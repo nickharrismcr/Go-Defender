@@ -7,7 +7,7 @@ const (
 	ScreenHeight = 1200
 	MaxTPS       = 30
 	WorldWidth   = ScreenWidth * 10
-	ScreenTop    = 200
+	ScreenTop    = 150
 	LanderSpeed  = 2
 )
 
