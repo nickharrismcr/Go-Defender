@@ -2,6 +2,7 @@ package game
 
 import (
 	"Def/cmp"
+	"Def/logger"
 	"fmt"
 )
 
@@ -48,6 +49,8 @@ func (f FSM) Update(ai *cmp.AI, e *Entity) {
 			panic(fmt.Sprintf("No state defined in FSM %s for %s", f.name, ai.NextState.String()))
 		}
 		next_state.Enter(ai, e)
+		logger.Debug("Entity %d state change %s -> %s", e.Id, ai.State.String(), ai.NextState.String())
+
 		ai.State = ai.NextState
 	}
 	curr_state, err := f.statetree.State(ai.State)

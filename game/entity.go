@@ -17,6 +17,8 @@ type Entity struct {
 	comps  map[types.CmpType]types.ICmp
 	active bool
 	engine *Engine
+	parent types.EntityID
+	child  types.EntityID
 }
 
 func NewEntity(engine *Engine, class types.EntityType) *Entity {
@@ -26,6 +28,8 @@ func NewEntity(engine *Engine, class types.EntityType) *Entity {
 		comps:  map[types.CmpType]types.ICmp{},
 		engine: engine,
 		active: false,
+		parent: idCounter,
+		child:  idCounter,
 	}
 	engine.AddEntity(rv)
 	idCounter++
@@ -77,4 +81,20 @@ func (e *Entity) GetComponent(c types.CmpType) types.ICmp {
 
 func (e *Entity) GetComponents() map[types.CmpType]types.ICmp {
 	return e.comps
+}
+
+func (e *Entity) Parent() types.EntityID {
+	return e.parent
+}
+
+func (e *Entity) Child() types.EntityID {
+	return e.child
+}
+
+func (e *Entity) SetParent(pe types.EntityID) {
+	e.parent = pe
+}
+
+func (e *Entity) SetChild(ce types.EntityID) {
+	e.child = ce
 }

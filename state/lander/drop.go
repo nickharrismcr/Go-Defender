@@ -24,41 +24,22 @@ func (s *LanderDrop) GetName() types.StateType {
 
 func (s *LanderDrop) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
-	pc.DX = global.LanderSpeed
-	pc.DY = 0
+	pc.DX = 0
+	pc.DY = 2 * global.LanderSpeed
 	ai.Counter = 0
+	te := e.GetEngine().GetEntity(e.Child())
+	tpc := te.GetComponent(types.Pos).(*cmp.Pos)
+	tpc.DX = 0
 }
 
 func (s *LanderDrop) Update(ai *cmp.AI, e types.IEntity) {
 
-	ai.Counter++
-
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
-
-	pc.X += pc.DX
-	pc.Y += pc.DY
-
-	if ai.Counter > 5 {
-		ai.Counter = 0
-		mh := e.GetEngine().MountainHeight(pc.X)
-		if pc.Y+300 < global.ScreenHeight-mh {
-			ai.Scratch++
-		} else {
-			ai.Scratch--
-		}
-	}
-	if ai.Scratch < 0 {
-		ai.Scratch = 0
-	}
-	if ai.Scratch > 5 {
-		ai.Scratch = 5
-	}
-	switch ai.Scratch {
-	case 0:
-		pc.DY = -global.LanderSpeed
-	case 1, 2, 3, 4:
-		pc.DY = 0
-	case 5:
-		pc.DY = global.LanderSpeed
+	te := e.GetEngine().GetEntity(e.Child())
+	tpc := te.GetComponent(types.Pos).(*cmp.Pos)
+	if tpc.Y-pc.Y < 50 {
+		ai.NextState = types.LanderGrab
+		tai := te.GetComponent(types.AI).(*cmp.AI)
+		tai.NextState = types.HumanGrabbed
 	}
 }

@@ -76,9 +76,10 @@ func (w *World) Draw(scr *ebiten.Image) {
 		scr.DrawImage(w.img, w.ops)
 		i++
 	}
-	cx := w.engine.CameraX - float64(ww/2)
 
 	sw := float64(global.ScreenWidth)
+	cx := w.engine.CameraX - float64(ww/2) + sw/2
+
 	rs := sw / 4
 	rw := sw / 2
 	for j := 0; j < ww; j += 10 {

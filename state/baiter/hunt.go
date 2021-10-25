@@ -4,8 +4,6 @@ import (
 	"Def/cmp"
 	"Def/global"
 	"Def/types"
-	"Def/util"
-	"math/rand"
 )
 
 // NB States should not contain entity state ;) they should act on cmp
@@ -25,14 +23,7 @@ func (s *BaiterHunt) GetName() types.StateType {
 }
 
 func (s *BaiterHunt) Enter(ai *cmp.AI, e types.IEntity) {
-	ai.Counter = rand.Intn(20) + 20
-	pc := e.GetComponent(types.Pos).(*cmp.Pos)
-	pc.Y = global.ScreenHeight / 2
-	pc.DX = 20
-	target, err := e.GetEngine().GetActiveEntityOfClass(types.Lander)
-	if err == nil {
-		ai.TargetId = target.GetID()
-	}
+
 }
 
 func (s *BaiterHunt) Update(ai *cmp.AI, e types.IEntity) {
@@ -48,25 +39,6 @@ func (s *BaiterHunt) Update(ai *cmp.AI, e types.IEntity) {
 	}
 	if tpos.X > pc.X && pc.DX < 20 {
 		pc.DX += 1
-	}
-
-	if !te.Active() {
-		target, err := e.GetEngine().GetActiveEntityOfClass(types.Lander)
-		if err == nil {
-			ai.TargetId = target.GetID()
-		}
-	} else {
-		ai.Counter--
-		if ai.Counter < 0 {
-			ai.Counter = rand.Intn(20) + 20
-			pc.DY = util.RandChoiceF([]float64{-3, 0, 3})
-
-			//dx, dy := util.ComputeBullet(pc, tpos, 60)
-			//if math.Abs(dx) < 6 {
-			//ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
-			//event.NotifyEvent(ev)
-			//}
-		}
 	}
 
 	if pc.Y < global.ScreenTop || pc.Y > global.ScreenHeight-100 {

@@ -6,6 +6,7 @@ import (
 	"Def/global"
 	"Def/types"
 	"Def/util"
+	"math"
 	"math/rand"
 )
 
@@ -30,6 +31,14 @@ func (s *LanderSearch) Enter(ai *cmp.AI, e types.IEntity) {
 	pc.DX = global.LanderSpeed
 	pc.DY = 0
 	ai.Counter = 0
+	for _, id := range e.GetEngine().GetActiveEntitiesOfClass(types.Human) {
+		te := e.GetEngine().GetEntity(id)
+		if te.Parent() == te.GetID() {
+			e.SetChild(te.GetID())
+			te.SetParent(e.GetID())
+			break
+		}
+	}
 }
 
 func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
@@ -71,6 +80,14 @@ func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 		dx, dy := util.ComputeBullet(pc, tc, 60)
 		ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
 		event.NotifyEvent(ev)
+	}
+
+	if e.Child() != e.GetID() {
+		te := e.GetEngine().GetEntity(e.Child())
+		tpc := te.GetComponent(types.Pos).(*cmp.Pos)
+		if math.Abs(tpc.X-pc.X) < 3 {
+			ai.NextState = types.LanderDrop
+		}
 	}
 
 }

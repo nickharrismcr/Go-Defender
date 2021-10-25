@@ -29,13 +29,13 @@ func (g *Game) Update() error {
 		return errors.New("escape pressed")
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		engine.CameraX -= 20
+		engine.CameraX -= 50
 		if engine.CameraX < 0 {
 			engine.CameraX += global.WorldWidth
 		}
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		engine.CameraX += 20
+		engine.CameraX += 50
 		if engine.CameraX > global.WorldWidth {
 			engine.CameraX -= global.WorldWidth
 		}

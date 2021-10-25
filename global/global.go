@@ -9,6 +9,7 @@ const (
 	WorldWidth   = ScreenWidth * 10
 	ScreenTop    = 150
 	LanderSpeed  = 2
+	HumanSpeed   = 0.1
 )
 
 var Blue = types.ColorF{R: 0, G: 0, B: 1, A: 1}

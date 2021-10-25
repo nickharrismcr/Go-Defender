@@ -8,6 +8,7 @@ const (
 	Lander EntityType = iota
 	Baiter EntityType = iota
 	Bullet EntityType = iota
+	Human  EntityType = iota
 )
 
 const (
@@ -19,6 +20,11 @@ const (
 	LanderDie         StateType = iota
 	BaiterMaterialise StateType = iota
 	BaiterHunt        StateType = iota
+	HumanWalking      StateType = iota
+	HumanGrabbed      StateType = iota
+	HumanDropping     StateType = iota
+	HumanRescued      StateType = iota
+	HumanDie          StateType = iota
 )
 
 func (st StateType) String() string {
@@ -39,6 +45,16 @@ func (st StateType) String() string {
 		return "Baiter-Materialise"
 	case BaiterHunt:
 		return "Baiter-Search"
+	case HumanWalking:
+		return "Human-Walking"
+	case HumanGrabbed:
+		return "Human-Grabbed"
+	case HumanDropping:
+		return "Human-Dropping"
+	case HumanRescued:
+		return "Human-Rescued"
+	case HumanDie:
+		return "Human-Die"
 	}
 	return ""
 }
@@ -77,7 +93,7 @@ type ICmp interface {
 }
 
 type IEngine interface {
-	GetActiveEntityOfClass(EntityType) (IEntity, error)
+	GetActiveEntitiesOfClass(EntityType) []EntityID
 	GetEntity(EntityID) IEntity
 	MountainHeight(float64) float64
 	GetCameraX() float64
@@ -89,6 +105,10 @@ type IEntity interface {
 	GetEngine() IEngine
 	GetID() EntityID
 	Active() bool
+	Parent() EntityID
+	Child() EntityID
+	SetParent(EntityID)
+	SetChild(EntityID)
 }
 
 type ColorF struct {

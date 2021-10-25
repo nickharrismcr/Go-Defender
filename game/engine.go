@@ -5,7 +5,6 @@ import (
 	"Def/global"
 	"Def/logger"
 	"Def/types"
-	"errors"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -83,13 +82,15 @@ func (eng *Engine) GetEntity(id types.EntityID) types.IEntity {
 	return eng.entities[id]
 }
 
-func (eng *Engine) GetActiveEntityOfClass(et types.EntityType) (types.IEntity, error) {
+func (eng *Engine) GetActiveEntitiesOfClass(et types.EntityType) []types.EntityID {
+
+	rv := []types.EntityID{}
 	for _, v := range eng.entities {
 		if v.Class == et && v.Active() {
-			return v, nil
+			rv = append(rv, v.Id)
 		}
 	}
-	return nil, errors.New("Not found")
+	return rv
 }
 
 func (eng *Engine) GetEntities() map[types.EntityID]*Entity {

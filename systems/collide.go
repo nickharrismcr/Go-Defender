@@ -1,12 +1,9 @@
 package systems
 
 import (
-	"Def/cmp"
-	"Def/event"
 	"Def/game"
 	"Def/logger"
 	"Def/types"
-	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -51,7 +48,7 @@ func (pos *CollideSystem) Update() {
 func (pos *CollideSystem) Draw(screen *ebiten.Image) {}
 
 func (pos *CollideSystem) process(e *game.Entity) {
-	for _, te := range pos.targets {
+	/* 	for _, te := range pos.targets {
 		if te.Active() && te.Id != e.Id && te.Class != e.Class {
 
 			ep := e.GetComponent(types.Pos).(*cmp.Pos)
@@ -67,7 +64,7 @@ func (pos *CollideSystem) process(e *game.Entity) {
 				event.NotifyEvent(ed)
 			}
 		}
-	}
+	} */
 
 }
 

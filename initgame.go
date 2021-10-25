@@ -7,6 +7,7 @@ import (
 	"Def/global"
 	"Def/graphics"
 	"Def/logger"
+	"Def/state/human"
 	"Def/state/lander"
 	"Def/systems"
 	"Def/types"
@@ -17,6 +18,7 @@ import (
 )
 
 var landerCount int
+var humanCount int
 var radarImg *ebiten.Image
 var ScoreId int
 
@@ -102,10 +104,10 @@ func InitSystems(engine *game.Engine) {
 
 func InitEntities(engine *game.Engine) {
 
-	radarImg = ebiten.NewImage(10, 10)
+	radarImg = ebiten.NewImage(5, 5)
 	radarImg.Fill(color.White)
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 20; i++ {
 
 		AddLander(engine, i)
 		landerCount++
@@ -114,6 +116,11 @@ func InitEntities(engine *game.Engine) {
 	//	ls := baiter.NewBaiterSearch()
 	//	Add(types.Baiter, engine, ls, "baiter.png", false, 5)
 	//}
+	for i := 0; i < 20; i++ {
+
+		AddHuman(engine, i)
+		humanCount++
+	}
 }
 
 func AddLander(engine *game.Engine, count int) {
@@ -144,6 +151,40 @@ func AddLander(engine *game.Engine, count int) {
 	ent.AddComponent(dr)
 
 	col := types.ColorF{R: 0, G: 1, B: 0, A: 1}
+	rd := cmp.NewRadarDraw(radarImg, col)
+	ent.AddComponent(rd)
+	cl := cmp.NewCollide()
+	ent.AddComponent(cl)
+}
+
+func AddHuman(engine *game.Engine, count int) {
+
+	ssheet := graphics.GetSpriteSheet()
+	ent := game.NewEntity(engine, types.Human)
+	ent.SetActive(true)
+
+	x := rand.Float64() * global.WorldWidth
+	if count < 2 {
+		x = rand.Float64()*global.ScreenWidth + engine.CameraX
+	}
+	pc := cmp.NewPos(x, 0, 0, 0)
+	ent.AddComponent(pc)
+	stree := game.NewStateTree()
+	stree.AddState(human.NewHumanWalking())
+	stree.AddState(human.NewHumanGrabbed())
+	stree.AddState(human.NewHumanDropping())
+	stree.AddState(human.NewHumanRescued())
+
+	stree.AddState(human.NewHumanDie())
+
+	testfsm := game.NewFSM(stree, "fsm1")
+	ai := cmp.NewAI(testfsm, types.HumanWalking)
+	ent.AddComponent(ai)
+	smap := graphics.GetSpriteMap("human.png")
+	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
+	ent.AddComponent(dr)
+
+	col := types.ColorF{R: 1, G: 0, B: 1, A: 1}
 	rd := cmp.NewRadarDraw(radarImg, col)
 	ent.AddComponent(rd)
 	cl := cmp.NewCollide()
