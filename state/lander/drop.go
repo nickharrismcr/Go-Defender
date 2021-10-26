@@ -4,6 +4,7 @@ import (
 	"Def/cmp"
 	"Def/global"
 	"Def/types"
+	"math"
 )
 
 // NB States should not contain entity state ;) they should act on cmp
@@ -25,7 +26,7 @@ func (s *LanderDrop) GetName() types.StateType {
 func (s *LanderDrop) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pc.DX = 0
-	pc.DY = 2 * global.LanderSpeed
+	pc.DY = 1.2 * global.LanderSpeed
 	ai.Counter = 0
 	te := e.GetEngine().GetEntity(e.Child())
 	tpc := te.GetComponent(types.Pos).(*cmp.Pos)
@@ -37,7 +38,7 @@ func (s *LanderDrop) Update(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	te := e.GetEngine().GetEntity(e.Child())
 	tpc := te.GetComponent(types.Pos).(*cmp.Pos)
-	if tpc.Y-pc.Y < 50 {
+	if math.Abs(pc.Y-tpc.Y) < 5 {
 		ai.NextState = types.LanderGrab
 		tai := te.GetComponent(types.AI).(*cmp.AI)
 		tai.NextState = types.HumanGrabbed

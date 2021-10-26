@@ -24,7 +24,7 @@ func (s *LanderGrab) GetName() types.StateType {
 
 func (s *LanderGrab) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
-	pc.DY = -2 * global.LanderSpeed
+	pc.DY = -global.LanderSpeed
 	ai.Counter = 0
 }
 
@@ -33,9 +33,6 @@ func (s *LanderGrab) Update(ai *cmp.AI, e types.IEntity) {
 	ai.Counter++
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
-
-	pc.X += pc.DX
-	pc.Y += pc.DY
 
 	if pc.Y < global.ScreenTop+50 {
 		ai.NextState = types.LanderMutate

@@ -6,7 +6,6 @@ import (
 	"Def/game"
 	"Def/global"
 	"Def/graphics"
-	"Def/logger"
 	"Def/state/human"
 	"Def/state/lander"
 	"Def/systems"
@@ -68,16 +67,12 @@ func InitEvents(engine *game.Engine) {
 			engine.TriggerBullet(ct.X, ct.Y, ct.DX, ct.DY)
 		}
 	}
-	entityDie := func(e event.IEvent) {
-		if ent := e.GetPayload().(*game.Entity); ent != nil {
-			logger.Debug("die %d %d ", ent.Class, landerCount)
-			if ent.Class == types.Lander {
-				landerCount--
-				if landerCount == 0 {
-					lc := event.NewLanderCleared(ent)
-					event.NotifyEvent(lc)
-				}
-			}
+	landerDie := func(e event.IEvent) {
+		ent := e.GetPayload().(*game.Entity)
+		landerCount--
+		if landerCount == 0 {
+			lc := event.NewLanderCleared(ent)
+			event.NotifyEvent(lc)
 		}
 	}
 	landerCleared := func(e event.IEvent) {
@@ -85,11 +80,15 @@ func InitEvents(engine *game.Engine) {
 			// end of level
 		}
 	}
+	humanDie := func(e event.IEvent) {
+
+	}
 
 	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
 	event.AddEventListener(event.FireBulletEvent, bulletTrigger)
-	event.AddEventListener(event.EntityDieEvent, entityDie)
+	event.AddEventListener(event.LanderDieEvent, landerDie)
 	event.AddEventListener(event.LanderClearedEvent, landerCleared)
+	event.AddEventListener(event.HumanDieEvent, humanDie)
 }
 
 func InitSystems(engine *game.Engine) {

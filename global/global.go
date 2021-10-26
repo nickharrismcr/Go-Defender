@@ -6,9 +6,9 @@ const (
 	ScreenWidth  = 1600
 	ScreenHeight = 1200
 	MaxTPS       = 30
-	WorldWidth   = ScreenWidth * 10
+	WorldWidth   = ScreenWidth * 3
 	ScreenTop    = 150
-	LanderSpeed  = 2
+	LanderSpeed  = 5
 	HumanSpeed   = 0.1
 )
 

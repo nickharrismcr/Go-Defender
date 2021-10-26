@@ -47,9 +47,6 @@ func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 
-	pc.X += pc.DX
-	pc.Y += pc.DY
-
 	if ai.Counter > 5 {
 		ai.Counter = 0
 		mh := e.GetEngine().MountainHeight(pc.X)
@@ -85,7 +82,7 @@ func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 	if e.Child() != e.GetID() {
 		te := e.GetEngine().GetEntity(e.Child())
 		tpc := te.GetComponent(types.Pos).(*cmp.Pos)
-		if math.Abs(tpc.X-pc.X) < 3 {
+		if math.Abs(tpc.X-(pc.X+18)) < 3 {
 			ai.NextState = types.LanderDrop
 		}
 	}

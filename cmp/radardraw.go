@@ -11,6 +11,8 @@ type RadarDraw struct {
 	Image         *ebiten.Image
 	Opts          *ebiten.DrawImageOptions
 	Color         types.ColorF
+	Cycle         bool
+	CycleIndex    float32
 }
 
 func NewRadarDraw(image *ebiten.Image, color types.ColorF) *RadarDraw {
@@ -20,6 +22,8 @@ func NewRadarDraw(image *ebiten.Image, color types.ColorF) *RadarDraw {
 		Opts:          &ebiten.DrawImageOptions{},
 		Color:         color,
 		componentType: types.RadarDraw,
+		Cycle:         false,
+		CycleIndex:    0,
 	}
 }
 

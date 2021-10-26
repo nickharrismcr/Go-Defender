@@ -56,6 +56,9 @@ func (pos *PosSystem) process(e *game.Entity) {
 	} else if poscmp.X > global.WorldWidth {
 		poscmp.X -= global.WorldWidth
 	}
+	if poscmp.Y < global.ScreenTop+20 {
+		poscmp.Y = global.ScreenTop + 20
+	}
 	poscmp.Y += poscmp.DY
 
 }

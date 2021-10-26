@@ -113,6 +113,12 @@ func (drawsys *RadarDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	}
 	screenx := rxs + rw*(posx/ww)
 
+	if drawcmp.Cycle {
+		drawcmp.CycleIndex += 0.4
+		drawcmp.Color = global.Cols[int(drawcmp.CycleIndex)%5]
+		op.ColorM.Reset()
+	}
+
 	op.GeoM.Translate(screenx, poscmp.Y*(st/sh))
 	c := drawcmp.Color
 	op.ColorM.Scale(c.R, c.G, c.B, c.A)

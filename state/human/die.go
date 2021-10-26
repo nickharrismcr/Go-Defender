@@ -2,6 +2,7 @@ package human
 
 import (
 	"Def/cmp"
+	"Def/event"
 	"Def/types"
 )
 
@@ -22,9 +23,17 @@ func (s *HumanDie) GetName() types.StateType {
 }
 
 func (s *HumanDie) Enter(ai *cmp.AI, e types.IEntity) {
-	e.SetActive(false)
+
+	dc := e.GetComponent(types.Draw).(*cmp.Draw)
+	dc.Disperse = 0
+	ev := event.NewHumanDie(e)
+	event.NotifyEvent(ev)
 }
 
 func (s *HumanDie) Update(ai *cmp.AI, e types.IEntity) {
-
+	dc := e.GetComponent(types.Draw).(*cmp.Draw)
+	dc.Disperse += 7
+	if dc.Disperse > 300 {
+		e.SetActive(false)
+	}
 }
