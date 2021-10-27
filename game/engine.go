@@ -25,6 +25,7 @@ type Engine struct {
 	stars                 *Stars
 	chars                 *Characters
 	BulletPool            []*Entity
+	BombPool              []*Entity
 	CameraX               float64
 }
 
@@ -36,6 +37,7 @@ func NewEngine() *Engine {
 		systems:               make(map[SystemName]ISystem),
 		chars:                 nil,
 		BulletPool:            []*Entity{},
+		BombPool:              []*Entity{},
 		CameraX:               global.WorldWidth * 0.8,
 	}
 	e.particleSystem = NewParticleSystem(e)
@@ -172,7 +174,20 @@ func (eng *Engine) TriggerBullet(x, y, dx, dy float64) {
 			pc := v.GetComponent(types.Pos).(*cmp.Pos)
 			pc.X, pc.Y, pc.DX, pc.DY = x, y, 2*dx, 2*dy
 			lc := v.GetComponent(types.Life).(*cmp.Life)
-			lc.TicksToLive = 60
+			lc.TicksToLive = 120
+			break
+		}
+	}
+}
+
+func (eng *Engine) TriggerBomb(x, y float64) {
+	for _, v := range eng.BombPool {
+		if !v.Active() {
+			v.SetActive(true)
+			pc := v.GetComponent(types.Pos).(*cmp.Pos)
+			pc.X, pc.Y, pc.DX, pc.DY = x, y, 0, 0
+			lc := v.GetComponent(types.Life).(*cmp.Life)
+			lc.TicksToLive = 320
 			break
 		}
 	}
@@ -184,6 +199,10 @@ func (eng *Engine) MountainHeight(wx float64) float64 {
 
 func (eng *Engine) GetCameraX() float64 {
 	return eng.CameraX
+}
+
+func (eng *Engine) SetCameraX(x float64) {
+	eng.CameraX = x
 }
 
 func (eng *Engine) AddString(s string, x, y float64) int {

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
+	"fmt"
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -36,7 +37,11 @@ func GetSpriteSheet() *ebiten.Image {
 }
 
 func GetSpriteMap(k string) GFXFrame {
-	return spriteMap[k]
+	rv, ok := spriteMap[k]
+	if !ok {
+		panic(fmt.Sprintf("No graphics for %s", k))
+	}
+	return rv
 }
 
 //go:embed spritesheet.json

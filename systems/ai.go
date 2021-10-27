@@ -19,13 +19,14 @@ type AISystem struct {
 	targets map[types.EntityID]*game.Entity
 }
 
-func NewAISystem(active bool) *AISystem {
+func NewAISystem(active bool, engine *game.Engine) *AISystem {
 	f := game.NewFilter()
 	f.Add(types.AI)
 	return &AISystem{
 		sysname: game.AISystem,
 		active:  active,
 		filter:  f,
+		engine:  engine,
 		targets: make(map[types.EntityID]*game.Entity),
 	}
 }

@@ -1,9 +1,13 @@
 package systems
 
 import (
+	"Def/cmp"
+	"Def/event"
 	"Def/game"
+	"Def/global"
 	"Def/logger"
 	"Def/types"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -19,81 +23,73 @@ type CollideSystem struct {
 	targets map[types.EntityID]*game.Entity
 }
 
-func NewCollideSystem(active bool) *CollideSystem {
+func NewCollideSystem(active bool, engine *game.Engine) *CollideSystem {
 	f := game.NewFilter()
 	f.Add(types.Collide)
 	return &CollideSystem{
 		sysname: game.CollideSystem,
 		active:  active,
 		filter:  f,
+		engine:  engine,
 		targets: make(map[types.EntityID]*game.Entity),
 	}
 }
 
-func (pos *CollideSystem) GetName() game.SystemName {
-	return pos.sysname
+func (cs *CollideSystem) GetName() game.SystemName {
+	return cs.sysname
 }
 
-func (pos *CollideSystem) Update() {
-	if !pos.active {
+func (cs *CollideSystem) Update() {
+	if !cs.active {
 		return
 	}
-	for _, e := range pos.targets {
+	pe := cs.engine.GetEntities()[global.PlayerID]
+	for _, e := range cs.targets {
 		if e.Active() {
-			pos.process(e)
+			cs.process(e, pe)
 		}
 	}
 }
 
-func (pos *CollideSystem) Draw(screen *ebiten.Image) {}
+func (cs *CollideSystem) Draw(screen *ebiten.Image) {}
 
-func (pos *CollideSystem) process(e *game.Entity) {
-	/* 	for _, te := range pos.targets {
-		if te.Active() && te.Id != e.Id && te.Class != e.Class {
+func (cs *CollideSystem) process(e *game.Entity, player *game.Entity) {
 
-			ep := e.GetComponent(types.Pos).(*cmp.Pos)
-			tep := te.GetComponent(types.Pos).(*cmp.Pos)
-			if math.Abs(ep.X-tep.X) < 25 && math.Abs(ep.Y-tep.Y) < 25 {
-				ev := event.NewExplode(ep)
-				event.NotifyEvent(ev)
-				e.SetActive(false)
-				te.SetActive(false)
-				ed := event.NewEntityDie(e)
-				event.NotifyEvent(ed)
-				ed = event.NewEntityDie(te)
-				event.NotifyEvent(ed)
-			}
-		}
-	} */
-
+	ep := e.GetComponent(types.Pos).(*cmp.Pos)
+	ppos := player.GetComponent(types.Pos).(*cmp.Pos)
+	if math.Abs(ep.X-ppos.X) < 25 && math.Abs(ep.Y-ppos.Y) < 25 {
+		ev := event.NewPlayerDie(player)
+		event.NotifyEvent(ev)
+		e.SetActive(false)
+	}
 }
 
-func (pos *CollideSystem) Active() bool {
-	return pos.active
+func (cs *CollideSystem) Active() bool {
+	return cs.active
 }
 
-func (pos *CollideSystem) SetActive(active bool) {
-	pos.active = active
+func (cs *CollideSystem) SetActive(active bool) {
+	cs.active = active
 }
 
-func (pos *CollideSystem) AddEntityIfRequired(e *game.Entity) {
-	if _, ok := pos.targets[e.Id]; ok {
+func (cs *CollideSystem) AddEntityIfRequired(e *game.Entity) {
+	if _, ok := cs.targets[e.Id]; ok {
 		return
 	}
-	for _, c := range pos.filter.Requires() {
+	for _, c := range cs.filter.Requires() {
 		if _, ok := e.GetComponents()[c]; !ok {
 			return
 		}
 	}
-	logger.Debug("System %T added entity %d ", pos, e.Id)
-	pos.targets[e.Id] = e
+	logger.Debug("System %T added entity %d ", cs, e.Id)
+	cs.targets[e.Id] = e
 }
 
-func (pos *CollideSystem) RemoveEntityIfRequired(e *game.Entity) {
-	for _, c := range pos.filter.Requires() {
+func (cs *CollideSystem) RemoveEntityIfRequired(e *game.Entity) {
+	for _, c := range cs.filter.Requires() {
 		if _, ok := e.GetComponents()[c]; !ok {
-			logger.Debug("System %T removed entity %d ", pos, e.Id)
-			delete(pos.targets, e.Id)
+			logger.Debug("System %T removed entity %d ", cs, e.Id)
+			delete(cs.targets, e.Id)
 			return
 		}
 	}

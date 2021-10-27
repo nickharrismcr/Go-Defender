@@ -19,13 +19,14 @@ type LifeSystem struct {
 	targets map[types.EntityID]*game.Entity
 }
 
-func NewLifeSystem(active bool) *LifeSystem {
+func NewLifeSystem(active bool, engine *game.Engine) *LifeSystem {
 	f := game.NewFilter()
 	f.Add(types.Life)
 	return &LifeSystem{
 		sysname: game.LifeSystem,
 		active:  active,
 		filter:  f,
+		engine:  engine,
 		targets: make(map[types.EntityID]*game.Entity),
 	}
 }

@@ -116,7 +116,7 @@
 		},
 		{
 			"filename": "ship.png",
-			"ticks_per_frame" : 30,
+			"ticks_per_frame" : 10,
 			"frame": {
 				"x": 2108,
 				"y": 10,

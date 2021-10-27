@@ -22,7 +22,7 @@ type DrawSystem struct {
 	targets map[types.EntityID]*game.Entity
 }
 
-func NewDrawSystem(active bool) *DrawSystem {
+func NewDrawSystem(active bool, engine *game.Engine) *DrawSystem {
 	f := game.NewFilter()
 	f.Add(types.Draw)
 	f.Add(types.Pos)
@@ -30,6 +30,7 @@ func NewDrawSystem(active bool) *DrawSystem {
 		sysname: game.DrawSystem,
 		active:  active,
 		filter:  f,
+		engine:  engine,
 		targets: make(map[types.EntityID]*game.Entity),
 	}
 }
@@ -51,15 +52,12 @@ func (drawsys *DrawSystem) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (drawsys *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
+func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
-	drawcmp := e.GetComponent(types.Draw).(*cmp.Draw)
-	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
-
-	op := drawcmp.Opts
-	op.GeoM.Reset()
-	px := poscmp.X
-
+	dc := e.GetComponent(types.Draw).(*cmp.Draw)
+	pc := e.GetComponent(types.Pos).(*cmp.Pos)
+	op := dc.Opts
+	px := pc.X
 	camx := e.GetEngine().GetCameraX()
 	ww := float64(global.WorldWidth)
 	sw := float64(global.ScreenWidth)
@@ -69,44 +67,73 @@ func (drawsys *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 		translate += ww
 	}
 
-	if util.OffScreen(translate, poscmp.Y) {
+	if util.OffScreen(translate, pc.Y) {
 		return
 	}
 
-	op.GeoM.Translate(translate, poscmp.Y)
-	frames := drawcmp.SpriteMap.Anim_frames
-	drawcmp.Counter++
-	if drawcmp.Counter > drawcmp.SpriteMap.Ticks_per_frame {
-		drawcmp.Counter = 0
-		drawcmp.Frame++
-		if drawcmp.Frame == frames {
-			drawcmp.Frame = 0
+	op.GeoM.Reset()
+	op.GeoM.Scale(dc.Scale, dc.Scale)
+	op.GeoM.Translate(translate, pc.Y)
+	frames := dc.SpriteMap.Anim_frames
+	dc.Counter++
+	if dc.Counter > dc.SpriteMap.Ticks_per_frame {
+		dc.Counter = 0
+		dc.Frame++
+		if dc.Frame == frames {
+			dc.Frame = 0
 		}
 	}
 
-	fw, fh := drawcmp.SpriteMap.Frame.W/frames, drawcmp.SpriteMap.Frame.H
-	sx, sy := drawcmp.SpriteMap.Frame.X+drawcmp.Frame*fw, drawcmp.SpriteMap.Frame.Y
+	fw, fh := dc.SpriteMap.Frame.W/frames, dc.SpriteMap.Frame.H
+	sx, sy := dc.SpriteMap.Frame.X+dc.Frame*fw, dc.SpriteMap.Frame.Y
 
-	si := drawcmp.Image.SubImage(image.Rect(sx, sy, sx+fw, sy+fh)).(*ebiten.Image)
-	if drawcmp.Disperse == 0 {
+	si := dc.Image.SubImage(image.Rect(sx, sy, sx+fw, sy+fh)).(*ebiten.Image)
+	if dc.Disperse == 0 {
 		screen.DrawImage(si, op)
+		if dc.Bomber {
+			ds.Cycle(dc, 0.1)
+			ds.Cycle(dc, 0.1)
+			op.GeoM.Reset()
+			op.GeoM.Scale(dc.Scale, dc.Scale)
+			op.GeoM.Translate(translate+7, pc.Y+7)
+			screen.DrawImage(si, op)
+			ds.Cycle(dc, 0.1)
+			ds.Cycle(dc, 0.1)
+			op.GeoM.Reset()
+			op.GeoM.Scale(dc.Scale/2, dc.Scale/2)
+			op.GeoM.Translate(translate+11, pc.Y+11)
+			screen.DrawImage(si, op)
+		} else {
+			ds.Cycle(dc, 1)
+		}
 	} else {
 		for i := 0; i < 9; i++ {
 			for j := 0; j < 9; j++ {
-				x := translate + (float64(i-2) * drawcmp.Disperse)
-				y := poscmp.Y + (float64(j-2) * drawcmp.Disperse)
+				x := translate + (float64(i-2) * dc.Disperse)
+				y := pc.Y + (float64(j-2) * dc.Disperse)
 				op.GeoM.Reset()
+				op.GeoM.Scale(2-float64(i)/10, 2-float64(j)/10)
 				op.GeoM.Translate(x, y)
 				x1 := sx + i*(fw/9)
 				x2 := x1 + fw/9
 				y1 := sy + j*(fh/9)
 				y2 := y1 + fh/9
-				ssi := drawcmp.Image.SubImage(image.Rect(x1, y1, x2, y2)).(*ebiten.Image)
+				ssi := dc.Image.SubImage(image.Rect(x1, y1, x2, y2)).(*ebiten.Image)
+
 				screen.DrawImage(ssi, op)
 			}
 		}
 	}
 
+}
+
+func (drawsys *DrawSystem) Cycle(drawcmp *cmp.Draw, v float64) {
+	if drawcmp.Cycle {
+		drawcmp.CycleIndex += v
+		c := global.Cols[int(drawcmp.CycleIndex)%5]
+		drawcmp.Opts.ColorM.Reset()
+		drawcmp.Opts.ColorM.Scale(c.R, c.G, c.B, c.A)
+	}
 }
 
 func (drawsys *DrawSystem) Active() bool {

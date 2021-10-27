@@ -6,8 +6,10 @@ import (
 	"Def/game"
 	"Def/global"
 	"Def/graphics"
+	"Def/state/bomber"
 	"Def/state/human"
 	"Def/state/lander"
+	"Def/state/player"
 	"Def/systems"
 	"Def/types"
 	"image/color"
@@ -18,7 +20,7 @@ import (
 
 var landerCount int
 var humanCount int
-var radarImg *ebiten.Image
+var blankImg *ebiten.Image
 var ScoreId int
 
 // game setup
@@ -30,29 +32,9 @@ func InitGame(engine *game.Engine) {
 	InitSystems(engine)
 	InitEntities(engine)
 	bulletPool(engine)
+	bombPool(engine)
 
 	ScoreId = engine.AddString("       0", 100, 40)
-}
-
-func bulletPool(engine *game.Engine) {
-
-	ssheet := graphics.GetSpriteSheet()
-
-	for i := 0; i < 40; i++ {
-		ent := game.NewEntity(engine, types.Bullet)
-		pc := cmp.NewPos(0, 0, 0, 0)
-		ent.AddComponent(pc)
-		smap := graphics.GetSpriteMap("bullet.png")
-		dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
-		//cl := cmp.NewCollide()
-		li := cmp.NewLife(120)
-		ent.AddComponent(dr)
-		//ent.AddComponent(cl)
-		ent.AddComponent(li)
-
-		engine.BulletPool = append(engine.BulletPool, ent)
-	}
-
 }
 
 func InitEvents(engine *game.Engine) {
@@ -84,42 +66,82 @@ func InitEvents(engine *game.Engine) {
 
 	}
 
+	bomberDie := func(e event.IEvent) {
+	}
+
 	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
 	event.AddEventListener(event.FireBulletEvent, bulletTrigger)
 	event.AddEventListener(event.LanderDieEvent, landerDie)
 	event.AddEventListener(event.LanderClearedEvent, landerCleared)
 	event.AddEventListener(event.HumanDieEvent, humanDie)
+	event.AddEventListener(event.BomberDieEvent, bomberDie)
+
 }
 
 func InitSystems(engine *game.Engine) {
 
-	engine.AddSystem(systems.NewPosSystem(true), game.UPDATE)
-	engine.AddSystem(systems.NewAISystem(true), game.UPDATE)
-	engine.AddSystem(systems.NewLifeSystem(true), game.UPDATE)
-	engine.AddSystem(systems.NewCollideSystem(true), game.UPDATE)
-	engine.AddSystem(systems.NewDrawSystem(true), game.DRAW)
-	engine.AddSystem(systems.NewRadarDrawSystem(true), game.DRAW)
+	engine.AddSystem(systems.NewPosSystem(true, engine), game.UPDATE)
+	engine.AddSystem(systems.NewAISystem(true, engine), game.UPDATE)
+	engine.AddSystem(systems.NewLifeSystem(true, engine), game.UPDATE)
+	engine.AddSystem(systems.NewCollideSystem(true, engine), game.UPDATE)
+	engine.AddSystem(systems.NewDrawSystem(true, engine), game.DRAW)
+	engine.AddSystem(systems.NewRadarDrawSystem(true, engine), game.DRAW)
 }
 
 func InitEntities(engine *game.Engine) {
 
-	radarImg = ebiten.NewImage(5, 5)
-	radarImg.Fill(color.White)
+	blankImg = ebiten.NewImage(5, 5)
+	blankImg.Fill(color.White)
 
-	for i := 0; i < 20; i++ {
+	AddPlayer(engine)
+
+	for i := 0; i < global.BomberCount; i++ {
 
 		AddLander(engine, i)
 		landerCount++
 	}
-	//for i := 0; i < 1; i++ {
-	//	ls := baiter.NewBaiterSearch()
-	//	Add(types.Baiter, engine, ls, "baiter.png", false, 5)
-	//}
-	for i := 0; i < 20; i++ {
+
+	for i := 0; i < 1; i++ {
+		//TODO baiter
+	}
+
+	for i := 0; i < global.HumanCount; i++ {
 
 		AddHuman(engine, i)
 		humanCount++
 	}
+	for i := 0; i < global.BomberCount; i++ {
+
+		AddBomber(engine, i)
+	}
+}
+
+func AddPlayer(engine *game.Engine) {
+
+	ssheet := graphics.GetSpriteSheet()
+	ent := game.NewEntity(engine, types.Player)
+	global.PlayerID = ent.Id
+	ent.SetActive(true)
+
+	x := float64(global.WorldWidth) / 2
+	y := float64(global.ScreenHeight) / 2
+
+	pc := cmp.NewPos(x, y, 0, 0)
+	ent.AddComponent(pc)
+	stree := game.NewStateTree()
+	stree.AddState(player.NewPlayerPlay())
+
+	fsm := game.NewFSM(stree, "fsm1")
+	ai := cmp.NewAI(fsm, types.PlayerPlay)
+	ent.AddComponent(ai)
+	smap := graphics.GetSpriteMap("ship.png")
+	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
+	ent.AddComponent(dr)
+
+	col := types.ColorF{R: 1, G: 1, B: 1, A: 1}
+	rd := cmp.NewRadarDraw(blankImg, col)
+	ent.AddComponent(rd)
+
 }
 
 func AddLander(engine *game.Engine, count int) {
@@ -142,15 +164,15 @@ func AddLander(engine *game.Engine, count int) {
 	stree.AddState(lander.NewLanderMutate())
 	stree.AddState(lander.NewLanderDie())
 
-	testfsm := game.NewFSM(stree, "fsm1")
-	ai := cmp.NewAI(testfsm, types.LanderMaterialise)
+	fsm := game.NewFSM(stree, "fsm1")
+	ai := cmp.NewAI(fsm, types.LanderMaterialise)
 	ent.AddComponent(ai)
 	smap := graphics.GetSpriteMap("lander.png")
 	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
 	ent.AddComponent(dr)
 
 	col := types.ColorF{R: 0, G: 1, B: 0, A: 1}
-	rd := cmp.NewRadarDraw(radarImg, col)
+	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
 	cl := cmp.NewCollide()
 	ent.AddComponent(cl)
@@ -176,16 +198,91 @@ func AddHuman(engine *game.Engine, count int) {
 
 	stree.AddState(human.NewHumanDie())
 
-	testfsm := game.NewFSM(stree, "fsm1")
-	ai := cmp.NewAI(testfsm, types.HumanWalking)
+	fsm := game.NewFSM(stree, "fsm1")
+	ai := cmp.NewAI(fsm, types.HumanWalking)
 	ent.AddComponent(ai)
 	smap := graphics.GetSpriteMap("human.png")
 	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
 	ent.AddComponent(dr)
 
 	col := types.ColorF{R: 1, G: 0, B: 1, A: 1}
-	rd := cmp.NewRadarDraw(radarImg, col)
+	rd := cmp.NewRadarDraw(blankImg, col)
+	ent.AddComponent(rd)
+
+}
+
+func AddBomber(engine *game.Engine, count int) {
+
+	ent := game.NewEntity(engine, types.Bomber)
+	ent.SetActive(true)
+
+	x := (rand.Float64() * global.ScreenWidth) + global.WorldWidth/3
+	y := (rand.Float64() * global.ScreenHeight / 2) + global.ScreenTop + 50
+
+	pc := cmp.NewPos(x, y, 0, 0)
+	ent.AddComponent(pc)
+	stree := game.NewStateTree()
+	stree.AddState(bomber.NewBomberMove())
+	stree.AddState(bomber.NewBomberDie())
+
+	fsm := game.NewFSM(stree, "fsm1")
+	ai := cmp.NewAI(fsm, types.BomberMove)
+	ent.AddComponent(ai)
+	smap := graphics.GFXFrame{
+		Frame:           graphics.SourceFrame{X: 0, Y: 0, W: 1, H: 1},
+		Anim_frames:     1,
+		Ticks_per_frame: 30,
+	}
+	dr := cmp.NewDraw(blankImg, smap, types.ColorF{R: 1, G: 1, B: 1})
+	dr.Cycle = true
+	dr.Bomber = true
+	dr.Scale = 20
+	ent.AddComponent(dr)
+
+	col := types.ColorF{R: 0.5, G: 0, B: 1, A: 1}
+	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
 	cl := cmp.NewCollide()
 	ent.AddComponent(cl)
+}
+
+func bulletPool(engine *game.Engine) {
+
+	ssheet := graphics.GetSpriteSheet()
+
+	for i := 0; i < 40; i++ {
+		ent := game.NewEntity(engine, types.Bullet)
+		pc := cmp.NewPos(0, 0, 0, 0)
+		ent.AddComponent(pc)
+		smap := graphics.GetSpriteMap("bullet.png")
+		dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
+		ent.AddComponent(dr)
+		li := cmp.NewLife(240)
+		ent.AddComponent(li)
+		cl := cmp.NewCollide()
+		ent.AddComponent(cl)
+		engine.BulletPool = append(engine.BulletPool, ent)
+	}
+
+}
+
+func bombPool(engine *game.Engine) {
+
+	ssheet := graphics.GetSpriteSheet()
+
+	for i := 0; i < 20; i++ {
+		ent := game.NewEntity(engine, types.Bomb)
+		pc := cmp.NewPos(0, 0, 0, 0)
+		ent.AddComponent(pc)
+		smap := graphics.GetSpriteMap("bomb.png")
+		dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
+		dr.Cycle = true
+		ent.AddComponent(dr)
+		cl := cmp.NewCollide()
+		ent.AddComponent(cl)
+		li := cmp.NewLife(240)
+		ent.AddComponent(li)
+		engine.BombPool = append(engine.BombPool, ent)
+	}
+
 }

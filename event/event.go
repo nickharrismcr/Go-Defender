@@ -19,6 +19,7 @@ const (
 	BaiterDieEvent     EventType = iota
 	BomberDieEvent     EventType = iota
 	LanderClearedEvent EventType = iota
+	PlayerDieEvent     EventType = iota
 )
 
 func (ev EventType) String() string {
@@ -36,6 +37,8 @@ func (ev EventType) String() string {
 		return "LanderDie"
 	case LanderClearedEvent:
 		return "LanderCleared"
+	case PlayerDieEvent:
+		return "PlayerDie"
 	}
 
 	return ""

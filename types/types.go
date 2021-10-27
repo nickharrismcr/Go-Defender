@@ -3,12 +3,16 @@ package types
 type StateType int
 type EntityType int
 type EntityID int
+type CmpType int
 
 const (
 	Lander EntityType = iota
 	Baiter EntityType = iota
 	Bullet EntityType = iota
 	Human  EntityType = iota
+	Bomb   EntityType = iota
+	Bomber EntityType = iota
+	Player EntityType = iota
 )
 
 const (
@@ -25,6 +29,10 @@ const (
 	HumanDropping     StateType = iota
 	HumanRescued      StateType = iota
 	HumanDie          StateType = iota
+	PlayerPlay        StateType = iota
+	PlayerDie         StateType = iota
+	BomberMove        StateType = iota
+	BomberDie         StateType = iota
 )
 
 func (st StateType) String() string {
@@ -55,11 +63,17 @@ func (st StateType) String() string {
 		return "Human-Rescued"
 	case HumanDie:
 		return "Human-Die"
+	case PlayerPlay:
+		return "Player Play	"
+	case PlayerDie:
+		return "Player-Die"
+	case BomberMove:
+		return "Bomber Move"
+	case BomberDie:
+		return "Bomber-Die"
 	}
 	return ""
 }
-
-type CmpType int
 
 const (
 	AI        CmpType = iota
@@ -83,7 +97,7 @@ func (t CmpType) String() string {
 	case Life:
 		return "Life"
 	case RadarDraw:
-		return ""
+		return "RadarDraw"
 	}
 	return ""
 }
@@ -97,6 +111,8 @@ type IEngine interface {
 	GetEntity(EntityID) IEntity
 	MountainHeight(float64) float64
 	GetCameraX() float64
+	SetCameraX(float64)
+	TriggerBomb(float64, float64)
 }
 
 type IEntity interface {

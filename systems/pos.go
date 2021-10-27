@@ -20,13 +20,14 @@ type PosSystem struct {
 	targets map[types.EntityID]*game.Entity
 }
 
-func NewPosSystem(active bool) *PosSystem {
+func NewPosSystem(active bool, engine *game.Engine) *PosSystem {
 	f := game.NewFilter()
 	f.Add(types.Pos)
 	return &PosSystem{
 		sysname: game.PosSystem,
 		active:  active,
 		filter:  f,
+		engine:  engine,
 		targets: make(map[types.EntityID]*game.Entity),
 	}
 }

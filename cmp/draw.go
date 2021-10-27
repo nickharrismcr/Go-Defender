@@ -17,6 +17,9 @@ type Draw struct {
 	Counter       int
 	Frame         int
 	Disperse      float64
+	Cycle         bool
+	CycleIndex    float64
+	Bomber        bool
 }
 
 func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color types.ColorF) *Draw {
@@ -31,6 +34,8 @@ func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color types.ColorF) *D
 		Counter:       0,
 		Frame:         0,
 		Disperse:      0,
+		CycleIndex:    0,
+		Bomber:        false,
 	}
 }
 

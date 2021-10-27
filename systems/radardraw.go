@@ -33,7 +33,7 @@ type RadarDrawSystem struct {
 	targets map[types.EntityID]*game.Entity
 }
 
-func NewRadarDrawSystem(active bool) *RadarDrawSystem {
+func NewRadarDrawSystem(active bool, engine *game.Engine) *RadarDrawSystem {
 	f := game.NewFilter()
 	f.Add(types.RadarDraw)
 	f.Add(types.Pos)
@@ -42,6 +42,7 @@ func NewRadarDrawSystem(active bool) *RadarDrawSystem {
 		sysname: game.RadarDrawSystem,
 		active:  active,
 		filter:  f,
+		engine:  engine,
 		targets: make(map[types.EntityID]*game.Entity),
 	}
 }
@@ -121,6 +122,7 @@ func (drawsys *RadarDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
 	op.GeoM.Translate(screenx, poscmp.Y*(st/sh))
 	c := drawcmp.Color
+	op.ColorM.Reset()
 	op.ColorM.Scale(c.R, c.G, c.B, c.A)
 	screen.DrawImage(drawcmp.Image, op)
 }

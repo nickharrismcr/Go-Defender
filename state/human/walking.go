@@ -36,7 +36,6 @@ func (s *HumanWalking) Update(ai *cmp.AI, e types.IEntity) {
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 
-	pc.X += pc.DX
 	pc.Y = global.ScreenHeight - e.GetEngine().MountainHeight(pc.X)
 
 }
