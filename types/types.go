@@ -82,6 +82,7 @@ const (
 	Collide   CmpType = iota
 	Life      CmpType = iota
 	RadarDraw CmpType = iota
+	Ship      CmpType = iota
 )
 
 func (t CmpType) String() string {

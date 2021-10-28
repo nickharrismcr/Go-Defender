@@ -28,18 +28,6 @@ func (g *Game) Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return errors.New("escape pressed")
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		engine.CameraX -= 50
-		if engine.CameraX < 0 {
-			engine.CameraX += global.WorldWidth
-		}
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		engine.CameraX += 50
-		if engine.CameraX > global.WorldWidth {
-			engine.CameraX -= global.WorldWidth
-		}
-	}
 
 	engine.ChangeString(ScoreId, fmt.Sprintf("%8d", g.ucount))
 	return nil

@@ -11,6 +11,8 @@ const (
 	LanderSpeed  = 5
 	HumanSpeed   = 0.1
 	BomberSpeed  = 3
+	PlayerSpeedX = 50
+	PlayerSpeedY = 25
 )
 
 var PlayerID types.EntityID

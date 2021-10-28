@@ -128,6 +128,9 @@ func AddPlayer(engine *game.Engine) {
 
 	pc := cmp.NewPos(x, y, 0, 0)
 	ent.AddComponent(pc)
+	sc := cmp.NewShip()
+	ent.AddComponent(sc)
+
 	stree := game.NewStateTree()
 	stree.AddState(player.NewPlayerPlay())
 

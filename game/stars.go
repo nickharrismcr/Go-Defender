@@ -20,7 +20,7 @@ type Stars struct {
 	engine *Engine
 }
 
-// individual star. system has a pool of these size = MAX
+// individual star. system has a pool of these size = MAXSTARS
 type star struct {
 	active      bool
 	ticksToLive int
@@ -68,11 +68,12 @@ func (s *Stars) Update() {
 func (s *Stars) Draw(screen *ebiten.Image) {
 
 	for _, p := range s.plist {
-		p.opts.GeoM.Reset()
+
 		screenX := p.x - s.engine.CameraX/4
 		if util.OffScreen(screenX, p.y) {
 			continue
 		}
+		p.opts.GeoM.Reset()
 		p.opts.GeoM.Translate(screenX, p.y)
 		p.opts.ColorM.Reset()
 		p.opts.ColorM.Scale(p.color.R, p.color.G, p.color.B, 1)

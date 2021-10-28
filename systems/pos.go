@@ -60,6 +60,9 @@ func (pos *PosSystem) process(e *game.Entity) {
 	if poscmp.Y < global.ScreenTop+20 {
 		poscmp.Y = global.ScreenTop + 20
 	}
+	if poscmp.Y > global.ScreenHeight-50 {
+		poscmp.Y = global.ScreenHeight - 50
+	}
 	poscmp.Y += poscmp.DY
 
 }

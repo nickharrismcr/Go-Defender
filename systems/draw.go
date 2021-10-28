@@ -73,6 +73,9 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
 	op.GeoM.Reset()
 	op.GeoM.Scale(dc.Scale, dc.Scale)
+	if dc.FlipX {
+		op.GeoM.Scale(-1, 1)
+	}
 	op.GeoM.Translate(translate, pc.Y)
 	frames := dc.SpriteMap.Anim_frames
 	dc.Counter++
