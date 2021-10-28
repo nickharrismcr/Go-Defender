@@ -12,6 +12,7 @@ const (
 	LifeSystem      SystemName = iota
 	RadarDrawSystem SystemName = iota
 	LaserDrawSystem SystemName = iota
+	LaserMoveSystem SystemName = iota
 )
 
 func (t SystemName) String() string {
@@ -28,6 +29,8 @@ func (t SystemName) String() string {
 		return "Life"
 	case RadarDrawSystem:
 		return "RadarDrawSystem"
+	case LaserMoveSystem:
+		return "LaserMoveSystem"
 	}
 	return ""
 }

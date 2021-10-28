@@ -98,3 +98,7 @@ func (e *Entity) SetParent(pe types.EntityID) {
 func (e *Entity) SetChild(ce types.EntityID) {
 	e.child = ce
 }
+
+func (e *Entity) GetClass() types.EntityType {
+	return e.Class
+}

@@ -117,6 +117,7 @@ func InitSystems(engine *game.Engine) {
 	engine.AddSystem(systems.NewDrawSystem(true, engine), game.DRAW)
 	engine.AddSystem(systems.NewRadarDrawSystem(true, engine), game.DRAW)
 	engine.AddSystem(systems.NewLaserDrawSystem(true, engine), game.DRAW)
+	engine.AddSystem(systems.NewLaserMoveSystem(true, engine), game.UPDATE)
 }
 
 func InitEntities(engine *game.Engine) {
@@ -338,6 +339,8 @@ func laserPool(engine *game.Engine) {
 		ent.AddComponent(dr)
 		li := cmp.NewLife(240)
 		ent.AddComponent(li)
+		mv := cmp.NewLaserMove()
+		ent.AddComponent(mv)
 
 		engine.LaserPool = append(engine.LaserPool, ent)
 	}

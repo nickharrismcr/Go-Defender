@@ -16,7 +16,7 @@ const (
 
 type Engine struct {
 	entities              map[types.EntityID]*Entity
-	entitiesWithComponent map[types.CmpType]map[types.EntityID]*Entity
+	entitiesWithComponent map[types.CmpType]map[types.EntityID]types.IEntity
 	systems               map[SystemName]ISystem
 	updateSystems         []ISystem
 	drawSystems           []ISystem
@@ -35,7 +35,7 @@ func NewEngine() *Engine {
 
 	e := &Engine{
 		entities:              make(map[types.EntityID]*Entity),
-		entitiesWithComponent: make(map[types.CmpType]map[types.EntityID]*Entity),
+		entitiesWithComponent: make(map[types.CmpType]map[types.EntityID]types.IEntity),
 		systems:               make(map[SystemName]ISystem),
 		chars:                 nil,
 		BulletPool:            []*Entity{},
@@ -128,7 +128,7 @@ func (eng *Engine) RemoveComponent(e *Entity, ct types.CmpType) {
 func (eng *Engine) addToEntitiesWithComponent(e *Entity, c types.ICmp) {
 	_, ok := eng.entitiesWithComponent[c.Type()]
 	if !ok {
-		eng.entitiesWithComponent[c.Type()] = map[types.EntityID]*Entity{}
+		eng.entitiesWithComponent[c.Type()] = map[types.EntityID]types.IEntity{}
 	}
 	eng.entitiesWithComponent[c.Type()][e.Id] = e
 }
@@ -140,7 +140,7 @@ func (eng *Engine) removeFromEntitiesWithComponent(e *Entity, ct types.CmpType) 
 	}
 }
 
-func (eng *Engine) GetEntitiesWithComponent(ct types.CmpType) map[types.EntityID]*Entity {
+func (eng *Engine) GetEntitiesWithComponent(ct types.CmpType) map[types.EntityID]types.IEntity {
 	list, ok := eng.entitiesWithComponent[ct]
 	if ok {
 		return list
@@ -240,4 +240,16 @@ func (eng *Engine) ChangeString(id int, s string) {
 
 func (eng *Engine) ClearChars() {
 	eng.chars.Clear()
+}
+
+func (eng *Engine) Kill(e types.IEntity) {
+	ai := e.GetComponent(types.AI).(*cmp.AI)
+	switch e.GetClass() {
+	case types.Lander:
+		ai.NextState = types.LanderDie
+	case types.Human:
+		ai.NextState = types.HumanDie
+	case types.Bomber:
+		ai.NextState = types.BomberDie
+	}
 }

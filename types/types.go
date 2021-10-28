@@ -97,6 +97,7 @@ const (
 	Ship      CmpType = iota
 	Shootable CmpType = iota
 	LaserDraw CmpType = iota
+	LaserMove CmpType = iota
 )
 
 func (t CmpType) String() string {
@@ -119,6 +120,8 @@ func (t CmpType) String() string {
 		return "Shootable"
 	case LaserDraw:
 		return "LaserDraw"
+	case LaserMove:
+		return "Laser"
 	}
 	return ""
 }
@@ -135,6 +138,8 @@ type IEngine interface {
 	SetCameraX(float64)
 	TriggerBomb(float64, float64)
 	TriggerPS(float64, float64)
+	Kill(IEntity)
+	GetEntitiesWithComponent(CmpType) map[EntityID]IEntity
 }
 
 type IEntity interface {
@@ -147,6 +152,7 @@ type IEntity interface {
 	Child() EntityID
 	SetParent(EntityID)
 	SetChild(EntityID)
+	GetClass() EntityType
 }
 
 type ColorF struct {
