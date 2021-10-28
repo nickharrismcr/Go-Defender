@@ -24,6 +24,7 @@ const (
 	Bomb   EntityType = iota
 	Bomber EntityType = iota
 	Player EntityType = iota
+	Laser  EntityType = iota
 )
 
 const (
@@ -94,6 +95,8 @@ const (
 	Life      CmpType = iota
 	RadarDraw CmpType = iota
 	Ship      CmpType = iota
+	Shootable CmpType = iota
+	LaserDraw CmpType = iota
 )
 
 func (t CmpType) String() string {
@@ -110,6 +113,12 @@ func (t CmpType) String() string {
 		return "Life"
 	case RadarDraw:
 		return "RadarDraw"
+	case Ship:
+		return "Ship"
+	case Shootable:
+		return "Shootable"
+	case LaserDraw:
+		return "LaserDraw"
 	}
 	return ""
 }

@@ -11,6 +11,7 @@ const (
 	CollideSystem   SystemName = iota
 	LifeSystem      SystemName = iota
 	RadarDrawSystem SystemName = iota
+	LaserDrawSystem SystemName = iota
 )
 
 func (t SystemName) String() string {

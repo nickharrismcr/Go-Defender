@@ -13,6 +13,7 @@ import (
 	"Def/systems"
 	"Def/types"
 	"image/color"
+	"math"
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -33,6 +34,7 @@ func InitGame(engine *game.Engine) {
 	InitEntities(engine)
 	bulletPool(engine)
 	bombPool(engine)
+	laserPool(engine)
 
 	ScoreId = engine.AddString("       0", 100, 40)
 }
@@ -82,6 +84,18 @@ func InitEvents(engine *game.Engine) {
 		engine.GetSystem(game.PosSystem).SetActive(false)
 	}
 
+	playerFire := func(e event.IEvent) {
+		if pe := e.GetPayload().(*game.Entity); pe != nil {
+			pc := pe.GetComponent(types.Pos).(*cmp.Pos)
+			sc := pe.GetComponent(types.Ship).(*cmp.Ship)
+			x := pc.X + 100
+			if sc.Direction < 0 {
+				x = pc.X - 100
+			}
+			engine.TriggerLaser(x, pc.Y, sc.Direction*math.Abs(pc.DX))
+		}
+	}
+
 	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
 	event.AddEventListener(event.FireBulletEvent, bulletTrigger)
 	event.AddEventListener(event.LanderDieEvent, landerDie)
@@ -90,6 +104,7 @@ func InitEvents(engine *game.Engine) {
 	event.AddEventListener(event.BomberDieEvent, bomberDie)
 	event.AddEventListener(event.PlayerDieEvent, playerDie)
 	event.AddEventListener(event.StartEvent, start)
+	event.AddEventListener(event.PlayerFireEvent, playerFire)
 
 }
 
@@ -101,6 +116,7 @@ func InitSystems(engine *game.Engine) {
 	engine.AddSystem(systems.NewCollideSystem(true, engine), game.UPDATE)
 	engine.AddSystem(systems.NewDrawSystem(true, engine), game.DRAW)
 	engine.AddSystem(systems.NewRadarDrawSystem(true, engine), game.DRAW)
+	engine.AddSystem(systems.NewLaserDrawSystem(true, engine), game.DRAW)
 }
 
 func InitEntities(engine *game.Engine) {
@@ -195,6 +211,8 @@ func AddLander(engine *game.Engine, count int) {
 	ent.AddComponent(rd)
 	cl := cmp.NewCollide()
 	ent.AddComponent(cl)
+	sh := cmp.NewShootable()
+	ent.AddComponent(sh)
 }
 
 func AddHuman(engine *game.Engine, count int) {
@@ -227,6 +245,8 @@ func AddHuman(engine *game.Engine, count int) {
 	col := types.ColorF{R: 1, G: 0, B: 1, A: 1}
 	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
+	sh := cmp.NewShootable()
+	ent.AddComponent(sh)
 
 }
 
@@ -263,6 +283,8 @@ func AddBomber(engine *game.Engine, count int) {
 	ent.AddComponent(rd)
 	cl := cmp.NewCollide()
 	ent.AddComponent(cl)
+	sh := cmp.NewShootable()
+	ent.AddComponent(sh)
 }
 
 func bulletPool(engine *game.Engine) {
@@ -302,6 +324,22 @@ func bombPool(engine *game.Engine) {
 		li := cmp.NewLife(240)
 		ent.AddComponent(li)
 		engine.BombPool = append(engine.BombPool, ent)
+	}
+
+}
+
+func laserPool(engine *game.Engine) {
+
+	for i := 0; i < 5; i++ {
+		ent := game.NewEntity(engine, types.Laser)
+		pc := cmp.NewPos(0, 0, 0, 0)
+		ent.AddComponent(pc)
+		dr := cmp.NewLaserDraw()
+		ent.AddComponent(dr)
+		li := cmp.NewLife(240)
+		ent.AddComponent(li)
+
+		engine.LaserPool = append(engine.LaserPool, ent)
 	}
 
 }

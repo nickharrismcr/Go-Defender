@@ -80,7 +80,7 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 	if ebiten.IsKeyPressed(global.KeyMap[types.Fire]) {
 		if !sc.FirePressed {
 			sc.FirePressed = true
-			ev := event.NewPlayerFire(pc)
+			ev := event.NewPlayerFire(e)
 			event.NotifyEvent(ev)
 		}
 	} else {

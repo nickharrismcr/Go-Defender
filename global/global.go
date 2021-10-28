@@ -40,6 +40,9 @@ var Red = types.ColorF{R: 1, G: 0, B: 0, A: 1}
 var Green = types.ColorF{R: 0, G: 1, B: 0, A: 1}
 var Yellow = types.ColorF{R: 1, G: 1, B: 0, A: 1}
 var Magenta = types.ColorF{R: 1, G: 0, B: 1, A: 1}
+var Cyan = types.ColorF{R: 0, G: 1, B: 1, A: 1}
 
 var Cols = []types.ColorF{Blue, Green, Yellow, Red, Magenta}
+var LaserCols = []types.ColorF{Green, Green, Green, Yellow, Yellow, Yellow, Red, Red, Red, Blue, Blue, Blue, Cyan, Cyan, Cyan}
+
 var HudCol int = 0
