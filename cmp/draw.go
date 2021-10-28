@@ -21,6 +21,7 @@ type Draw struct {
 	CycleIndex    float64
 	Bomber        bool
 	FlipX         bool
+	Hide          bool
 }
 
 func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color types.ColorF) *Draw {
@@ -38,6 +39,7 @@ func NewDraw(image *ebiten.Image, smap graphics.GFXFrame, color types.ColorF) *D
 		CycleIndex:    0,
 		Bomber:        false,
 		FlipX:         false,
+		Hide:          false,
 	}
 }
 

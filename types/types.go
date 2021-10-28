@@ -4,6 +4,17 @@ type StateType int
 type EntityType int
 type EntityID int
 type CmpType int
+type ActionType int
+
+const (
+	Up         ActionType = iota
+	Down       ActionType = iota
+	Thrust     ActionType = iota
+	Fire       ActionType = iota
+	Reverse    ActionType = iota
+	SmartBomb  ActionType = iota
+	HyperSpace ActionType = iota
+)
 
 const (
 	Lander EntityType = iota
@@ -114,6 +125,7 @@ type IEngine interface {
 	GetCameraX() float64
 	SetCameraX(float64)
 	TriggerBomb(float64, float64)
+	TriggerPS(float64, float64)
 }
 
 type IEntity interface {

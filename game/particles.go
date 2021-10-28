@@ -2,7 +2,6 @@ package game
 
 import (
 	"Def/types"
-	"Def/util"
 	"image/color"
 	"math"
 	"math/rand"
@@ -114,7 +113,7 @@ func (s *ParticleSystem) Update() {
 			return
 		}
 		p.ticksToLive--
-		if p.ticksToLive == 0 || util.OffScreen(p.x, p.y) {
+		if p.ticksToLive == 0 {
 			p.active = false
 			s.activeList = append(s.activeList[:i], s.activeList[i+1:]...)
 		}

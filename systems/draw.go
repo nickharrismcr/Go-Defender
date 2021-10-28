@@ -55,6 +55,11 @@ func (drawsys *DrawSystem) Draw(screen *ebiten.Image) {
 func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
 	dc := e.GetComponent(types.Draw).(*cmp.Draw)
+
+	if dc.Hide {
+		return
+	}
+
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	op := dc.Opts
 	px := pc.X

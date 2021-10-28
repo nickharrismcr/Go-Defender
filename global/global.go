@@ -1,6 +1,10 @@
 package global
 
-import "Def/types"
+import (
+	"Def/types"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 const (
 	ScreenWidth  = 1600
@@ -12,8 +16,18 @@ const (
 	HumanSpeed   = 0.1
 	BomberSpeed  = 3
 	PlayerSpeedX = 50
-	PlayerSpeedY = 25
+	PlayerSpeedY = 15
 )
+
+var KeyMap = map[types.ActionType]ebiten.Key{
+	types.Up:         ebiten.KeyQ,
+	types.Down:       ebiten.KeyA,
+	types.Reverse:    ebiten.KeySpace,
+	types.Thrust:     ebiten.KeyEnter,
+	types.Fire:       ebiten.KeyShiftRight,
+	types.SmartBomb:  ebiten.KeyBackspace,
+	types.HyperSpace: ebiten.KeyControlLeft,
+}
 
 var PlayerID types.EntityID
 

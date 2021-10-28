@@ -39,6 +39,11 @@ func InitGame(engine *game.Engine) {
 
 func InitEvents(engine *game.Engine) {
 	// Events
+
+	start := func(e event.IEvent) {
+		engine.GetSystem(game.PosSystem).SetActive(true)
+	}
+
 	explodeTrigger := func(e event.IEvent) {
 		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
 			engine.TriggerPS(ct.X, ct.Y)
@@ -67,6 +72,14 @@ func InitEvents(engine *game.Engine) {
 	}
 
 	bomberDie := func(e event.IEvent) {
+
+	}
+
+	playerDie := func(e event.IEvent) {
+		pe := engine.GetEntities()[global.PlayerID]
+		pai := pe.GetComponent(types.AI).(*cmp.AI)
+		pai.NextState = types.PlayerDie
+		engine.GetSystem(game.PosSystem).SetActive(false)
 	}
 
 	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
@@ -75,6 +88,8 @@ func InitEvents(engine *game.Engine) {
 	event.AddEventListener(event.LanderClearedEvent, landerCleared)
 	event.AddEventListener(event.HumanDieEvent, humanDie)
 	event.AddEventListener(event.BomberDieEvent, bomberDie)
+	event.AddEventListener(event.PlayerDieEvent, playerDie)
+	event.AddEventListener(event.StartEvent, start)
 
 }
 
@@ -133,6 +148,7 @@ func AddPlayer(engine *game.Engine) {
 
 	stree := game.NewStateTree()
 	stree.AddState(player.NewPlayerPlay())
+	stree.AddState(player.NewPlayerDie())
 
 	fsm := game.NewFSM(stree, "fsm1")
 	ai := cmp.NewAI(fsm, types.PlayerPlay)

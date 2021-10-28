@@ -2,6 +2,7 @@ package player
 
 import (
 	"Def/cmp"
+	"Def/event"
 	"Def/global"
 	"Def/types"
 
@@ -27,6 +28,8 @@ func (s *PlayerPlay) GetName() types.StateType {
 func (s *PlayerPlay) Enter(ai *cmp.AI, e types.IEntity) {
 	sc := e.GetComponent(types.Ship).(*cmp.Ship)
 	sc.ScreenOffset = global.ScreenWidth * 0.1
+	ev := event.NewStart(e)
+	event.NotifyEvent(ev)
 }
 
 func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
@@ -44,7 +47,7 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 
 	e.GetEngine().SetCameraX(pc.X - sc.ScreenOffset)
 
-	if ebiten.IsKeyPressed(ebiten.KeySpace) {
+	if ebiten.IsKeyPressed(global.KeyMap[types.Reverse]) {
 		if !sc.ReversePressed {
 			sc.Direction = -sc.Direction
 			dc.FlipX = !dc.FlipX
@@ -53,7 +56,7 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 	} else {
 		sc.ReversePressed = false
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
+	if ebiten.IsKeyPressed(global.KeyMap[types.Thrust]) {
 		pc.DX += sc.Direction * 2
 	} else {
 		pc.DX /= 1.05
@@ -64,14 +67,41 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 	if pc.DX < -global.PlayerSpeedX {
 		pc.DX = -global.PlayerSpeedX
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyQ) && ebiten.IsKeyPressed(ebiten.KeyA) {
+	if ebiten.IsKeyPressed(global.KeyMap[types.Up]) && ebiten.IsKeyPressed(global.KeyMap[types.Down]) {
 		pc.DY = 0
-	} else if ebiten.IsKeyPressed(ebiten.KeyQ) {
+	} else if ebiten.IsKeyPressed(global.KeyMap[types.Up]) {
 		pc.DY = -global.PlayerSpeedY
-	} else if ebiten.IsKeyPressed(ebiten.KeyA) {
+	} else if ebiten.IsKeyPressed(global.KeyMap[types.Down]) {
 		pc.DY = global.PlayerSpeedY
 	} else {
 		pc.DY = 0
 	}
 
+	if ebiten.IsKeyPressed(global.KeyMap[types.Fire]) {
+		if !sc.FirePressed {
+			sc.FirePressed = true
+			ev := event.NewPlayerFire(pc)
+			event.NotifyEvent(ev)
+		}
+	} else {
+		sc.FirePressed = false
+	}
+
+	if ebiten.IsKeyPressed(global.KeyMap[types.SmartBomb]) {
+		if !sc.SmartBombPressed {
+			sc.SmartBombPressed = true
+			ev := event.NewSmartBomb(pc)
+			event.NotifyEvent(ev)
+		}
+	} else {
+		sc.SmartBombPressed = false
+	}
+
+	if ebiten.IsKeyPressed(global.KeyMap[types.HyperSpace]) {
+		if !sc.HyperSpacePressed {
+			sc.HyperSpacePressed = true
+		}
+	} else {
+		sc.HyperSpacePressed = false
+	}
 }

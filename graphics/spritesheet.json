@@ -127,7 +127,7 @@
 		},
 		{
 			"filename": "shipd.png",
-			"ticks_per_frame" : 30,
+			"ticks_per_frame" : 2,
 			"frame": {
 				"x": 2428,
 				"y": 10,

@@ -151,6 +151,7 @@ func (eng *Engine) Update() {
 	eng.particleSystem.Update()
 	eng.stars.Update()
 	eng.chars.Update()
+
 }
 
 func (eng *Engine) Draw(screen *ebiten.Image) {

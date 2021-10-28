@@ -6,19 +6,25 @@ import (
 )
 
 type Ship struct {
-	componentType  types.CmpType
-	Direction      float64
-	ScreenOffset   float64
-	ReversePressed bool
+	componentType     types.CmpType
+	Direction         float64
+	ScreenOffset      float64
+	ReversePressed    bool
+	FirePressed       bool
+	SmartBombPressed  bool
+	HyperSpacePressed bool
 }
 
 func NewShip() *Ship {
 
 	return &Ship{
-		ScreenOffset:   global.ScreenWidth * 0.2,
-		Direction:      1,
-		componentType:  types.Ship,
-		ReversePressed: false,
+		ScreenOffset:      global.ScreenWidth * 0.2,
+		Direction:         1,
+		componentType:     types.Ship,
+		ReversePressed:    false,
+		FirePressed:       false,
+		SmartBombPressed:  false,
+		HyperSpacePressed: false,
 	}
 }
 
