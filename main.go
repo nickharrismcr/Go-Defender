@@ -36,7 +36,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.dcount++
 	engine.Draw(screen)
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", engine.CameraX))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", global.CameraX()))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

@@ -24,7 +24,7 @@ var KeyMap = map[types.ActionType]ebiten.Key{
 	types.Down:       ebiten.KeyA,
 	types.Reverse:    ebiten.KeySpace,
 	types.Thrust:     ebiten.KeyEnter,
-	types.Fire:       ebiten.KeyShiftRight,
+	types.Fire:       ebiten.KeyRightBracket,
 	types.SmartBomb:  ebiten.KeyBackspace,
 	types.HyperSpace: ebiten.KeyControlLeft,
 }
@@ -46,3 +46,13 @@ var Cols = []types.ColorF{Blue, Green, Yellow, Red, Magenta}
 var LaserCols = []types.ColorF{Green, Green, Green, Yellow, Yellow, Yellow, Red, Red, Red, Blue, Blue, Blue, Cyan, Cyan, Cyan}
 
 var HudCol int = 0
+
+var cameraX float64
+
+func CameraX() float64 {
+	return cameraX
+}
+
+func SetCameraX(x float64) {
+	cameraX = x
+}

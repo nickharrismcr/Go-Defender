@@ -7,7 +7,7 @@ import (
 	"Def/global"
 	"Def/logger"
 	"Def/types"
-	"math"
+	"Def/util"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -56,8 +56,10 @@ func (cs *CollideSystem) Draw(screen *ebiten.Image) {}
 func (cs *CollideSystem) process(e *game.Entity, player *game.Entity) {
 
 	ep := e.GetComponent(types.Pos).(*cmp.Pos)
+	ec := e.GetComponent(types.Collide).(*cmp.Collide)
 	ppos := player.GetComponent(types.Pos).(*cmp.Pos)
-	if math.Abs(ep.X-ppos.X) < 25 && math.Abs(ep.Y-ppos.Y) < 25 {
+	psh := player.GetComponent(types.Ship).(*cmp.Ship)
+	if util.Collide(ppos.X, ppos.Y, psh.W, psh.H, ep.X, ep.Y, ec.W, ec.H) {
 		ev := event.NewPlayerDie(player)
 		event.NotifyEvent(ev)
 		e.SetActive(false)

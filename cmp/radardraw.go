@@ -13,6 +13,7 @@ type RadarDraw struct {
 	Color         types.ColorF
 	Cycle         bool
 	CycleIndex    float32
+	Hide          bool
 }
 
 func NewRadarDraw(image *ebiten.Image, color types.ColorF) *RadarDraw {

@@ -27,6 +27,14 @@ func (s *LanderSearch) GetName() types.StateType {
 }
 
 func (s *LanderSearch) Enter(ai *cmp.AI, e types.IEntity) {
+
+	sh := cmp.NewShootable()
+	e.AddComponent(sh)
+	dr := e.GetComponent(types.Draw).(*cmp.Draw)
+	smap := dr.SpriteMap
+	cl := cmp.NewCollide(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
+	e.AddComponent(cl)
+
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pc.DX = global.LanderSpeed
 	pc.DY = 0

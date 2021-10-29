@@ -62,27 +62,23 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	op := dc.Opts
-	px := pc.X
-	camx := e.GetEngine().GetCameraX()
-	ww := float64(global.WorldWidth)
-	sw := float64(global.ScreenWidth)
-	translate := px - camx
+	frames := dc.SpriteMap.Anim_frames
+	fw, fh := dc.SpriteMap.Frame.W/frames, dc.SpriteMap.Frame.H
+	screenx := util.ScreenX(pc.X) + float64(fw)/2
 
-	if px < (sw - (ww - camx)) {
-		translate += ww
-	}
-
-	if util.OffScreen(translate, pc.Y) {
+	if util.OffScreen(screenx, pc.Y) {
 		return
 	}
+
+	logger.Debug("%d %f %f %f ", e.Id, global.CameraX(), pc.X, screenx)
 
 	op.GeoM.Reset()
 	op.GeoM.Scale(dc.Scale, dc.Scale)
 	if dc.FlipX {
 		op.GeoM.Scale(-1, 1)
 	}
-	op.GeoM.Translate(translate, pc.Y)
-	frames := dc.SpriteMap.Anim_frames
+	op.GeoM.Translate(screenx, pc.Y+float64(fh)/2)
+
 	dc.Counter++
 	if dc.Counter > dc.SpriteMap.Ticks_per_frame {
 		dc.Counter = 0
@@ -92,7 +88,6 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 		}
 	}
 
-	fw, fh := dc.SpriteMap.Frame.W/frames, dc.SpriteMap.Frame.H
 	sx, sy := dc.SpriteMap.Frame.X+dc.Frame*fw, dc.SpriteMap.Frame.Y
 
 	si := dc.Image.SubImage(image.Rect(sx, sy, sx+fw, sy+fh)).(*ebiten.Image)
@@ -103,13 +98,13 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 			ds.Cycle(dc, 0.1)
 			op.GeoM.Reset()
 			op.GeoM.Scale(dc.Scale, dc.Scale)
-			op.GeoM.Translate(translate+7, pc.Y+7)
+			op.GeoM.Translate(screenx+7, pc.Y+7)
 			screen.DrawImage(si, op)
 			ds.Cycle(dc, 0.1)
 			ds.Cycle(dc, 0.1)
 			op.GeoM.Reset()
 			op.GeoM.Scale(dc.Scale/2, dc.Scale/2)
-			op.GeoM.Translate(translate+11, pc.Y+11)
+			op.GeoM.Translate(screenx+11, pc.Y+11)
 			screen.DrawImage(si, op)
 		} else {
 			ds.Cycle(dc, 1)
@@ -117,8 +112,8 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	} else {
 		for i := 0; i < 9; i++ {
 			for j := 0; j < 9; j++ {
-				x := translate + (float64(i-2) * dc.Disperse)
-				y := pc.Y + (float64(j-2) * dc.Disperse)
+				x := screenx + (float64(i-4) * dc.Disperse)
+				y := pc.Y + (float64(j-4) * dc.Disperse)
 				op.GeoM.Reset()
 				op.GeoM.Scale(2-float64(i)/10, 2-float64(j)/10)
 				op.GeoM.Translate(x, y)

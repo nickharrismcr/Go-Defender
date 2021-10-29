@@ -27,6 +27,8 @@ func (s *LanderDie) Enter(ai *cmp.AI, e types.IEntity) {
 	dc.Disperse = 0
 	ev := event.NewLanderDie(e)
 	event.NotifyEvent(ev)
+	rdc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
+	rdc.Hide = true
 }
 
 func (s *LanderDie) Update(ai *cmp.AI, e types.IEntity) {

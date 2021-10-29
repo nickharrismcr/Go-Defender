@@ -2,6 +2,7 @@ package game
 
 import (
 	"Def/global"
+	"Def/util"
 	"image/color"
 	"math/rand"
 
@@ -29,9 +30,16 @@ func NewWorld(engine *Engine) *World {
 	for i := 0; i <= global.WorldWidth; i++ {
 		w.points[i] = y
 		y += dy
-		if i > 100 && (y < 100 || y > global.ScreenHeight/4 || rand.Intn(10) == 1) {
-			dy = -dy
+		if i > 100 {
+			if y < 10 || y > global.ScreenHeight/4 || rand.Intn(10) == 1 {
+				dy = -dy
+			}
+		} else if i == 100 {
+			dy = 1
+		} else {
+			dy = util.RandChoiceF([]float64{0, 1})
 		}
+
 	}
 	y = 0
 	dy = 1
@@ -40,6 +48,7 @@ func NewWorld(engine *Engine) *World {
 			break
 		}
 		w.points[i] = y
+		dy := util.RandChoiceF([]float64{0, 1})
 		y += dy
 
 	}
@@ -63,7 +72,7 @@ func (w *World) At(wx float64) float64 {
 
 func (w *World) Draw(scr *ebiten.Image) {
 	ww := global.WorldWidth
-	i := int(w.engine.CameraX)
+	i := int(global.CameraX())
 	for x := 0; x < global.ScreenWidth; x++ {
 		if i < 0 {
 			i += ww
@@ -78,7 +87,7 @@ func (w *World) Draw(scr *ebiten.Image) {
 	}
 
 	sw := float64(global.ScreenWidth)
-	cx := w.engine.CameraX - float64(ww/2) + sw/2
+	cx := global.CameraX() - float64(ww/2) + sw/2
 
 	rs := sw / 4
 	rw := sw / 2

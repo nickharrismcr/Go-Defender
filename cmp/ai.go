@@ -13,6 +13,7 @@ type AI struct {
 	NextState     types.StateType
 	TargetId      types.EntityID
 	Scratch       int
+	Wait          int
 }
 
 func init() {
@@ -26,9 +27,7 @@ func NewAI(FSMId int, initState types.StateType) *AI {
 		FSMId:         FSMId,
 		State:         -1,
 		NextState:     initState,
-		Counter:       0,
 		componentType: types.AI,
-		Scratch:       0,
 	}
 }
 

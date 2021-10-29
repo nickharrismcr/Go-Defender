@@ -45,7 +45,11 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 		sc.ScreenOffset += 30
 	}
 
-	e.GetEngine().SetCameraX(pc.X - sc.ScreenOffset)
+	camx := (pc.X - sc.ScreenOffset)
+	if camx < 0 {
+		camx += global.WorldWidth
+	}
+	global.SetCameraX(camx)
 
 	if ebiten.IsKeyPressed(global.KeyMap[types.Reverse]) {
 		if !sc.ReversePressed {
@@ -70,9 +74,13 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 	if ebiten.IsKeyPressed(global.KeyMap[types.Up]) && ebiten.IsKeyPressed(global.KeyMap[types.Down]) {
 		pc.DY = 0
 	} else if ebiten.IsKeyPressed(global.KeyMap[types.Up]) {
-		pc.DY = -global.PlayerSpeedY
+		if pc.DY > -global.PlayerSpeedY {
+			pc.DY -= 2
+		}
 	} else if ebiten.IsKeyPressed(global.KeyMap[types.Down]) {
-		pc.DY = global.PlayerSpeedY
+		if pc.DY < global.PlayerSpeedY {
+			pc.DY += 2
+		}
 	} else {
 		pc.DY = 0
 	}

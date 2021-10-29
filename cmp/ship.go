@@ -13,9 +13,10 @@ type Ship struct {
 	FirePressed       bool
 	SmartBombPressed  bool
 	HyperSpacePressed bool
+	W, H              float64
 }
 
-func NewShip() *Ship {
+func NewShip(w, h int) *Ship {
 
 	return &Ship{
 		ScreenOffset:      global.ScreenWidth * 0.2,
@@ -25,6 +26,8 @@ func NewShip() *Ship {
 		FirePressed:       false,
 		SmartBombPressed:  false,
 		HyperSpacePressed: false,
+		W:                 float64(w),
+		H:                 float64(h),
 	}
 }
 

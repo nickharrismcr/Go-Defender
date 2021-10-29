@@ -28,6 +28,7 @@ const (
 )
 
 const (
+	LanderWait        StateType = iota
 	LanderMaterialise StateType = iota
 	LanderSearch      StateType = iota
 	LanderDrop        StateType = iota
@@ -49,6 +50,8 @@ const (
 
 func (st StateType) String() string {
 	switch st {
+	case LanderWait:
+		return "Lander-Wait"
 	case LanderMaterialise:
 		return "Lander-Materialise"
 	case LanderSearch:
@@ -134,8 +137,6 @@ type IEngine interface {
 	GetActiveEntitiesOfClass(EntityType) []EntityID
 	GetEntity(EntityID) IEntity
 	MountainHeight(float64) float64
-	GetCameraX() float64
-	SetCameraX(float64)
 	TriggerBomb(float64, float64)
 	TriggerPS(float64, float64)
 	Kill(IEntity)
@@ -144,6 +145,7 @@ type IEngine interface {
 
 type IEntity interface {
 	GetComponent(c CmpType) ICmp
+	HasComponent(c CmpType) bool
 	SetActive(bool)
 	GetEngine() IEngine
 	GetID() EntityID
@@ -153,6 +155,7 @@ type IEntity interface {
 	SetParent(EntityID)
 	SetChild(EntityID)
 	GetClass() EntityType
+	AddComponent(ICmp)
 }
 
 type ColorF struct {

@@ -28,7 +28,6 @@ type Engine struct {
 	BombPool              []*Entity
 	LaserPool             []*Entity
 	LaserColIdx           int
-	CameraX               float64
 }
 
 func NewEngine() *Engine {
@@ -42,7 +41,6 @@ func NewEngine() *Engine {
 		BombPool:              []*Entity{},
 		LaserPool:             []*Entity{},
 		LaserColIdx:           0,
-		CameraX:               global.WorldWidth * 0.8,
 	}
 	e.particleSystem = NewParticleSystem(e)
 	e.stars = NewStars(e)
@@ -203,7 +201,7 @@ func (eng *Engine) TriggerLaser(x, y, dx float64) {
 		if !v.Active() {
 			v.SetActive(true)
 			pc := v.GetComponent(types.Pos).(*cmp.Pos)
-			pc.X, pc.Y, pc.DX, pc.DY = x, y, dx+5, 0
+			pc.X, pc.Y, pc.DX, pc.DY = x, y, dx, 0
 			lc := v.GetComponent(types.Life).(*cmp.Life)
 			lc.TicksToLive = 90
 			dc := v.GetComponent(types.LaserDraw).(*cmp.LaserDraw)
@@ -217,14 +215,6 @@ func (eng *Engine) TriggerLaser(x, y, dx float64) {
 
 func (eng *Engine) MountainHeight(wx float64) float64 {
 	return eng.world.At(wx)
-}
-
-func (eng *Engine) GetCameraX() float64 {
-	return eng.CameraX
-}
-
-func (eng *Engine) SetCameraX(x float64) {
-	eng.CameraX = x
 }
 
 func (eng *Engine) AddString(s string, x, y float64) int {

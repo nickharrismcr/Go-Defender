@@ -26,6 +26,7 @@ func (s *LanderMaterialise) Enter(ai *cmp.AI, e types.IEntity) {
 	pc.DX = 0
 	pc.DY = 0
 	dc := e.GetComponent(types.Draw).(*cmp.Draw)
+	dc.Hide = false
 	dc.Disperse = 300
 }
 

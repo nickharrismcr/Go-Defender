@@ -100,12 +100,16 @@ func (drawsys *RadarDrawSystem) Draw(screen *ebiten.Image) {
 
 func (drawsys *RadarDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
-	drawcmp := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
-	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
-	op := drawcmp.Opts
+	rdc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
+	if rdc.Hide {
+		return
+	}
+
+	pc := e.GetComponent(types.Pos).(*cmp.Pos)
+	op := rdc.Opts
 	op.GeoM.Reset()
 
-	var posx = ww/2 + poscmp.X - e.GetEngine().GetCameraX() - sw/2
+	var posx = ww/2 + pc.X - global.CameraX() - sw/2
 	if posx > ww {
 		posx = posx - ww
 	}
@@ -114,17 +118,18 @@ func (drawsys *RadarDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	}
 	screenx := rxs + rw*(posx/ww)
 
-	if drawcmp.Cycle {
-		drawcmp.CycleIndex += 0.4
-		drawcmp.Color = global.Cols[int(drawcmp.CycleIndex)%5]
+	if rdc.Cycle {
+		rdc.CycleIndex += 0.4
+		rdc.Color = global.Cols[int(rdc.CycleIndex)%5]
 		op.ColorM.Reset()
 	}
 
-	op.GeoM.Translate(screenx, poscmp.Y*(st/sh))
-	c := drawcmp.Color
+	op.GeoM.Scale(0.3, 0.3)
+	op.GeoM.Translate(screenx, pc.Y*(st/sh))
+	c := rdc.Color
 	op.ColorM.Reset()
 	op.ColorM.Scale(c.R, c.G, c.B, c.A)
-	screen.DrawImage(drawcmp.Image, op)
+	screen.DrawImage(rdc.Image, op)
 }
 
 func (drawsys *RadarDrawSystem) Active() bool {

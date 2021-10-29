@@ -3,8 +3,10 @@ package systems
 import (
 	"Def/cmp"
 	"Def/game"
+	"Def/global"
 	"Def/logger"
 	"Def/types"
+	"Def/util"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -50,15 +52,33 @@ func (lms *LaserMoveSystem) Update() {
 	}
 }
 
-func (lms *LaserMoveSystem) process(e *game.Entity) {
-	pc := e.GetComponent(types.Pos).(*cmp.Pos)
-	for _, v := range e.GetEngine().GetEntitiesWithComponent(types.Shootable) {
+func (lms *LaserMoveSystem) process(laserEnt *game.Entity) {
+
+	playEnt := laserEnt.GetEngine().GetEntity(global.PlayerID)
+	playPosCmp := playEnt.GetComponent(types.Pos).(*cmp.Pos)
+	playShipCmp := playEnt.GetComponent(types.Ship).(*cmp.Ship)
+
+	laspos := laserEnt.GetComponent(types.Pos).(*cmp.Pos)
+	// track player dx
+	laspos.X += laspos.DX * (20 + math.Abs(playPosCmp.DX))
+
+	for _, v := range laserEnt.GetEngine().GetEntitiesWithComponent(types.Shootable) {
 		tpc := v.GetComponent(types.Pos).(*cmp.Pos)
-		if math.Abs(tpc.Y-pc.Y) < 30 && tpc.X > pc.X && tpc.X < pc.X+1000 {
-			e.SetActive(false)
-			e.GetEngine().Kill(v)
+		stpcx := util.ScreenX(tpc.X)
+		if util.OffScreen(stpcx, tpc.Y) {
+			continue
+		}
+		if v.HasComponent(types.Collide) {
+			pcc := v.GetComponent(types.Collide).(*cmp.Collide)
+			if math.Abs(tpc.Y-laspos.Y) < pcc.H/2 &&
+				stpcx > util.ScreenX(laspos.X) &&
+				stpcx < util.ScreenX(laspos.X+(2000*playShipCmp.Direction)) {
+				laserEnt.SetActive(false)
+				laserEnt.GetEngine().Kill(v)
+			}
 		}
 	}
+
 }
 
 func (lms *LaserMoveSystem) Draw(screen *ebiten.Image) {}

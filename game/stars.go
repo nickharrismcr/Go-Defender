@@ -69,7 +69,7 @@ func (s *Stars) Draw(screen *ebiten.Image) {
 
 	for _, p := range s.plist {
 
-		screenX := p.x - s.engine.CameraX/4
+		screenX := p.x - global.CameraX()/4
 		if util.OffScreen(screenX, p.y) {
 			continue
 		}
