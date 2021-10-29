@@ -28,6 +28,8 @@ func (s *HumanDie) Enter(ai *cmp.AI, e types.IEntity) {
 	dc.Disperse = 0
 	ev := event.NewHumanDie(e)
 	event.NotifyEvent(ev)
+	rdc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
+	rdc.Hide = true
 }
 
 func (s *HumanDie) Update(ai *cmp.AI, e types.IEntity) {

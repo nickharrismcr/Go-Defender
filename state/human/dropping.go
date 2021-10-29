@@ -24,7 +24,8 @@ func (s *HumanDropping) GetName() types.StateType {
 
 func (s *HumanDropping) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
-	pc.DX = global.HumanSpeed
+	e.SetParent(-1)
+	pc.DX = 0
 	pc.DY = 0
 	ai.Counter = 0
 }
@@ -34,31 +35,13 @@ func (s *HumanDropping) Update(ai *cmp.AI, e types.IEntity) {
 	ai.Counter++
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
+	pc.DY += 0.1
 
-	pc.X += pc.DX
-	pc.Y += pc.DY
-
-	if ai.Counter > 5 {
-		ai.Counter = 0
-		mh := e.GetEngine().MountainHeight(pc.X)
-		if pc.Y+300 < global.ScreenHeight-mh {
-			ai.Scratch++
+	if pc.Y > global.ScreenHeight-e.GetEngine().MountainHeight(pc.X) {
+		if pc.DY > 10 {
+			ai.NextState = types.HumanDie
 		} else {
-			ai.Scratch--
+			ai.NextState = types.HumanWalking
 		}
-	}
-	if ai.Scratch < 0 {
-		ai.Scratch = 0
-	}
-	if ai.Scratch > 5 {
-		ai.Scratch = 5
-	}
-	switch ai.Scratch {
-	case 0:
-		pc.DY = -global.HumanSpeed
-	case 1, 2, 3, 4:
-		pc.DY = 0
-	case 5:
-		pc.DY = global.HumanSpeed
 	}
 }

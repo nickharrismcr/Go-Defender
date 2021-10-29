@@ -7,6 +7,7 @@ import (
 	"Def/types"
 	"Def/util"
 	"image/color"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -68,14 +69,41 @@ func (lds *LaserDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	lds.opts.ColorM.Scale(c.R, c.G, c.B, c.A)
 	lds.opts.GeoM.Reset()
 	if pc.DX < 0 {
-		lds.opts.GeoM.Scale(-2000, 2)
+		lds.opts.GeoM.Scale(-2000, 4)
 	} else {
-		lds.opts.GeoM.Scale(2000, 2)
+		lds.opts.GeoM.Scale(2000, 4)
 	}
 
 	sx := util.ScreenX(pc.X)
 	lds.opts.GeoM.Translate(sx, pc.Y)
 	screen.DrawImage(lds.img, lds.opts)
+
+	if ldc.Counter == 0 {
+		ldc.Counter = 5
+		var s float64 = 0
+		for i := 0; i < 9; i += 2 {
+			if pc.DX < 0 {
+				s -= rand.Float64() * 300
+			} else {
+				s += rand.Float64() * 300
+			}
+			ldc.Black[i] = s
+			ln := rand.Float64() * 50
+			ldc.Black[i+1] = ln
+		}
+	}
+
+	for i := 0; i < 9; i += 2 {
+		lds.opts.ColorM.Reset()
+		lds.opts.ColorM.Scale(0, 0, 0, 1)
+		lds.opts.GeoM.Reset()
+		lds.opts.GeoM.Scale(ldc.Black[i+1], 4)
+		lds.opts.GeoM.Translate(sx+ldc.Black[i], pc.Y)
+		screen.DrawImage(lds.img, lds.opts)
+	}
+
+	ldc.Counter--
+
 	pc.X += pc.DX * 1.5
 	if util.OffScreen(sx, pc.Y) {
 		e.SetActive(false)

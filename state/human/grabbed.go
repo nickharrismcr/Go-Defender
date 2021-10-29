@@ -32,8 +32,11 @@ func (s *HumanGrabbed) Update(ai *cmp.AI, e types.IEntity) {
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pe := e.GetEngine().GetEntity(e.Parent())
-	if pe.Active() {
+	pai := pe.GetComponent(types.AI).(*cmp.AI)
+	if pai.State != types.LanderDie {
 		pec := pe.GetComponent(types.Pos).(*cmp.Pos)
 		pc.Y = pec.Y + 50
+	} else {
+		ai.NextState = types.HumanDropping
 	}
 }

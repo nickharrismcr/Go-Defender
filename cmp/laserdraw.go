@@ -5,6 +5,8 @@ import "Def/types"
 type LaserDraw struct {
 	componentType types.CmpType
 	Color         types.ColorF
+	Black         [10]float64
+	Counter       int
 }
 
 func NewLaserDraw() *LaserDraw {
@@ -13,6 +15,7 @@ func NewLaserDraw() *LaserDraw {
 
 		componentType: types.LaserDraw,
 		Color:         types.ColorF{},
+		Black:         [10]float64{},
 	}
 }
 

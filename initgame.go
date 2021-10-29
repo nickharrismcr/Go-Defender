@@ -127,25 +127,25 @@ func InitEntities(engine *game.Engine) {
 
 	AddPlayer(engine)
 
-	for i := 0; i < 2; i++ {
+	for i := 0; i < global.LanderCount; i++ {
 
 		AddLander(engine, i)
 		landerCount++
 	}
 
-	// for i := 0; i < 1; i++ {
-	// 	//TODO baiter
-	// }
+	for i := 0; i < 1; i++ {
+		//TODO baiter
+	}
 
-	// for i := 0; i < global.HumanCount; i++ {
+	for i := 0; i < global.HumanCount; i++ {
 
-	// 	AddHuman(engine, i)
-	// 	humanCount++
-	// }
-	// for i := 0; i < global.BomberCount; i++ {
+		AddHuman(engine, i)
+		humanCount++
+	}
+	for i := 0; i < global.BomberCount; i++ {
 
-	// 	AddBomber(engine, i)
-	// }
+		AddBomber(engine, i)
+	}
 }
 
 func AddPlayer(engine *game.Engine) {

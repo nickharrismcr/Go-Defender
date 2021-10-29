@@ -25,30 +25,28 @@ func NewWorld(engine *Engine) *World {
 		engine: engine,
 	}
 	w.points = make([]float64, global.WorldWidth+1)
-	var y float64 = 0
+	var y float64 = 50
 	var dy float64 = 1
 	for i := 0; i <= global.WorldWidth; i++ {
 		w.points[i] = y
 		y += dy
-		if i > 100 {
-			if y < 10 || y > global.ScreenHeight/4 || rand.Intn(10) == 1 {
+		if i > 50 {
+			if y < 50 || y > global.ScreenHeight/4 || rand.Intn(10) == 1 {
 				dy = -dy
 			}
-		} else if i == 100 {
-			dy = 1
 		} else {
-			dy = util.RandChoiceF([]float64{0, 1})
+			dy = 1
 		}
 
 	}
-	y = 0
+	y = 50
 	dy = 1
 	for i := global.WorldWidth; i > 0; i-- {
-		if y == w.points[i] {
+		if y >= w.points[i] {
 			break
 		}
 		w.points[i] = y
-		dy := util.RandChoiceF([]float64{0, 1})
+		dy := util.RandChoiceF([]float64{0, 1, 1})
 		y += dy
 
 	}

@@ -24,6 +24,8 @@ func (s *LanderWait) GetName() types.StateType {
 func (s *LanderWait) Enter(ai *cmp.AI, e types.IEntity) {
 	dr := e.GetComponent(types.Draw).(*cmp.Draw)
 	dr.Hide = true
+	rdc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
+	rdc.Hide = true
 }
 
 func (s *LanderWait) Update(ai *cmp.AI, e types.IEntity) {

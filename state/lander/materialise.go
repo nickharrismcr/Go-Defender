@@ -28,6 +28,8 @@ func (s *LanderMaterialise) Enter(ai *cmp.AI, e types.IEntity) {
 	dc := e.GetComponent(types.Draw).(*cmp.Draw)
 	dc.Hide = false
 	dc.Disperse = 300
+	rdc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
+	rdc.Hide = false
 }
 
 func (s *LanderMaterialise) Update(ai *cmp.AI, e types.IEntity) {
