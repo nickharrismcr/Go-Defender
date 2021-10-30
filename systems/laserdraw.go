@@ -63,15 +63,16 @@ func (lds *LaserDrawSystem) Draw(screen *ebiten.Image) {
 func (lds *LaserDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
 	ldc := e.GetComponent(types.LaserDraw).(*cmp.LaserDraw)
+	lasmov := e.GetComponent(types.LaserMove).(*cmp.LaserMove)
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	c := ldc.Color
 	lds.opts.ColorM.Reset()
 	lds.opts.ColorM.Scale(c.R, c.G, c.B, c.A)
 	lds.opts.GeoM.Reset()
 	if pc.DX < 0 {
-		lds.opts.GeoM.Scale(-2000, 4)
+		lds.opts.GeoM.Scale(-lasmov.Length, 4)
 	} else {
-		lds.opts.GeoM.Scale(2000, 4)
+		lds.opts.GeoM.Scale(lasmov.Length, 4)
 	}
 
 	sx := util.ScreenX(pc.X)

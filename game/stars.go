@@ -1,7 +1,7 @@
 package game
 
 import (
-	"Def/global"
+	"Def/gl"
 	"Def/types"
 	"Def/util"
 	"image/color"
@@ -42,9 +42,9 @@ func NewStars(engine *Engine) *Stars {
 		p := &star{
 			active:      false,
 			ticksToLive: rand.Intn(30),
-			x:           rand.Float64() * global.WorldWidth,
-			y:           global.ScreenTop + rand.Float64()*(global.ScreenHeight/2),
-			color:       global.Cols[rand.Intn(5)],
+			x:           rand.Float64() * gl.WorldWidth,
+			y:           gl.ScreenTop + rand.Float64()*(gl.ScreenHeight/2),
+			color:       gl.Cols[rand.Intn(5)],
 			image:       starsImg,
 			opts:        &ebiten.DrawImageOptions{},
 		}
@@ -58,8 +58,8 @@ func (s *Stars) Update() {
 	for _, p := range s.plist {
 		p.ticksToLive--
 		if p.ticksToLive == 0 {
-			p.x = rand.Float64() * global.WorldWidth
-			p.y = global.ScreenTop + rand.Float64()*(global.ScreenHeight/2)
+			p.x = rand.Float64() * gl.WorldWidth
+			p.y = gl.ScreenTop + rand.Float64()*(gl.ScreenHeight/2)
 			p.ticksToLive = rand.Intn(60) + 30
 		}
 	}
@@ -69,7 +69,7 @@ func (s *Stars) Draw(screen *ebiten.Image) {
 
 	for _, p := range s.plist {
 
-		screenX := p.x - global.CameraX()/4
+		screenX := p.x - gl.CameraX()/4
 		if util.OffScreen(screenX, p.y) {
 			continue
 		}

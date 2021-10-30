@@ -1,7 +1,7 @@
 package game
 
 import (
-	"Def/global"
+	"Def/gl"
 	"Def/types"
 	"image/color"
 	"math"
@@ -127,7 +127,7 @@ func (s *ParticleSystem) Draw(screen *ebiten.Image) {
 
 		p.opts.GeoM.Reset()
 		p.opts.GeoM.Scale(p.scale, p.scale)
-		screenX := p.x - global.CameraX()
+		screenX := p.x - gl.CameraX()
 		p.opts.GeoM.Translate(screenX, p.y)
 		p.opts.ColorM.Reset()
 		p.opts.ColorM.Scale(p.color.R, p.color.G, p.color.B, 1)

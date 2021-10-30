@@ -2,7 +2,7 @@ package lander
 
 import (
 	"Def/cmp"
-	"Def/global"
+	"Def/gl"
 	"Def/types"
 	"math"
 )
@@ -26,7 +26,7 @@ func (s *LanderDrop) GetName() types.StateType {
 func (s *LanderDrop) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pc.DX = 0
-	pc.DY = 1.2 * global.LanderSpeed
+	pc.DY = 1.2 * gl.LanderSpeed
 	ai.Counter = 0
 	te := e.GetEngine().GetEntity(e.Child())
 	tpc := te.GetComponent(types.Pos).(*cmp.Pos)

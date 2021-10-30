@@ -3,7 +3,7 @@ package lander
 import (
 	"Def/cmp"
 	"Def/event"
-	"Def/global"
+	"Def/gl"
 	"Def/graphics"
 	"Def/types"
 	"Def/util"
@@ -29,7 +29,7 @@ func (s *LanderMutate) GetName() types.StateType {
 func (s *LanderMutate) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pc.DY = 0
-	pc.DX = global.LanderSpeed * 2
+	pc.DX = gl.LanderSpeed * 2
 	dc := e.GetComponent(types.Draw).(*cmp.Draw)
 	dc.SpriteMap = graphics.GetSpriteMap("mutant.png")
 	rc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
@@ -38,7 +38,7 @@ func (s *LanderMutate) Enter(ai *cmp.AI, e types.IEntity) {
 }
 
 func (s *LanderMutate) Update(ai *cmp.AI, e types.IEntity) {
-	gs := float64(global.LanderSpeed)
+	gs := float64(gl.LanderSpeed)
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	ai.Counter++
 	if ai.Counter > 2 {
@@ -48,9 +48,11 @@ func (s *LanderMutate) Update(ai *cmp.AI, e types.IEntity) {
 		pc.X += util.RandChoiceF([]float64{-20, 0, 20})
 		pc.Y += util.RandChoiceF([]float64{-20, 0, 20})
 	}
-	if !util.OffScreen(pc.X, pc.Y) && rand.Intn(50) == 0 {
-		tc := cmp.NewPos(pc.X+400, pc.Y, 1, 1)
-		dx, dy := util.ComputeBullet(pc, tc, 60)
+
+	// TODO gl bullet rate
+	if !util.OffScreen(util.ScreenX(pc.X), pc.Y) && rand.Intn(100) == 0 {
+		tc := e.GetEngine().GetPlayer().GetComponent(types.Pos).(*cmp.Pos)
+		dx, dy := util.ComputeBullet(pc, tc, gl.BulletTime)
 		ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
 		event.NotifyEvent(ev)
 	}

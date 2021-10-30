@@ -2,7 +2,7 @@ package baiter
 
 import (
 	"Def/cmp"
-	"Def/global"
+	"Def/gl"
 	"Def/types"
 )
 
@@ -41,7 +41,7 @@ func (s *BaiterHunt) Update(ai *cmp.AI, e types.IEntity) {
 		pc.DX += 1
 	}
 
-	if pc.Y < global.ScreenTop || pc.Y > global.ScreenHeight-100 {
+	if pc.Y < gl.ScreenTop || pc.Y > gl.ScreenHeight-100 {
 		pc.DY = -pc.DY
 	}
 

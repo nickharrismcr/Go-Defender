@@ -4,7 +4,7 @@ import (
 	"Def/cmp"
 	"Def/event"
 	"Def/game"
-	"Def/global"
+	"Def/gl"
 	"Def/graphics"
 	"Def/state/bomber"
 	"Def/state/human"
@@ -77,7 +77,7 @@ func InitEvents(engine *game.Engine) {
 	}
 
 	playerDie := func(e event.IEvent) {
-		pe := engine.GetEntities()[global.PlayerID]
+		pe := engine.GetEntities()[gl.PlayerID]
 		pai := pe.GetComponent(types.AI).(*cmp.AI)
 		pai.NextState = types.PlayerDie
 		engine.GetSystem(game.PosSystem).SetActive(false)
@@ -127,7 +127,7 @@ func InitEntities(engine *game.Engine) {
 
 	AddPlayer(engine)
 
-	for i := 0; i < global.LanderCount; i++ {
+	for i := 0; i < gl.LanderCount; i++ {
 
 		AddLander(engine, i)
 		landerCount++
@@ -137,12 +137,12 @@ func InitEntities(engine *game.Engine) {
 		//TODO baiter
 	}
 
-	for i := 0; i < global.HumanCount; i++ {
+	for i := 0; i < gl.HumanCount; i++ {
 
 		AddHuman(engine, i)
 		humanCount++
 	}
-	for i := 0; i < global.BomberCount; i++ {
+	for i := 0; i < gl.BomberCount; i++ {
 
 		AddBomber(engine, i)
 	}
@@ -152,11 +152,11 @@ func AddPlayer(engine *game.Engine) {
 
 	ssheet := graphics.GetSpriteSheet()
 	ent := game.NewEntity(engine, types.Player)
-	global.PlayerID = ent.Id
+	gl.PlayerID = ent.Id
 	ent.SetActive(true)
 
-	x := float64(global.WorldWidth) / 2
-	y := float64(global.ScreenHeight) / 2
+	x := float64(gl.WorldWidth) / 2
+	y := float64(gl.ScreenHeight) / 2
 
 	pc := cmp.NewPos(x, y, 0, 0)
 	ent.AddComponent(pc)
@@ -187,11 +187,11 @@ func AddLander(engine *game.Engine, count int) {
 	ent := game.NewEntity(engine, types.Lander)
 	ent.SetActive(true)
 
-	x := rand.Float64() * global.WorldWidth
+	x := rand.Float64() * gl.WorldWidth
 	if count < 2 {
-		x = global.WorldWidth * 0.8
+		x = gl.WorldWidth * 0.8
 	}
-	pc := cmp.NewPos(x, global.ScreenTop+500*rand.Float64(), 0, 0)
+	pc := cmp.NewPos(x, gl.ScreenTop+500*rand.Float64(), 0, 0)
 	ent.AddComponent(pc)
 	stree := game.NewStateTree()
 	stree.AddState(lander.NewLanderWait())
@@ -222,9 +222,9 @@ func AddHuman(engine *game.Engine, count int) {
 	ent := game.NewEntity(engine, types.Human)
 	ent.SetActive(true)
 
-	x := rand.Float64() * global.WorldWidth
+	x := rand.Float64() * gl.WorldWidth
 	if count < 2 {
-		x = rand.Float64()*global.ScreenWidth + global.CameraX()
+		x = rand.Float64()*gl.ScreenWidth + gl.CameraX()
 	}
 	pc := cmp.NewPos(x, 0, 0, 0)
 	ent.AddComponent(pc)
@@ -256,8 +256,8 @@ func AddBomber(engine *game.Engine, count int) {
 	ent := game.NewEntity(engine, types.Bomber)
 	ent.SetActive(true)
 
-	x := (rand.Float64() * global.ScreenWidth) + global.WorldWidth/3
-	y := (rand.Float64() * global.ScreenHeight / 2) + global.ScreenTop + 50
+	x := (rand.Float64() * gl.ScreenWidth) + gl.WorldWidth/3
+	y := (rand.Float64() * gl.ScreenHeight / 2) + gl.ScreenTop + 50
 
 	pc := cmp.NewPos(x, y, 0, 0)
 	ent.AddComponent(pc)

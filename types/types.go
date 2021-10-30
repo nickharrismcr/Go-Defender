@@ -141,6 +141,7 @@ type IEngine interface {
 	TriggerPS(float64, float64)
 	Kill(IEntity)
 	GetEntitiesWithComponent(CmpType) map[EntityID]IEntity
+	GetPlayer() IEntity
 }
 
 type IEntity interface {

@@ -2,16 +2,16 @@ package util
 
 import (
 	"Def/cmp"
-	"Def/global"
+	"Def/gl"
 	"math"
 	"math/rand"
 )
 
 func ScreenX(x float64) float64 {
 
-	ww := float64(global.WorldWidth)
-	sw := float64(global.ScreenWidth)
-	cx := global.CameraX()
+	ww := float64(gl.WorldWidth)
+	sw := float64(gl.ScreenWidth)
+	cx := gl.CameraX()
 	over := sw - (ww - cx)
 	if over > 0 && x < over {
 		x += ww
@@ -23,7 +23,7 @@ func ScreenX(x float64) float64 {
 
 func OffScreen(x, y float64) bool {
 
-	return (x < -100 || x > global.ScreenWidth+100 || y < 0 || y > global.ScreenHeight)
+	return (x < -100 || x > gl.ScreenWidth+100 || y < 0 || y > gl.ScreenHeight)
 }
 
 func RandChoiceF(lst []float64) float64 {
@@ -38,11 +38,13 @@ func RandChoiceS(lst []string) string {
 	return lst[rand.Intn(len(lst))]
 }
 
-func ComputeBullet(pos1, pos2 *cmp.Pos, ticks int) (float64, float64) {
-	projected_x := pos2.X + (pos2.DX * float64(ticks))
-	projected_y := pos2.Y + (pos2.DY * float64(ticks))
-	dx := (projected_x - pos1.X) / float64(ticks)
-	dy := (projected_y - pos1.Y) / float64(ticks)
+func ComputeBullet(firepos, playpos *cmp.Pos, time float64) (float64, float64) {
+
+	tt := gl.MaxTPS * time
+	projected_x := playpos.X + (playpos.DX * tt)
+	projected_y := playpos.Y
+	dx := (projected_x - firepos.X) / tt
+	dy := (projected_y - firepos.Y) / tt
 	return dx, dy
 }
 

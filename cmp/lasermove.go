@@ -4,6 +4,7 @@ import "Def/types"
 
 type LaserMove struct {
 	componentType types.CmpType
+	Length        float64
 }
 
 func NewLaserMove() *LaserMove {

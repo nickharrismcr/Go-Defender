@@ -4,7 +4,7 @@ import (
 	"Def/cmp"
 	"Def/event"
 	"Def/game"
-	"Def/global"
+	"Def/gl"
 	"Def/logger"
 	"Def/types"
 	"Def/util"
@@ -43,7 +43,7 @@ func (cs *CollideSystem) Update() {
 	if !cs.active {
 		return
 	}
-	pe := cs.engine.GetEntities()[global.PlayerID]
+	pe := cs.engine.GetEntities()[gl.PlayerID]
 	for _, e := range cs.targets {
 		if e.Active() {
 			cs.process(e, pe)

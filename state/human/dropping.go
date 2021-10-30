@@ -2,7 +2,7 @@ package human
 
 import (
 	"Def/cmp"
-	"Def/global"
+	"Def/gl"
 	"Def/types"
 )
 
@@ -37,7 +37,7 @@ func (s *HumanDropping) Update(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pc.DY += 0.1
 
-	if pc.Y > global.ScreenHeight-e.GetEngine().MountainHeight(pc.X) {
+	if pc.Y > gl.ScreenHeight-e.GetEngine().MountainHeight(pc.X) {
 		if pc.DY > 10 {
 			ai.NextState = types.HumanDie
 		} else {

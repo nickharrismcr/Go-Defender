@@ -1,7 +1,7 @@
 package cmp
 
 import (
-	"Def/global"
+	"Def/gl"
 	"Def/types"
 )
 
@@ -19,7 +19,7 @@ type Ship struct {
 func NewShip(w, h int) *Ship {
 
 	return &Ship{
-		ScreenOffset:      global.ScreenWidth * 0.2,
+		ScreenOffset:      gl.ScreenWidth * 0.2,
 		Direction:         1,
 		componentType:     types.Ship,
 		ReversePressed:    false,

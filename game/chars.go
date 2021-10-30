@@ -1,7 +1,7 @@
 package game
 
 import (
-	"Def/global"
+	"Def/gl"
 	"Def/graphics"
 	"Def/types"
 	"image"
@@ -93,14 +93,14 @@ func (w *Characters) getOffset(c string) int {
 func (w *Characters) Update() {
 
 	w.colCtr += w.speed
-	if w.colCtr == global.MaxTPS {
+	if w.colCtr == gl.MaxTPS {
 		w.colCtr = 0
 		w.colIdx++
 	}
-	currCol := global.Cols[w.colIdx%5]
-	nextCol := global.Cols[(w.colIdx+1)%5]
+	currCol := gl.Cols[w.colIdx%5]
+	nextCol := gl.Cols[(w.colIdx+1)%5]
 	dcol := nextCol.Subtract(currCol)
-	dcol = dcol.Multiply(1.0 / float64(global.MaxTPS))
+	dcol = dcol.Multiply(1.0 / float64(gl.MaxTPS))
 	ncol := dcol.Multiply(w.colCtr)
 	ncol = ncol.Add(currCol)
 	w.col = ncol

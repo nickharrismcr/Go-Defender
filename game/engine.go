@@ -2,7 +2,7 @@ package game
 
 import (
 	"Def/cmp"
-	"Def/global"
+	"Def/gl"
 	"Def/logger"
 	"Def/types"
 
@@ -175,7 +175,7 @@ func (eng *Engine) TriggerBullet(x, y, dx, dy float64) {
 		if !v.Active() {
 			v.SetActive(true)
 			pc := v.GetComponent(types.Pos).(*cmp.Pos)
-			pc.X, pc.Y, pc.DX, pc.DY = x, y, 2*dx, 2*dy
+			pc.X, pc.Y, pc.DX, pc.DY = x, y, dx, dy
 			lc := v.GetComponent(types.Life).(*cmp.Life)
 			lc.TicksToLive = 120
 			break
@@ -205,12 +205,18 @@ func (eng *Engine) TriggerLaser(x, y, dx float64) {
 			lc := v.GetComponent(types.Life).(*cmp.Life)
 			lc.TicksToLive = 90
 			dc := v.GetComponent(types.LaserDraw).(*cmp.LaserDraw)
-			dc.Color = global.LaserCols[eng.LaserColIdx%15]
+			dc.Color = gl.LaserCols[eng.LaserColIdx%15]
+			mv := v.GetComponent(types.LaserMove).(*cmp.LaserMove)
+			mv.Length = 0
 			eng.LaserColIdx++
 			break
 		}
 	}
 
+}
+
+func (eng *Engine) GetPlayer() types.IEntity {
+	return eng.entities[gl.PlayerID]
 }
 
 func (eng *Engine) MountainHeight(wx float64) float64 {

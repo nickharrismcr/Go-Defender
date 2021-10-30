@@ -2,7 +2,7 @@ package human
 
 import (
 	"Def/cmp"
-	"Def/global"
+	"Def/gl"
 	"Def/types"
 )
 
@@ -24,10 +24,10 @@ func (s *HumanWalking) GetName() types.StateType {
 
 func (s *HumanWalking) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
-	pc.DX = global.HumanSpeed
+	pc.DX = gl.HumanSpeed
 	pc.DY = 0
 	ai.Counter = 0
-	pc.Y = global.ScreenHeight - e.GetEngine().MountainHeight(pc.X)
+	pc.Y = gl.ScreenHeight - e.GetEngine().MountainHeight(pc.X)
 }
 
 func (s *HumanWalking) Update(ai *cmp.AI, e types.IEntity) {
@@ -36,6 +36,6 @@ func (s *HumanWalking) Update(ai *cmp.AI, e types.IEntity) {
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 
-	pc.Y = global.ScreenHeight - e.GetEngine().MountainHeight(pc.X)
+	pc.Y = gl.ScreenHeight - e.GetEngine().MountainHeight(pc.X)
 
 }

@@ -1,7 +1,7 @@
 package game
 
 import (
-	"Def/global"
+	"Def/gl"
 	"Def/util"
 	"image/color"
 	"math/rand"
@@ -9,8 +9,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var scrh = float64(global.ScreenHeight)
-var scrtop = float64(global.ScreenTop)
+var scrh = float64(gl.ScreenHeight)
+var scrtop = float64(gl.ScreenTop)
 
 type World struct {
 	points []float64
@@ -24,14 +24,14 @@ func NewWorld(engine *Engine) *World {
 	w := &World{
 		engine: engine,
 	}
-	w.points = make([]float64, global.WorldWidth+1)
+	w.points = make([]float64, gl.WorldWidth+1)
 	var y float64 = 50
 	var dy float64 = 1
-	for i := 0; i <= global.WorldWidth; i++ {
+	for i := 0; i <= gl.WorldWidth; i++ {
 		w.points[i] = y
 		y += dy
 		if i > 50 {
-			if y < 50 || y > global.ScreenHeight/4 || rand.Intn(10) == 1 {
+			if y < 50 || y > gl.ScreenHeight/4 || rand.Intn(10) == 1 {
 				dy = -dy
 			}
 		} else {
@@ -41,7 +41,7 @@ func NewWorld(engine *Engine) *World {
 	}
 	y = 50
 	dy = 1
-	for i := global.WorldWidth; i > 0; i-- {
+	for i := gl.WorldWidth; i > 0; i-- {
 		if y >= w.points[i] {
 			break
 		}
@@ -62,16 +62,16 @@ func (w *World) At(wx float64) float64 {
 	if wx < 0 {
 		wx = 0
 	}
-	if wx > global.WorldWidth {
-		wx = global.WorldWidth
+	if wx > gl.WorldWidth {
+		wx = gl.WorldWidth
 	}
 	return w.points[int(wx)]
 }
 
 func (w *World) Draw(scr *ebiten.Image) {
-	ww := global.WorldWidth
-	i := int(global.CameraX())
-	for x := 0; x < global.ScreenWidth; x++ {
+	ww := gl.WorldWidth
+	i := int(gl.CameraX())
+	for x := 0; x < gl.ScreenWidth; x++ {
 		if i < 0 {
 			i += ww
 		} else if i > ww {
@@ -79,13 +79,13 @@ func (w *World) Draw(scr *ebiten.Image) {
 		}
 		h := w.points[i]
 		w.ops.GeoM.Reset()
-		w.ops.GeoM.Translate(float64(x), float64(global.ScreenHeight-h))
+		w.ops.GeoM.Translate(float64(x), float64(gl.ScreenHeight-h))
 		scr.DrawImage(w.img, w.ops)
 		i++
 	}
 
-	sw := float64(global.ScreenWidth)
-	cx := global.CameraX() - float64(ww/2) + sw/2
+	sw := float64(gl.ScreenWidth)
+	cx := gl.CameraX() - float64(ww/2) + sw/2
 
 	rs := sw / 4
 	rw := sw / 2

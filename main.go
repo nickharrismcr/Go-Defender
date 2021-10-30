@@ -2,7 +2,7 @@ package main
 
 import (
 	"Def/game"
-	"Def/global"
+	"Def/gl"
 	"Def/logger"
 	"errors"
 	"fmt"
@@ -36,7 +36,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.dcount++
 	engine.Draw(screen)
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", global.CameraX()))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", gl.CameraX()))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -58,7 +58,7 @@ func main() {
 	ebiten.SetWindowSize(320*5, 240*5)
 	ebiten.SetWindowTitle("Defender")
 	ebiten.SetFullscreen(true)
-	ebiten.SetMaxTPS(global.MaxTPS)
+	ebiten.SetMaxTPS(gl.MaxTPS)
 	if err := ebiten.RunGame(gm); err != nil {
 		logger.Debug(">>> %d %d ", gm.ucount, gm.dcount)
 	}

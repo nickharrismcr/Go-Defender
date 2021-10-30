@@ -3,7 +3,7 @@ package systems
 import (
 	"Def/cmp"
 	"Def/game"
-	"Def/global"
+	"Def/gl"
 	"Def/logger"
 	"Def/types"
 	"Def/util"
@@ -70,7 +70,7 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 		return
 	}
 
-	logger.Debug("%d %f %f %f ", e.Id, global.CameraX(), pc.X, screenx)
+	logger.Debug("%d %f %f %f ", e.Id, gl.CameraX(), pc.X, screenx)
 
 	op.GeoM.Reset()
 	op.GeoM.Scale(dc.Scale, dc.Scale)
@@ -133,7 +133,7 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 func (drawsys *DrawSystem) Cycle(drawcmp *cmp.Draw, v float64) {
 	if drawcmp.Cycle {
 		drawcmp.CycleIndex += v
-		c := global.Cols[int(drawcmp.CycleIndex)%5]
+		c := gl.Cols[int(drawcmp.CycleIndex)%5]
 		drawcmp.Opts.ColorM.Reset()
 		drawcmp.Opts.ColorM.Scale(c.R, c.G, c.B, c.A)
 	}

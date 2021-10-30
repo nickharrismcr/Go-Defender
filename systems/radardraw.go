@@ -3,7 +3,7 @@ package systems
 import (
 	"Def/cmp"
 	"Def/game"
-	"Def/global"
+	"Def/gl"
 	"Def/logger"
 	"Def/types"
 	"image/color"
@@ -11,13 +11,13 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var sw = float64(global.ScreenWidth)
-var sh = float64(global.ScreenHeight)
-var st = float64(global.ScreenTop)
+var sw = float64(gl.ScreenWidth)
+var sh = float64(gl.ScreenHeight)
+var st = float64(gl.ScreenTop)
 var rxs = sw * 0.25
 var rxe = sw * 0.75
 var rw = rxe - rxs
-var ww = float64(global.WorldWidth)
+var ww = float64(gl.WorldWidth)
 var rsw = rw * (sw / ww)
 
 var lineImg = ebiten.NewImage(1, 1)
@@ -55,7 +55,7 @@ func (drawsys *RadarDrawSystem) Update() {}
 
 func (drawsys *RadarDrawSystem) HUD(screen *ebiten.Image) {
 
-	col := global.Cols[global.HudCol]
+	col := gl.Cols[gl.HudCol]
 
 	lineOpts.ColorM.Scale(col.R, col.G, col.B, col.A)
 	lineOpts.GeoM.Reset()
@@ -109,7 +109,7 @@ func (drawsys *RadarDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	op := rdc.Opts
 	op.GeoM.Reset()
 
-	var posx = ww/2 + pc.X - global.CameraX() - sw/2
+	var posx = ww/2 + pc.X - gl.CameraX() - sw/2
 	if posx > ww {
 		posx = posx - ww
 	}
@@ -120,7 +120,7 @@ func (drawsys *RadarDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 
 	if rdc.Cycle {
 		rdc.CycleIndex += 0.4
-		rdc.Color = global.Cols[int(rdc.CycleIndex)%5]
+		rdc.Color = gl.Cols[int(rdc.CycleIndex)%5]
 		op.ColorM.Reset()
 	}
 

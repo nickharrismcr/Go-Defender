@@ -3,7 +3,7 @@ package systems
 import (
 	"Def/cmp"
 	"Def/game"
-	"Def/global"
+	"Def/gl"
 	"Def/logger"
 	"Def/types"
 
@@ -51,18 +51,18 @@ func (pos *PosSystem) Draw(screen *ebiten.Image) {}
 
 func (pos *PosSystem) process(e *game.Entity) {
 	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
-	poscmp.X += poscmp.DX
 	if poscmp.X < 0 {
-		poscmp.X += global.WorldWidth
-	} else if poscmp.X > global.WorldWidth {
-		poscmp.X -= global.WorldWidth
+		poscmp.X += gl.WorldWidth
+	} else if poscmp.X > gl.WorldWidth {
+		poscmp.X -= gl.WorldWidth
 	}
-	if poscmp.Y < global.ScreenTop+20 {
-		poscmp.Y = global.ScreenTop + 20
+	if poscmp.Y < gl.ScreenTop+20 {
+		poscmp.Y = gl.ScreenTop + 20
 	}
-	if poscmp.Y > global.ScreenHeight-50 {
-		poscmp.Y = global.ScreenHeight - 50
+	if poscmp.Y > gl.ScreenHeight-50 {
+		poscmp.Y = gl.ScreenHeight - 50
 	}
+	poscmp.X += poscmp.DX
 	poscmp.Y += poscmp.DY
 
 }

@@ -3,7 +3,7 @@ package systems
 import (
 	"Def/cmp"
 	"Def/game"
-	"Def/global"
+	"Def/gl"
 	"Def/logger"
 	"Def/types"
 	"Def/util"
@@ -54,25 +54,35 @@ func (lms *LaserMoveSystem) Update() {
 
 func (lms *LaserMoveSystem) process(laserEnt *game.Entity) {
 
-	playEnt := laserEnt.GetEngine().GetEntity(global.PlayerID)
-	playPosCmp := playEnt.GetComponent(types.Pos).(*cmp.Pos)
-	playShipCmp := playEnt.GetComponent(types.Ship).(*cmp.Ship)
-
-	laspos := laserEnt.GetComponent(types.Pos).(*cmp.Pos)
+	pe := laserEnt.GetEngine().GetEntity(gl.PlayerID)
+	ppc := pe.GetComponent(types.Pos).(*cmp.Pos)
+	psc := pe.GetComponent(types.Ship).(*cmp.Ship)
+	lpc := laserEnt.GetComponent(types.Pos).(*cmp.Pos)
+	lmc := laserEnt.GetComponent(types.LaserMove).(*cmp.LaserMove)
 	// track player dx
-	laspos.X += laspos.DX * (20 + math.Abs(playPosCmp.DX))
+	lpc.X += lpc.DX * (20 + math.Abs(ppc.DX))
+	lmc.Length += 70
+
+	var h2 float64 = 4
+	y2 := lpc.Y
+	x2 := util.ScreenX(lpc.X)
+	w2 := lmc.Length
+	if psc.Direction == -1 {
+		x2 = x2 - lmc.Length
+	}
 
 	for _, v := range laserEnt.GetEngine().GetEntitiesWithComponent(types.Shootable) {
 		tpc := v.GetComponent(types.Pos).(*cmp.Pos)
-		stpcx := util.ScreenX(tpc.X)
-		if util.OffScreen(stpcx, tpc.Y) {
+		x1 := util.ScreenX(tpc.X)
+		y1 := tpc.Y
+		if util.OffScreen(x1, tpc.Y) {
 			continue
 		}
 		if v.HasComponent(types.Collide) {
-			pcc := v.GetComponent(types.Collide).(*cmp.Collide)
-			if math.Abs(tpc.Y-laspos.Y) < pcc.H/2 &&
-				stpcx > util.ScreenX(laspos.X) &&
-				stpcx < util.ScreenX(laspos.X+(2000*playShipCmp.Direction)) {
+			tcc := v.GetComponent(types.Collide).(*cmp.Collide)
+			w1 := tcc.W
+			h1 := tcc.H
+			if util.Collide(x1, y1, w1, h1, x2, y2, w2, h2) {
 				laserEnt.SetActive(false)
 				laserEnt.GetEngine().Kill(v)
 			}

@@ -1,4 +1,4 @@
-package global
+package gl
 
 import (
 	"Def/types"
@@ -34,6 +34,8 @@ var PlayerID types.EntityID
 var LanderCount = 20
 var HumanCount = 20
 var BomberCount = 3
+
+var BulletTime float64 = 2
 
 var Blue = types.ColorF{R: 0, G: 0, B: 1, A: 1}
 var Red = types.ColorF{R: 1, G: 0, B: 0, A: 1}

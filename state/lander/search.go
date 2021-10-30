@@ -3,7 +3,7 @@ package lander
 import (
 	"Def/cmp"
 	"Def/event"
-	"Def/global"
+	"Def/gl"
 	"Def/types"
 	"Def/util"
 	"math"
@@ -36,7 +36,7 @@ func (s *LanderSearch) Enter(ai *cmp.AI, e types.IEntity) {
 	e.AddComponent(cl)
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
-	pc.DX = global.LanderSpeed
+	pc.DX = gl.LanderSpeed
 	pc.DY = 0
 	ai.Counter = 0
 	for _, id := range e.GetEngine().GetActiveEntitiesOfClass(types.Human) {
@@ -58,7 +58,7 @@ func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 	if ai.Counter > 5 {
 		ai.Counter = 0
 		mh := e.GetEngine().MountainHeight(pc.X)
-		if pc.Y+200 < global.ScreenHeight-mh {
+		if pc.Y+200 < gl.ScreenHeight-mh {
 			ai.Scratch++
 		} else {
 			ai.Scratch--
@@ -72,16 +72,17 @@ func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 	}
 	switch ai.Scratch {
 	case 0:
-		pc.DY = -global.LanderSpeed
+		pc.DY = -gl.LanderSpeed
 	case 1, 2, 3, 4:
 		pc.DY = 0
 	case 5:
-		pc.DY = global.LanderSpeed
+		pc.DY = gl.LanderSpeed
 	}
 
-	if !util.OffScreen(pc.X, pc.Y) && rand.Intn(200) == 0 {
-		tc := cmp.NewPos(pc.X+400, pc.Y, 1, 1)
-		dx, dy := util.ComputeBullet(pc, tc, 60)
+	// TODO gl bullet rate
+	if !util.OffScreen(util.ScreenX(pc.X), pc.Y) && rand.Intn(100) == 0 {
+		tc := e.GetEngine().GetPlayer().GetComponent(types.Pos).(*cmp.Pos)
+		dx, dy := util.ComputeBullet(pc, tc, gl.BulletTime)
 		ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
 		event.NotifyEvent(ev)
 	}
