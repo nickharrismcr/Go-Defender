@@ -2,6 +2,8 @@ package human
 
 import (
 	"Def/cmp"
+	"Def/event"
+	"Def/gl"
 	"Def/types"
 )
 
@@ -22,19 +24,26 @@ func (s *HumanRescued) GetName() types.StateType {
 }
 
 func (s *HumanRescued) Enter(ai *cmp.AI, e types.IEntity) {
+
+	ev := event.NewHumanRescue(e)
+	event.NotifyEvent(ev)
+	e.SetParent(e.GetEngine().GetPlayer().GetID())
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pc.DX = 0
 	pc.DY = 0
-	dc := e.GetComponent(types.Draw).(*cmp.Draw)
-	dc.Disperse = 300
 }
 
 func (s *HumanRescued) Update(ai *cmp.AI, e types.IEntity) {
+	pc := e.GetComponent(types.Pos).(*cmp.Pos)
+	pe := e.GetEngine().GetEntity(e.Parent())
 
-	dc := e.GetComponent(types.Draw).(*cmp.Draw)
-	dc.Disperse -= 5
-	if dc.Disperse < 10 {
-		dc.Disperse = 0
+	pec := pe.GetComponent(types.Pos).(*cmp.Pos)
+	pc.Y = pec.Y + 50
+	pc.X = pec.X
+	// TODO why not aligned ?
+	if pc.Y > gl.ScreenHeight-e.GetEngine().MountainHeight(pc.X) {
 		ai.NextState = types.HumanWalking
+		ev := event.NewHumanLanded(e)
+		event.NotifyEvent(ev)
 	}
 }

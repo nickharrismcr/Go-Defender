@@ -70,8 +70,6 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 		return
 	}
 
-	logger.Debug("%d %f %f %f ", e.Id, gl.CameraX(), pc.X, screenx)
-
 	op.GeoM.Reset()
 	op.GeoM.Scale(dc.Scale, dc.Scale)
 	if dc.FlipX {

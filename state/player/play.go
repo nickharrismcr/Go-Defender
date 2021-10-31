@@ -101,6 +101,8 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 			sc.SmartBombPressed = true
 			ev := event.NewSmartBomb(pc)
 			event.NotifyEvent(ev)
+			event.NotifyEventDelay(ev, 5)
+			event.NotifyEventDelay(ev, 10)
 		}
 	} else {
 		sc.SmartBombPressed = false

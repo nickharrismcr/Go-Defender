@@ -17,15 +17,43 @@ const (
 )
 
 const (
-	Lander EntityType = iota
-	Baiter EntityType = iota
-	Bullet EntityType = iota
-	Human  EntityType = iota
-	Bomb   EntityType = iota
-	Bomber EntityType = iota
-	Player EntityType = iota
-	Laser  EntityType = iota
+	Lander  EntityType = iota
+	Baiter  EntityType = iota
+	Bullet  EntityType = iota
+	Human   EntityType = iota
+	Bomb    EntityType = iota
+	Bomber  EntityType = iota
+	Player  EntityType = iota
+	Laser   EntityType = iota
+	Pod     EntityType = iota
+	Swarmer EntityType = iota
 )
+
+func (et EntityType) String() string {
+	switch et {
+	case Lander:
+		return "Lander"
+	case Baiter:
+		return "Baiter"
+	case Bullet:
+		return "Bullet"
+	case Human:
+		return "Human"
+	case Bomb:
+		return "Bomb"
+	case Bomber:
+		return "Bomber"
+	case Player:
+		return "Player"
+	case Laser:
+		return "Laser"
+	case Pod:
+		return "Pod"
+	case Swarmer:
+		return "Swarmer"
+	}
+	return ""
+}
 
 const (
 	LanderWait        StateType = iota
@@ -46,6 +74,10 @@ const (
 	PlayerDie         StateType = iota
 	BomberMove        StateType = iota
 	BomberDie         StateType = iota
+	PodMove           StateType = iota
+	PodDie            StateType = iota
+	SwarmerMove       StateType = iota
+	SwarmerDie        StateType = iota
 )
 
 func (st StateType) String() string {
@@ -86,6 +118,14 @@ func (st StateType) String() string {
 		return "Bomber Move"
 	case BomberDie:
 		return "Bomber-Die"
+	case PodMove:
+		return "Pod-Move"
+	case PodDie:
+		return "Pod-Die"
+	case SwarmerMove:
+		return "Swarmer-Move"
+	case SwarmerDie:
+		return "Swarmer-Die"
 	}
 	return ""
 }
@@ -142,6 +182,7 @@ type IEngine interface {
 	Kill(IEntity)
 	GetEntitiesWithComponent(CmpType) map[EntityID]IEntity
 	GetPlayer() IEntity
+	SetFlash()
 }
 
 type IEntity interface {

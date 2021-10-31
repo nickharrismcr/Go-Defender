@@ -2,9 +2,12 @@ package game
 
 import (
 	"Def/cmp"
+	"Def/event"
 	"Def/gl"
 	"Def/logger"
 	"Def/types"
+	"Def/util"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -28,6 +31,7 @@ type Engine struct {
 	BombPool              []*Entity
 	LaserPool             []*Entity
 	LaserColIdx           int
+	flash                 bool
 }
 
 func NewEngine() *Engine {
@@ -153,10 +157,17 @@ func (eng *Engine) Update() {
 	eng.particleSystem.Update()
 	eng.stars.Update()
 	eng.chars.Update()
+	event.UpdateQueue()
 
 }
 
 func (eng *Engine) Draw(screen *ebiten.Image) {
+
+	if eng.flash {
+		screen.Fill(color.White)
+		eng.flash = false
+	}
+
 	for _, s := range eng.drawSystems {
 		s.Draw(screen)
 	}
@@ -239,6 +250,11 @@ func (eng *Engine) ClearChars() {
 }
 
 func (eng *Engine) Kill(e types.IEntity) {
+
+	if !e.HasComponent(types.AI) {
+		e.SetActive(false)
+		return
+	}
 	ai := e.GetComponent(types.AI).(*cmp.AI)
 	switch e.GetClass() {
 	case types.Lander:
@@ -247,5 +263,25 @@ func (eng *Engine) Kill(e types.IEntity) {
 		ai.NextState = types.HumanDie
 	case types.Bomber:
 		ai.NextState = types.BomberDie
+	default:
+		e.SetActive(false)
 	}
+}
+
+func (eng *Engine) SetFlash() {
+	eng.flash = true
+}
+
+func (eng *Engine) SmartBomb() {
+
+	for id := range eng.entitiesWithComponent[types.Shootable] {
+		e := eng.entities[id]
+		if e.Active() && e.Class != types.Human {
+			pc := e.GetComponent(types.Pos).(*cmp.Pos)
+			if !util.OffScreen(util.ScreenX(pc.X), pc.Y) {
+				eng.Kill(e)
+			}
+		}
+	}
+
 }

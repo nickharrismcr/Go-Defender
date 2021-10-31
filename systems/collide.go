@@ -60,9 +60,8 @@ func (cs *CollideSystem) process(e *game.Entity, player *game.Entity) {
 	ppos := player.GetComponent(types.Pos).(*cmp.Pos)
 	psh := player.GetComponent(types.Ship).(*cmp.Ship)
 	if util.Collide(ppos.X, ppos.Y, psh.W, psh.H, ep.X, ep.Y, ec.W, ec.H) {
-		ev := event.NewPlayerDie(player)
+		ev := event.NewPlayerCollide(e)
 		event.NotifyEvent(ev)
-		e.SetActive(false)
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"Def/game"
 	"Def/gl"
 	"Def/graphics"
+	"Def/logger"
 	"Def/state/bomber"
 	"Def/state/human"
 	"Def/state/lander"
@@ -21,106 +22,37 @@ import (
 var landerCount int
 var humanCount int
 var blankImg *ebiten.Image
-var ScoreId int
+var scoreId int
 
 // game setup
 
 func InitGame(engine *game.Engine) {
 
 	graphics.Load()
-	InitEvents(engine)
-	InitSystems(engine)
-	InitEntities(engine)
+
+	initSystems(engine)
+	initEntities(engine)
 	bulletPool(engine)
 	bombPool(engine)
 	laserPool(engine)
+	InitEvents(engine)
 
-	ScoreId = engine.AddString("       0", 100, 40)
+	scoreId = engine.AddString("       0", 100, 40)
 }
 
-func InitEvents(engine *game.Engine) {
-	// Events
-
-	start := func(e event.IEvent) {
-		engine.GetSystem(game.PosSystem).SetActive(true)
-	}
-
-	explodeTrigger := func(e event.IEvent) {
-		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
-			engine.TriggerPS(ct.X, ct.Y)
-		}
-	}
-	bulletTrigger := func(e event.IEvent) {
-		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
-			engine.TriggerBullet(ct.X, ct.Y, ct.DX, ct.DY)
-		}
-	}
-	landerDie := func(e event.IEvent) {
-		ent := e.GetPayload().(*game.Entity)
-		landerCount--
-		if landerCount == 0 {
-			lc := event.NewLanderCleared(ent)
-			event.NotifyEvent(lc)
-		}
-	}
-	landerCleared := func(e event.IEvent) {
-		if ent := e.GetPayload().(*game.Entity); ent != nil {
-			// end of level
-		}
-	}
-	humanDie := func(e event.IEvent) {
-
-	}
-
-	bomberDie := func(e event.IEvent) {
-
-	}
-
-	playerDie := func(e event.IEvent) {
-		pe := engine.GetEntities()[gl.PlayerID]
-		pai := pe.GetComponent(types.AI).(*cmp.AI)
-		pai.NextState = types.PlayerDie
-		engine.GetSystem(game.PosSystem).SetActive(false)
-	}
-
-	playerFire := func(e event.IEvent) {
-		if pe := e.GetPayload().(*game.Entity); pe != nil {
-			pc := pe.GetComponent(types.Pos).(*cmp.Pos)
-			sc := pe.GetComponent(types.Ship).(*cmp.Ship)
-			x := pc.X + 100
-			y := pc.Y + 25
-			if sc.Direction < 0 {
-				x = pc.X - 100
-			}
-			engine.TriggerLaser(x, y, sc.Direction)
-		}
-	}
-
-	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
-	event.AddEventListener(event.FireBulletEvent, bulletTrigger)
-	event.AddEventListener(event.LanderDieEvent, landerDie)
-	event.AddEventListener(event.LanderClearedEvent, landerCleared)
-	event.AddEventListener(event.HumanDieEvent, humanDie)
-	event.AddEventListener(event.BomberDieEvent, bomberDie)
-	event.AddEventListener(event.PlayerDieEvent, playerDie)
-	event.AddEventListener(event.StartEvent, start)
-	event.AddEventListener(event.PlayerFireEvent, playerFire)
-
-}
-
-func InitSystems(engine *game.Engine) {
+func initSystems(engine *game.Engine) {
 
 	engine.AddSystem(systems.NewPosSystem(true, engine), game.UPDATE)
 	engine.AddSystem(systems.NewAISystem(true, engine), game.UPDATE)
 	engine.AddSystem(systems.NewLifeSystem(true, engine), game.UPDATE)
-	//engine.AddSystem(systems.NewCollideSystem(true, engine), game.UPDATE)
+	engine.AddSystem(systems.NewCollideSystem(true, engine), game.UPDATE)
 	engine.AddSystem(systems.NewDrawSystem(true, engine), game.DRAW)
 	engine.AddSystem(systems.NewRadarDrawSystem(true, engine), game.DRAW)
 	engine.AddSystem(systems.NewLaserDrawSystem(true, engine), game.DRAW)
 	engine.AddSystem(systems.NewLaserMoveSystem(true, engine), game.UPDATE)
 }
 
-func InitEntities(engine *game.Engine) {
+func initEntities(engine *game.Engine) {
 
 	blankImg = ebiten.NewImage(20, 20)
 	blankImg.Fill(color.White)
@@ -233,7 +165,6 @@ func AddHuman(engine *game.Engine, count int) {
 	stree.AddState(human.NewHumanGrabbed())
 	stree.AddState(human.NewHumanDropping())
 	stree.AddState(human.NewHumanRescued())
-
 	stree.AddState(human.NewHumanDie())
 
 	fsm := game.NewFSM(stree, "fsm1")
@@ -248,6 +179,8 @@ func AddHuman(engine *game.Engine, count int) {
 	ent.AddComponent(rd)
 	sh := cmp.NewShootable()
 	ent.AddComponent(sh)
+	cl := cmp.NewCollide(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
+	ent.AddComponent(cl)
 
 }
 
@@ -344,5 +277,98 @@ func laserPool(engine *game.Engine) {
 
 		engine.LaserPool = append(engine.LaserPool, ent)
 	}
+
+}
+
+func InitEvents(engine *game.Engine) {
+	// Events
+
+	start := func(e event.IEvent) {
+		engine.GetSystem(game.PosSystem).SetActive(true)
+	}
+
+	playerCollide := func(ev event.IEvent) {
+
+		e := ev.GetPayload().(*game.Entity)
+		logger.Info("Collide : %s ", e.Class.String())
+		if e.Class == types.Human {
+			ai := e.GetComponent(types.AI).(*cmp.AI)
+			if ai.State == types.HumanDropping {
+				ai.NextState = types.HumanRescued
+			}
+		} else {
+			engine.Kill(e)
+			//ev := event.NewPlayerDie(engine.GetPlayer())
+			//event.NotifyEvent(ev)
+		}
+	}
+
+	explodeTrigger := func(e event.IEvent) {
+		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
+			engine.TriggerPS(ct.X, ct.Y)
+		}
+	}
+	bulletTrigger := func(e event.IEvent) {
+		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
+			engine.TriggerBullet(ct.X, ct.Y, ct.DX, ct.DY)
+		}
+	}
+	landerDie := func(e event.IEvent) {
+		ent := e.GetPayload().(*game.Entity)
+		landerCount--
+		if landerCount == 0 {
+			lc := event.NewLanderCleared(ent)
+			event.NotifyEvent(lc)
+		}
+	}
+	landerCleared := func(e event.IEvent) {
+		if ent := e.GetPayload().(*game.Entity); ent != nil {
+			// end of level
+		}
+	}
+	humanDie := func(e event.IEvent) {
+
+	}
+
+	bomberDie := func(e event.IEvent) {
+
+	}
+
+	playerDie := func(e event.IEvent) {
+		pe := engine.GetEntities()[gl.PlayerID]
+		pai := pe.GetComponent(types.AI).(*cmp.AI)
+		pai.NextState = types.PlayerDie
+		engine.GetSystem(game.PosSystem).SetActive(false)
+	}
+
+	playerFire := func(e event.IEvent) {
+		if pe := e.GetPayload().(*game.Entity); pe != nil {
+			pc := pe.GetComponent(types.Pos).(*cmp.Pos)
+			sc := pe.GetComponent(types.Ship).(*cmp.Ship)
+			x := pc.X + 100
+			y := pc.Y + 25
+			if sc.Direction < 0 {
+				x = pc.X - 100
+			}
+			engine.TriggerLaser(x, y, sc.Direction)
+		}
+	}
+
+	smartBomb := func(e event.IEvent) {
+		engine.SetFlash()
+		engine.SmartBomb()
+	}
+
+	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
+	event.AddEventListener(event.FireBulletEvent, bulletTrigger)
+	event.AddEventListener(event.LanderDieEvent, landerDie)
+	event.AddEventListener(event.LanderClearedEvent, landerCleared)
+	event.AddEventListener(event.HumanDieEvent, humanDie)
+	event.AddEventListener(event.BomberDieEvent, bomberDie)
+	event.AddEventListener(event.PlayerDieEvent, playerDie)
+	event.AddEventListener(event.StartEvent, start)
+	event.AddEventListener(event.PlayerFireEvent, playerFire)
+	event.AddEventListener(event.SmartBombEvent, smartBomb)
+	event.AddEventListener(event.PlayerCollideEvent, playerCollide)
 
 }

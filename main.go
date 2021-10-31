@@ -29,7 +29,7 @@ func (g *Game) Update() error {
 		return errors.New("escape pressed")
 	}
 
-	engine.ChangeString(ScoreId, fmt.Sprintf("%8d", g.ucount))
+	engine.ChangeString(scoreId, fmt.Sprintf("%8d", g.ucount))
 	return nil
 }
 
@@ -57,7 +57,7 @@ func main() {
 
 	ebiten.SetWindowSize(320*5, 240*5)
 	ebiten.SetWindowTitle("Defender")
-	ebiten.SetFullscreen(true)
+	//ebiten.SetFullscreen(true)
 	ebiten.SetMaxTPS(gl.MaxTPS)
 	if err := ebiten.RunGame(gm); err != nil {
 		logger.Debug(">>> %d %d ", gm.ucount, gm.dcount)
