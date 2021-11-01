@@ -64,7 +64,7 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	op := dc.Opts
 	frames := dc.SpriteMap.Anim_frames
 	fw, fh := dc.SpriteMap.Frame.W/frames, dc.SpriteMap.Frame.H
-	screenx := util.ScreenX(pc.X) + float64(fw)/2
+	screenx := util.ScreenX(pc.X) - float64(fw)/2
 
 	if util.OffScreen(screenx, pc.Y) {
 		return
@@ -75,7 +75,7 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	if dc.FlipX {
 		op.GeoM.Scale(-1, 1)
 	}
-	op.GeoM.Translate(screenx, pc.Y+float64(fh)/2)
+	op.GeoM.Translate(screenx, pc.Y-float64(fh)/2)
 
 	dc.Counter++
 	if dc.Counter > dc.SpriteMap.Ticks_per_frame {
