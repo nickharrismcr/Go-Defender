@@ -2,6 +2,7 @@ package human
 
 import (
 	"Def/cmp"
+	"Def/event"
 	"Def/gl"
 	"Def/types"
 )
@@ -41,6 +42,8 @@ func (s *HumanDropping) Update(ai *cmp.AI, e types.IEntity) {
 		if pc.DY > 10 {
 			ai.NextState = types.HumanDie
 		} else {
+			ev := event.NewHumanLanded(e)
+			event.NotifyEvent(ev)
 			ai.NextState = types.HumanWalking
 		}
 	}

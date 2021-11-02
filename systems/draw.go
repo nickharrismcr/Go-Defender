@@ -65,6 +65,9 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	frames := dc.SpriteMap.Anim_frames
 	fw, fh := dc.SpriteMap.Frame.W/frames, dc.SpriteMap.Frame.H
 	screenx := util.ScreenX(pc.X) - float64(fw)/2
+	if pc.Screen {
+		screenx = pc.X
+	}
 
 	if util.OffScreen(screenx, pc.Y) {
 		return

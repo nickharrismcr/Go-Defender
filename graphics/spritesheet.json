@@ -3,7 +3,7 @@
 		{
 			"filename": "250.png",
 			"anim_frames" : 3,
-			"ticks_per_frame" : 30,
+			"ticks_per_frame" : 3,
 			"frame": {
 				"x": 10,
 				"y": 10,
@@ -20,7 +20,7 @@
 				"h": 20
 			},
 			"anim_frames" : 3,
-			"ticks_per_frame" : 30
+			"ticks_per_frame" : 3
 
 		},
 		{

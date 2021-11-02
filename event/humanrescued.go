@@ -5,7 +5,7 @@ type HumanRescued struct {
 	payload interface{}
 }
 
-func NewHumanRescue(p interface{}) *HumanRescued {
+func NewHumanRescued(p interface{}) *HumanRescued {
 	return &HumanRescued{
 		mytype:  HumanRescuedEvent,
 		payload: p,

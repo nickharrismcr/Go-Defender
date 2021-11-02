@@ -27,6 +27,7 @@ const (
 	Laser   EntityType = iota
 	Pod     EntityType = iota
 	Swarmer EntityType = iota
+	Score   EntityType = iota
 )
 
 func (et EntityType) String() string {
@@ -51,6 +52,8 @@ func (et EntityType) String() string {
 		return "Pod"
 	case Swarmer:
 		return "Swarmer"
+	case Score:
+		return "Score"
 	}
 	return ""
 }

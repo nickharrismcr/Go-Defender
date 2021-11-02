@@ -12,7 +12,7 @@ var f os.File
 
 func init() {
 
-	logger.SetLevel(logrus.InfoLevel)
+	logger.SetLevel(logrus.PanicLevel)
 	f, _ := os.OpenFile("./defender.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	logger.Out = f
 }

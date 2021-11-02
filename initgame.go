@@ -288,6 +288,31 @@ func AddSwarmer(engine *game.Engine, count int, x, y float64) {
 	ent.AddComponent(sh)
 }
 
+func AddScoreSprite(engine *game.Engine, ev event.IEvent) {
+
+	eve := ev.GetPayload().(*game.Entity)
+	evpc := eve.GetComponent(types.Pos).(*cmp.Pos)
+
+	ent := game.NewEntity(engine, types.Score)
+	ent.SetActive(true)
+	pc := cmp.NewPos(evpc.X-gl.CameraX(), evpc.Y, 0, 0)
+	pc.Screen = true
+	ent.AddComponent(pc)
+
+	s := "500.png"
+	if ev.GetType() == event.HumanLandedEvent {
+		s = "250.png"
+	}
+	smap := graphics.GetSpriteMap(s)
+	ssheet := graphics.GetSpriteSheet()
+	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
+	dr.Scale = 1
+	ent.AddComponent(dr)
+	li := cmp.NewLife(60)
+	ent.AddComponent(li)
+
+}
+
 func bulletPool(engine *game.Engine) {
 
 	ssheet := graphics.GetSpriteSheet()
@@ -434,6 +459,16 @@ func InitEvents(engine *game.Engine) {
 		}
 	}
 
+	humanRescued := func(e event.IEvent) {
+		AddScoreSprite(engine, e)
+	}
+	humanSaved := func(e event.IEvent) {
+		AddScoreSprite(engine, e)
+	}
+	humanLanded := func(e event.IEvent) {
+		AddScoreSprite(engine, e)
+	}
+
 	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
 	event.AddEventListener(event.FireBulletEvent, bulletTrigger)
 	event.AddEventListener(event.LanderDieEvent, landerDie)
@@ -446,5 +481,8 @@ func InitEvents(engine *game.Engine) {
 	event.AddEventListener(event.SmartBombEvent, smartBomb)
 	event.AddEventListener(event.PlayerCollideEvent, playerCollide)
 	event.AddEventListener(event.PodDieEvent, podDie)
+	event.AddEventListener(event.HumanRescuedEvent, humanRescued)
+	event.AddEventListener(event.HumanSavedEvent, humanSaved)
+	event.AddEventListener(event.HumanLandedEvent, humanLanded)
 
 }

@@ -25,7 +25,7 @@ func (s *HumanRescued) GetName() types.StateType {
 
 func (s *HumanRescued) Enter(ai *cmp.AI, e types.IEntity) {
 
-	ev := event.NewHumanRescue(e)
+	ev := event.NewHumanRescued(e)
 	event.NotifyEvent(ev)
 	e.SetParent(e.GetEngine().GetPlayer().GetID())
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
@@ -43,7 +43,7 @@ func (s *HumanRescued) Update(ai *cmp.AI, e types.IEntity) {
 	// TODO why not aligned ?
 	if pc.Y > gl.ScreenHeight-e.GetEngine().MountainHeight(pc.X) {
 		ai.NextState = types.HumanWalking
-		ev := event.NewHumanLanded(e)
+		ev := event.NewHumanSaved(e)
 		event.NotifyEvent(ev)
 	}
 }

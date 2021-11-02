@@ -27,6 +27,7 @@ const (
 	SwarmerDieEvent    EventType = iota
 	PodDieEvent        EventType = iota
 	HumanRescuedEvent  EventType = iota
+	HumanSavedEvent    EventType = iota
 	HumanLandedEvent   EventType = iota
 )
 
@@ -61,6 +62,8 @@ func (ev EventType) String() string {
 		return "SwarmerDie"
 	case HumanRescuedEvent:
 		return "HumanRescued"
+	case HumanSavedEvent:
+		return "HumanSaved"
 	case HumanLandedEvent:
 		return "HumanLanded"
 	}
