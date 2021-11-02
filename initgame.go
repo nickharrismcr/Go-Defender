@@ -15,6 +15,7 @@ import (
 	"Def/state/swarmer"
 	"Def/systems"
 	"Def/types"
+	"fmt"
 	"image/color"
 	"math/rand"
 
@@ -405,7 +406,10 @@ func InitEvents(engine *game.Engine) {
 			engine.TriggerBullet(ct.X, ct.Y, ct.DX, ct.DY)
 		}
 	}
+
 	landerDie := func(e event.IEvent) {
+		gl.Score += 150
+		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
 		ent := e.GetPayload().(*game.Entity)
 		landerCount--
 		if landerCount == 0 {
@@ -418,12 +422,13 @@ func InitEvents(engine *game.Engine) {
 			// end of level
 		}
 	}
-	humanDie := func(e event.IEvent) {
 
+	humanDie := func(e event.IEvent) {
 	}
 
 	bomberDie := func(e event.IEvent) {
-
+		gl.Score += 250
+		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
 	}
 
 	playerDie := func(e event.IEvent) {
@@ -452,6 +457,8 @@ func InitEvents(engine *game.Engine) {
 	}
 
 	podDie := func(e event.IEvent) {
+		gl.Score += 1000
+		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
 		ent := e.GetPayload().(*game.Entity)
 		pc := ent.GetComponent(types.Pos).(*cmp.Pos)
 		for i := 0; i < gl.SwarmerCount; i++ {
@@ -459,14 +466,30 @@ func InitEvents(engine *game.Engine) {
 		}
 	}
 
+	swarmerDie := func(e event.IEvent) {
+		gl.Score += 150
+		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+	}
+
+	baiterDie := func(e event.IEvent) {
+		gl.Score += 200
+		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+	}
+
 	humanRescued := func(e event.IEvent) {
 		AddScoreSprite(engine, e)
+		gl.Score += 500
+		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
 	}
 	humanSaved := func(e event.IEvent) {
 		AddScoreSprite(engine, e)
+		gl.Score += 500
+		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
 	}
 	humanLanded := func(e event.IEvent) {
 		AddScoreSprite(engine, e)
+		gl.Score += 250
+		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
 	}
 
 	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
@@ -481,6 +504,8 @@ func InitEvents(engine *game.Engine) {
 	event.AddEventListener(event.SmartBombEvent, smartBomb)
 	event.AddEventListener(event.PlayerCollideEvent, playerCollide)
 	event.AddEventListener(event.PodDieEvent, podDie)
+	event.AddEventListener(event.BaiterDieEvent, baiterDie)
+	event.AddEventListener(event.SwarmerDieEvent, swarmerDie)
 	event.AddEventListener(event.HumanRescuedEvent, humanRescued)
 	event.AddEventListener(event.HumanSavedEvent, humanSaved)
 	event.AddEventListener(event.HumanLandedEvent, humanLanded)

@@ -1,17 +1,21 @@
 package main
 
+//TODO
+//  mountain explode
+//  sound
+//  levels
+//  baiter
+
 import (
 	"Def/game"
 	"Def/gl"
 	"Def/logger"
 	"errors"
-	"fmt"
 	_ "image/png"
 	"math/rand"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Game struct {
@@ -23,20 +27,17 @@ var engine *game.Engine
 
 func (g *Game) Update() error {
 
-	g.ucount++
 	engine.Update()
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return errors.New("escape pressed")
 	}
 
-	engine.ChangeString(scoreId, fmt.Sprintf("%8d", g.ucount))
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.dcount++
 	engine.Draw(screen)
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("%f", gl.CameraX()))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

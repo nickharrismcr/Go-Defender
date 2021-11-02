@@ -37,7 +37,7 @@ var HumanCount = 20
 var BomberCount = 3
 var PodCount = 1
 var SwarmerCount = 10
-
+var Score int = 0
 var BulletTime float64 = 2
 
 var Blue = types.ColorF{R: 0, G: 0, B: 1, A: 1}
