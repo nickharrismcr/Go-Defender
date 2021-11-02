@@ -14,6 +14,7 @@ type AI struct {
 	TargetId      types.EntityID
 	Scratch       int
 	Wait          int
+	Val           float64
 }
 
 func init() {

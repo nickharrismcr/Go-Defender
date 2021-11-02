@@ -65,6 +65,7 @@ const (
 	LanderDie         StateType = iota
 	BaiterMaterialise StateType = iota
 	BaiterHunt        StateType = iota
+	BaiterDie         StateType = iota
 	HumanWalking      StateType = iota
 	HumanGrabbed      StateType = iota
 	HumanDropping     StateType = iota
@@ -100,6 +101,8 @@ func (st StateType) String() string {
 		return "Baiter-Materialise"
 	case BaiterHunt:
 		return "Baiter-Search"
+	case BaiterDie:
+		return "Baiter-Die"
 	case HumanWalking:
 		return "Human-Walking"
 	case HumanGrabbed:
@@ -126,6 +129,7 @@ func (st StateType) String() string {
 		return "Swarmer-Move"
 	case SwarmerDie:
 		return "Swarmer-Die"
+
 	}
 	return ""
 }

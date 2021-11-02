@@ -17,6 +17,7 @@ const (
 	BomberSpeed  = 3
 	PlayerSpeedX = 50
 	PlayerSpeedY = 15
+	SwarmerSpeed = 5
 )
 
 var KeyMap = map[types.ActionType]ebiten.Key{
@@ -34,6 +35,8 @@ var PlayerID types.EntityID
 var LanderCount = 20
 var HumanCount = 20
 var BomberCount = 3
+var PodCount = 1
+var SwarmerCount = 10
 
 var BulletTime float64 = 2
 

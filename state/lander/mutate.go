@@ -38,18 +38,19 @@ func (s *LanderMutate) Enter(ai *cmp.AI, e types.IEntity) {
 }
 
 func (s *LanderMutate) Update(ai *cmp.AI, e types.IEntity) {
+
 	gs := float64(gl.LanderSpeed)
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	ppc := e.GetEngine().GetPlayer().GetComponent(types.Pos).(*cmp.Pos)
 	if pc.X > ppc.X {
-		pc.DX = -gl.LanderSpeed * 3
+		pc.DX = -gs * 3
 	} else {
-		pc.DX = gl.LanderSpeed * 3
+		pc.DX = gs * 3
 	}
 	if pc.Y > ppc.Y {
-		pc.DY = -gl.LanderSpeed * 2
+		pc.DY = -gs * 2
 	} else {
-		pc.DY = gl.LanderSpeed * 2
+		pc.DY = gs * 2
 	}
 
 	ai.Counter++

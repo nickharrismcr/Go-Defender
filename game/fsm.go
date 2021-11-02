@@ -19,13 +19,11 @@ func init() {
 // runs logic in the current AI state and handles transitions between states.
 type FSM struct {
 	statetree *StateTree
-	name      string
 }
 
-func NewFSM(s *StateTree, name string) int {
+func NewFSM(s *StateTree) int {
 	fsmList = append(fsmList, FSM{
 		statetree: s,
-		name:      name,
 	})
 	rv := fsmCount
 	fsmCount++
@@ -46,7 +44,7 @@ func (f FSM) Update(ai *cmp.AI, e *Entity) {
 		//}
 		next_state, err := f.statetree.State(ai.NextState)
 		if err != nil {
-			panic(fmt.Sprintf("No state defined in FSM %s for %s", f.name, ai.NextState.String()))
+			panic(fmt.Sprintf("No state defined in FSM for %s", ai.NextState.String()))
 		}
 		next_state.Enter(ai, e)
 		logger.Debug("Entity %d state change %s -> %s", e.Id, ai.State.String(), ai.NextState.String())
@@ -55,7 +53,7 @@ func (f FSM) Update(ai *cmp.AI, e *Entity) {
 	}
 	curr_state, err := f.statetree.State(ai.State)
 	if err != nil {
-		panic(fmt.Sprintf("no current state %s in FSM %s ", ai.State.String(), f.name))
+		panic(fmt.Sprintf("no current state %s in FSM ", ai.State.String()))
 	}
 	curr_state.Update(ai, e)
 }

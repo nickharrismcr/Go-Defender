@@ -263,6 +263,12 @@ func (eng *Engine) Kill(e types.IEntity) {
 		ai.NextState = types.HumanDie
 	case types.Bomber:
 		ai.NextState = types.BomberDie
+	case types.Pod:
+		ai.NextState = types.PodDie
+	case types.Swarmer:
+		ai.NextState = types.SwarmerDie
+	case types.Baiter:
+		ai.NextState = types.BaiterDie
 	default:
 		e.SetActive(false)
 	}

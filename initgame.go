@@ -11,6 +11,8 @@ import (
 	"Def/state/human"
 	"Def/state/lander"
 	"Def/state/player"
+	"Def/state/pod"
+	"Def/state/swarmer"
 	"Def/systems"
 	"Def/types"
 	"image/color"
@@ -78,6 +80,10 @@ func initEntities(engine *game.Engine) {
 
 		AddBomber(engine, i)
 	}
+	for i := 0; i < gl.PodCount; i++ {
+
+		AddPod(engine, i)
+	}
 }
 
 func AddPlayer(engine *game.Engine) {
@@ -97,7 +103,7 @@ func AddPlayer(engine *game.Engine) {
 	stree.AddState(player.NewPlayerPlay())
 	stree.AddState(player.NewPlayerDie())
 
-	fsm := game.NewFSM(stree, "fsm1")
+	fsm := game.NewFSM(stree)
 	ai := cmp.NewAI(fsm, types.PlayerPlay)
 	ent.AddComponent(ai)
 	smap := graphics.GetSpriteMap("ship.png")
@@ -134,7 +140,7 @@ func AddLander(engine *game.Engine, count int) {
 	stree.AddState(lander.NewLanderMutate())
 	stree.AddState(lander.NewLanderDie())
 
-	fsm := game.NewFSM(stree, "fsm1")
+	fsm := game.NewFSM(stree)
 	ai := cmp.NewAI(fsm, types.LanderWait)
 	ai.Wait = 60 + (count%3)*200
 	ent.AddComponent(ai)
@@ -167,7 +173,7 @@ func AddHuman(engine *game.Engine, count int) {
 	stree.AddState(human.NewHumanRescued())
 	stree.AddState(human.NewHumanDie())
 
-	fsm := game.NewFSM(stree, "fsm1")
+	fsm := game.NewFSM(stree)
 	ai := cmp.NewAI(fsm, types.HumanWalking)
 	ent.AddComponent(ai)
 	smap := graphics.GetSpriteMap("human.png")
@@ -198,7 +204,7 @@ func AddBomber(engine *game.Engine, count int) {
 	stree.AddState(bomber.NewBomberMove())
 	stree.AddState(bomber.NewBomberDie())
 
-	fsm := game.NewFSM(stree, "fsm1")
+	fsm := game.NewFSM(stree)
 	ai := cmp.NewAI(fsm, types.BomberMove)
 	ent.AddComponent(ai)
 	smap := graphics.GFXFrame{
@@ -213,6 +219,67 @@ func AddBomber(engine *game.Engine, count int) {
 	ent.AddComponent(dr)
 
 	col := types.ColorF{R: 0.5, G: 0, B: 1, A: 1}
+	rd := cmp.NewRadarDraw(blankImg, col)
+	ent.AddComponent(rd)
+	cl := cmp.NewCollide(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
+	ent.AddComponent(cl)
+	sh := cmp.NewShootable()
+	ent.AddComponent(sh)
+}
+
+func AddPod(engine *game.Engine, count int) {
+
+	ent := game.NewEntity(engine, types.Pod)
+	ent.SetActive(true)
+
+	x := (rand.Float64() * gl.ScreenWidth) + gl.WorldWidth/2
+	y := (rand.Float64() * gl.ScreenHeight / 2) + gl.ScreenTop + 50
+
+	pc := cmp.NewPos(x, y, 0, 0)
+	ent.AddComponent(pc)
+	stree := game.NewStateTree()
+	stree.AddState(pod.NewPodMove())
+	stree.AddState(pod.NewPodDie())
+
+	fsm := game.NewFSM(stree)
+	ai := cmp.NewAI(fsm, types.PodMove)
+	ent.AddComponent(ai)
+	smap := graphics.GetSpriteMap("pod.png")
+	ssheet := graphics.GetSpriteSheet()
+	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
+	dr.Scale = 1
+	ent.AddComponent(dr)
+
+	col := types.ColorF{R: 0.5, G: 0, B: 0.5, A: 1}
+	rd := cmp.NewRadarDraw(blankImg, col)
+	ent.AddComponent(rd)
+	cl := cmp.NewCollide(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
+	ent.AddComponent(cl)
+	sh := cmp.NewShootable()
+	ent.AddComponent(sh)
+}
+
+func AddSwarmer(engine *game.Engine, count int, x, y float64) {
+
+	ent := game.NewEntity(engine, types.Swarmer)
+	ent.SetActive(true)
+
+	pc := cmp.NewPos(x, y, 0, 0)
+	ent.AddComponent(pc)
+	stree := game.NewStateTree()
+	stree.AddState(swarmer.NewSwarmerMove())
+	stree.AddState(swarmer.NewSwarmerDie())
+
+	fsm := game.NewFSM(stree)
+	ai := cmp.NewAI(fsm, types.SwarmerMove)
+	ent.AddComponent(ai)
+	smap := graphics.GetSpriteMap("swarmer.png")
+	ssheet := graphics.GetSpriteSheet()
+	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
+	dr.Scale = 1
+	ent.AddComponent(dr)
+
+	col := types.ColorF{R: 0.7, G: 0, B: 0, A: 1}
 	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
 	cl := cmp.NewCollide(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
@@ -359,6 +426,14 @@ func InitEvents(engine *game.Engine) {
 		engine.SmartBomb()
 	}
 
+	podDie := func(e event.IEvent) {
+		ent := e.GetPayload().(*game.Entity)
+		pc := ent.GetComponent(types.Pos).(*cmp.Pos)
+		for i := 0; i < gl.SwarmerCount; i++ {
+			AddSwarmer(engine, i, pc.X, pc.Y)
+		}
+	}
+
 	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
 	event.AddEventListener(event.FireBulletEvent, bulletTrigger)
 	event.AddEventListener(event.LanderDieEvent, landerDie)
@@ -370,5 +445,6 @@ func InitEvents(engine *game.Engine) {
 	event.AddEventListener(event.PlayerFireEvent, playerFire)
 	event.AddEventListener(event.SmartBombEvent, smartBomb)
 	event.AddEventListener(event.PlayerCollideEvent, playerCollide)
+	event.AddEventListener(event.PodDieEvent, podDie)
 
 }
