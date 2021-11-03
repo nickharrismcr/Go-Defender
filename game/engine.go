@@ -7,7 +7,6 @@ import (
 	"Def/logger"
 	"Def/types"
 	"Def/util"
-	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -31,7 +30,7 @@ type Engine struct {
 	BombPool              []*Entity
 	LaserPool             []*Entity
 	LaserColIdx           int
-	flash                 bool
+	flash                 int
 }
 
 func NewEngine() *Engine {
@@ -158,14 +157,18 @@ func (eng *Engine) Update() {
 	eng.stars.Update()
 	eng.chars.Update()
 	event.UpdateQueue()
+	eng.world.Update()
 
 }
 
 func (eng *Engine) Draw(screen *ebiten.Image) {
 
-	if eng.flash {
-		screen.Fill(color.White)
-		eng.flash = false
+	if eng.flash > 0 {
+		if eng.flash%2 == 0 {
+			col := gl.Cols[(eng.flash/2)%5].Convert()
+			screen.Fill(col)
+		}
+		eng.flash--
 	}
 
 	for _, s := range eng.drawSystems {
@@ -277,8 +280,8 @@ func (eng *Engine) Kill(e types.IEntity) {
 	}
 }
 
-func (eng *Engine) SetFlash() {
-	eng.flash = true
+func (eng *Engine) SetFlash(c int) {
+	eng.flash = 2 * c
 }
 
 func (eng *Engine) SmartBomb() {
@@ -291,6 +294,22 @@ func (eng *Engine) SmartBomb() {
 				eng.Kill(e)
 			}
 		}
+	}
+
+}
+
+func (eng *Engine) ExplodeWorld() {
+	eng.world.Explode()
+}
+
+func (eng *Engine) MutateAll() {
+
+	landers := eng.GetActiveEntitiesOfClass(types.Lander)
+
+	for _, id := range landers {
+		e := eng.GetEntity(id)
+		ai := e.GetComponent(types.AI).(*cmp.AI)
+		ai.NextState = types.LanderMutate
 	}
 
 }

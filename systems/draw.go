@@ -78,7 +78,8 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 	if dc.FlipX {
 		op.GeoM.Scale(-1, 1)
 	}
-	op.GeoM.Translate(screenx, pc.Y-float64(fh)/2)
+	y := pc.Y - float64(fh)/2
+	op.GeoM.Translate(screenx, y)
 
 	dc.Counter++
 	if dc.Counter > dc.SpriteMap.Ticks_per_frame {
@@ -99,13 +100,13 @@ func (ds *DrawSystem) process(e *game.Entity, screen *ebiten.Image) {
 			ds.Cycle(dc, 0.1)
 			op.GeoM.Reset()
 			op.GeoM.Scale(dc.Scale, dc.Scale)
-			op.GeoM.Translate(screenx+7, pc.Y+7)
+			op.GeoM.Translate(screenx+5, y+5)
 			screen.DrawImage(si, op)
 			ds.Cycle(dc, 0.1)
 			ds.Cycle(dc, 0.1)
 			op.GeoM.Reset()
 			op.GeoM.Scale(dc.Scale/2, dc.Scale/2)
-			op.GeoM.Translate(screenx+11, pc.Y+11)
+			op.GeoM.Translate(screenx+11, y+11)
 			screen.DrawImage(si, op)
 		} else {
 			ds.Cycle(dc, 1)

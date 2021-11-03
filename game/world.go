@@ -13,10 +13,12 @@ var scrh = float64(gl.ScreenHeight)
 var scrtop = float64(gl.ScreenTop)
 
 type World struct {
-	points []float64
-	img    *ebiten.Image
-	ops    *ebiten.DrawImageOptions
-	engine *Engine
+	points  []float64
+	img     *ebiten.Image
+	ops     *ebiten.DrawImageOptions
+	engine  *Engine
+	explode bool
+	counter int
 }
 
 func NewWorld(engine *Engine) *World {
@@ -57,6 +59,10 @@ func NewWorld(engine *Engine) *World {
 	return w
 }
 
+func (w *World) Explode() {
+	w.explode = true
+}
+
 func (w *World) At(wx float64) float64 {
 
 	if wx < 0 {
@@ -68,7 +74,36 @@ func (w *World) At(wx float64) float64 {
 	return w.points[int(wx)]
 }
 
+func (w *World) Update() {
+
+	if w.explode {
+		w.counter++
+		if w.counter > gl.WorldExplodeTicks {
+			return
+		}
+		ww := gl.WorldWidth
+		i := int(gl.CameraX())
+		for x := -2000; x < gl.ScreenWidth+2000; x++ {
+			if i < 0 {
+				i += ww
+			} else if i > ww {
+				i -= ww
+			}
+			w.points[i] += 20*rand.Float64() - 10
+			if rand.Intn(50) < 1 {
+				w.points[i] -= 10000
+			}
+			i++
+		}
+	}
+}
+
 func (w *World) Draw(scr *ebiten.Image) {
+
+	if w.counter > gl.WorldExplodeTicks {
+		return
+	}
+
 	ww := gl.WorldWidth
 	i := int(gl.CameraX())
 	for x := 0; x < gl.ScreenWidth; x++ {
@@ -79,7 +114,13 @@ func (w *World) Draw(scr *ebiten.Image) {
 		}
 		h := w.points[i]
 		w.ops.GeoM.Reset()
-		w.ops.GeoM.Translate(float64(x), float64(gl.ScreenHeight-h))
+		xOffset := 0
+		if w.explode {
+			s := 4 * float64(w.counter) / float64(gl.WorldExplodeTicks)
+			w.ops.GeoM.Scale(1+s, 1+s)
+			xOffset = rand.Intn(30) - 15
+		}
+		w.ops.GeoM.Translate(float64(x+xOffset), float64(gl.ScreenHeight-h))
 		scr.DrawImage(w.img, w.ops)
 		i++
 	}

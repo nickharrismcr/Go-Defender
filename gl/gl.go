@@ -7,17 +7,18 @@ import (
 )
 
 const (
-	ScreenWidth  = 1600
-	ScreenHeight = 1200
-	MaxTPS       = 30
-	WorldWidth   = ScreenWidth * 6
-	ScreenTop    = 150
-	LanderSpeed  = 5
-	HumanSpeed   = 0.1
-	BomberSpeed  = 3
-	PlayerSpeedX = 50
-	PlayerSpeedY = 15
-	SwarmerSpeed = 5
+	ScreenWidth       = 1600
+	ScreenHeight      = 1200
+	MaxTPS            = 30
+	WorldWidth        = ScreenWidth * 6
+	ScreenTop         = 150
+	LanderSpeed       = 5
+	HumanSpeed        = 0.1
+	BomberSpeed       = 3
+	PlayerSpeedX      = 50
+	PlayerSpeedY      = 15
+	SwarmerSpeed      = 5
+	WorldExplodeTicks = 350
 )
 
 var KeyMap = map[types.ActionType]ebiten.Key{
@@ -33,7 +34,9 @@ var KeyMap = map[types.ActionType]ebiten.Key{
 var PlayerID types.EntityID
 
 var LanderCount = 20
-var HumanCount = 20
+var LandersKilled = 0
+var HumanCount = 2
+var HumansKilled = 0
 var BomberCount = 3
 var PodCount = 1
 var SwarmerCount = 10

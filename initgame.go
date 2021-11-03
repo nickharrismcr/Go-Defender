@@ -22,8 +22,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var landerCount int
-var humanCount int
 var blankImg *ebiten.Image
 var scoreId int
 
@@ -65,7 +63,7 @@ func initEntities(engine *game.Engine) {
 	for i := 0; i < gl.LanderCount; i++ {
 
 		AddLander(engine, i)
-		landerCount++
+
 	}
 
 	for i := 0; i < 1; i++ {
@@ -75,7 +73,7 @@ func initEntities(engine *game.Engine) {
 	for i := 0; i < gl.HumanCount; i++ {
 
 		AddHuman(engine, i)
-		humanCount++
+
 	}
 	for i := 0; i < gl.BomberCount; i++ {
 
@@ -411,10 +409,11 @@ func InitEvents(engine *game.Engine) {
 		gl.Score += 150
 		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
 		ent := e.GetPayload().(*game.Entity)
-		landerCount--
-		if landerCount == 0 {
+		gl.LandersKilled++
+		if gl.LandersKilled == gl.LanderCount {
 			lc := event.NewLanderCleared(ent)
 			event.NotifyEvent(lc)
+
 		}
 	}
 	landerCleared := func(e event.IEvent) {
@@ -424,6 +423,13 @@ func InitEvents(engine *game.Engine) {
 	}
 
 	humanDie := func(e event.IEvent) {
+
+		gl.HumansKilled++
+		if gl.HumansKilled == gl.HumanCount {
+			engine.ExplodeWorld()
+			engine.SetFlash(30)
+			engine.MutateAll()
+		}
 	}
 
 	bomberDie := func(e event.IEvent) {
@@ -452,7 +458,7 @@ func InitEvents(engine *game.Engine) {
 	}
 
 	smartBomb := func(e event.IEvent) {
-		engine.SetFlash()
+		engine.SetFlash(1)
 		engine.SmartBomb()
 	}
 
