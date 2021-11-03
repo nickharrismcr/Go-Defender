@@ -95,26 +95,23 @@ func AddPlayer(engine *game.Engine) {
 	x := float64(gl.WorldWidth) / 2
 	y := float64(gl.ScreenHeight) / 2
 
-	pc := cmp.NewPos(x, y, 0, 0)
-	ent.AddComponent(pc)
+	sgraph := game.NewStateGraph()
+	sgraph.AddState(player.NewPlayerPlay())
+	sgraph.AddState(player.NewPlayerDie())
 
-	stree := game.NewStateTree()
-	stree.AddState(player.NewPlayerPlay())
-	stree.AddState(player.NewPlayerDie())
-
-	fsm := game.NewFSM(stree)
+	fsm := game.NewFSM(sgraph)
 	ai := cmp.NewAI(fsm, types.PlayerPlay)
 	ent.AddComponent(ai)
 	smap := graphics.GetSpriteMap("ship.png")
 	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
 	ent.AddComponent(dr)
-
 	col := types.ColorF{R: 1, G: 1, B: 1, A: 1}
 	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
-
 	sc := cmp.NewShip(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
 	ent.AddComponent(sc)
+	pc := cmp.NewPos(x, y, 0, 0)
+	ent.AddComponent(pc)
 
 }
 
@@ -130,23 +127,22 @@ func AddLander(engine *game.Engine, count int) {
 	}
 	pc := cmp.NewPos(x, gl.ScreenTop+500*rand.Float64(), 0, 0)
 	ent.AddComponent(pc)
-	stree := game.NewStateTree()
-	stree.AddState(lander.NewLanderWait())
-	stree.AddState(lander.NewLanderSearch())
-	stree.AddState(lander.NewLanderMaterialise())
-	stree.AddState(lander.NewLanderDrop())
-	stree.AddState(lander.NewLanderGrab())
-	stree.AddState(lander.NewLanderMutate())
-	stree.AddState(lander.NewLanderDie())
+	sgraph := game.NewStateGraph()
+	sgraph.AddState(lander.NewLanderWait())
+	sgraph.AddState(lander.NewLanderSearch())
+	sgraph.AddState(lander.NewLanderMaterialise())
+	sgraph.AddState(lander.NewLanderDrop())
+	sgraph.AddState(lander.NewLanderGrab())
+	sgraph.AddState(lander.NewLanderMutate())
+	sgraph.AddState(lander.NewLanderDie())
 
-	fsm := game.NewFSM(stree)
+	fsm := game.NewFSM(sgraph)
 	ai := cmp.NewAI(fsm, types.LanderWait)
 	ai.Wait = 60 + (count%3)*200
 	ent.AddComponent(ai)
 	smap := graphics.GetSpriteMap("lander.png")
 	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
 	ent.AddComponent(dr)
-
 	col := types.ColorF{R: 0, G: 1, B: 0, A: 1}
 	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
@@ -165,20 +161,19 @@ func AddHuman(engine *game.Engine, count int) {
 	}
 	pc := cmp.NewPos(x, 0, 0, 0)
 	ent.AddComponent(pc)
-	stree := game.NewStateTree()
-	stree.AddState(human.NewHumanWalking())
-	stree.AddState(human.NewHumanGrabbed())
-	stree.AddState(human.NewHumanDropping())
-	stree.AddState(human.NewHumanRescued())
-	stree.AddState(human.NewHumanDie())
+	sgraph := game.NewStateGraph()
+	sgraph.AddState(human.NewHumanWalking())
+	sgraph.AddState(human.NewHumanGrabbed())
+	sgraph.AddState(human.NewHumanDropping())
+	sgraph.AddState(human.NewHumanRescued())
+	sgraph.AddState(human.NewHumanDie())
 
-	fsm := game.NewFSM(stree)
+	fsm := game.NewFSM(sgraph)
 	ai := cmp.NewAI(fsm, types.HumanWalking)
 	ent.AddComponent(ai)
 	smap := graphics.GetSpriteMap("human.png")
 	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
 	ent.AddComponent(dr)
-
 	col := types.ColorF{R: 1, G: 0, B: 1, A: 1}
 	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
@@ -199,11 +194,11 @@ func AddBomber(engine *game.Engine, count int) {
 
 	pc := cmp.NewPos(x, y, 0, 0)
 	ent.AddComponent(pc)
-	stree := game.NewStateTree()
-	stree.AddState(bomber.NewBomberMove())
-	stree.AddState(bomber.NewBomberDie())
+	sgraph := game.NewStateGraph()
+	sgraph.AddState(bomber.NewBomberMove())
+	sgraph.AddState(bomber.NewBomberDie())
 
-	fsm := game.NewFSM(stree)
+	fsm := game.NewFSM(sgraph)
 	ai := cmp.NewAI(fsm, types.BomberMove)
 	ent.AddComponent(ai)
 	smap := graphics.GFXFrame{
@@ -216,7 +211,6 @@ func AddBomber(engine *game.Engine, count int) {
 	dr.Bomber = true
 	dr.Scale = 1
 	ent.AddComponent(dr)
-
 	col := types.ColorF{R: 0.5, G: 0, B: 1, A: 1}
 	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
@@ -236,11 +230,11 @@ func AddPod(engine *game.Engine, count int) {
 
 	pc := cmp.NewPos(x, y, 0, 0)
 	ent.AddComponent(pc)
-	stree := game.NewStateTree()
-	stree.AddState(pod.NewPodMove())
-	stree.AddState(pod.NewPodDie())
+	sgraph := game.NewStateGraph()
+	sgraph.AddState(pod.NewPodMove())
+	sgraph.AddState(pod.NewPodDie())
 
-	fsm := game.NewFSM(stree)
+	fsm := game.NewFSM(sgraph)
 	ai := cmp.NewAI(fsm, types.PodMove)
 	ent.AddComponent(ai)
 	smap := graphics.GetSpriteMap("pod.png")
@@ -248,7 +242,6 @@ func AddPod(engine *game.Engine, count int) {
 	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
 	dr.Scale = 1
 	ent.AddComponent(dr)
-
 	col := types.ColorF{R: 0.5, G: 0, B: 0.5, A: 1}
 	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
@@ -265,11 +258,11 @@ func AddSwarmer(engine *game.Engine, count int, x, y float64) {
 
 	pc := cmp.NewPos(x, y, 0, 0)
 	ent.AddComponent(pc)
-	stree := game.NewStateTree()
-	stree.AddState(swarmer.NewSwarmerMove())
-	stree.AddState(swarmer.NewSwarmerDie())
+	sgraph := game.NewStateGraph()
+	sgraph.AddState(swarmer.NewSwarmerMove())
+	sgraph.AddState(swarmer.NewSwarmerDie())
 
-	fsm := game.NewFSM(stree)
+	fsm := game.NewFSM(sgraph)
 	ai := cmp.NewAI(fsm, types.SwarmerMove)
 	ent.AddComponent(ai)
 	smap := graphics.GetSpriteMap("swarmer.png")
@@ -277,7 +270,6 @@ func AddSwarmer(engine *game.Engine, count int, x, y float64) {
 	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
 	dr.Scale = 1
 	ent.AddComponent(dr)
-
 	col := types.ColorF{R: 0.7, G: 0, B: 0, A: 1}
 	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
@@ -297,7 +289,6 @@ func AddScoreSprite(engine *game.Engine, ev event.IEvent) {
 	pc := cmp.NewPos(evpc.X-gl.CameraX(), evpc.Y, 0, 0)
 	pc.Screen = true
 	ent.AddComponent(pc)
-
 	s := "500.png"
 	if ev.GetType() == event.HumanLandedEvent {
 		s = "250.png"

@@ -18,10 +18,10 @@ func init() {
 // each entity with an AI component will have its own state tree, this struct
 // runs logic in the current AI state and handles transitions between states.
 type FSM struct {
-	statetree *StateTree
+	statetree *StateGraph
 }
 
-func NewFSM(s *StateTree) int {
+func NewFSM(s *StateGraph) int {
 	fsmList = append(fsmList, FSM{
 		statetree: s,
 	})
