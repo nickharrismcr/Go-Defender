@@ -62,8 +62,16 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 		sc.ReversePressed = false
 	}
 	if ebiten.IsKeyPressed(gl.KeyMap[types.Thrust]) {
+		if !sc.ThrustPressed {
+			sc.ThrustPressed = true
+			ev := event.NewPlayerThrust(e)
+			event.NotifyEvent(ev)
+		}
 		pc.DX += sc.Direction * 2
 	} else {
+		sc.ThrustPressed = false
+		ev := event.NewPlayerStopThrust(e)
+		event.NotifyEvent(ev)
 		pc.DX /= 1.05
 	}
 	if pc.DX > gl.PlayerSpeedX {
@@ -72,6 +80,7 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 	if pc.DX < -gl.PlayerSpeedX {
 		pc.DX = -gl.PlayerSpeedX
 	}
+
 	if ebiten.IsKeyPressed(gl.KeyMap[types.Up]) && ebiten.IsKeyPressed(gl.KeyMap[types.Down]) {
 		pc.DY = 0
 	} else if ebiten.IsKeyPressed(gl.KeyMap[types.Up]) {

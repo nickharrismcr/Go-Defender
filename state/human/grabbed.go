@@ -2,6 +2,7 @@ package human
 
 import (
 	"Def/cmp"
+	"Def/event"
 	"Def/types"
 )
 
@@ -24,6 +25,8 @@ func (s *HumanGrabbed) GetName() types.StateType {
 func (s *HumanGrabbed) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pc.DX = 0
+	ev := event.NewHumanGrabbed(e)
+	event.NotifyEvent(ev)
 }
 
 func (s *HumanGrabbed) Update(ai *cmp.AI, e types.IEntity) {

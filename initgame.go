@@ -7,6 +7,7 @@ import (
 	"Def/gl"
 	"Def/graphics"
 	"Def/logger"
+	"Def/sound"
 	"Def/state/bomber"
 	"Def/state/human"
 	"Def/state/lander"
@@ -367,6 +368,7 @@ func InitEvents(engine *game.Engine) {
 
 	start := func(e event.IEvent) {
 		engine.GetSystem(game.PosSystem).SetActive(true)
+		sound.Play(sound.Background)
 	}
 
 	playerCollide := func(ev event.IEvent) {
@@ -394,6 +396,7 @@ func InitEvents(engine *game.Engine) {
 		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
 			engine.TriggerBullet(ct.X, ct.Y, ct.DX, ct.DY)
 		}
+		sound.Play(sound.Bullet)
 	}
 
 	landerDie := func(e event.IEvent) {
@@ -404,8 +407,9 @@ func InitEvents(engine *game.Engine) {
 		if gl.LandersKilled == gl.LanderCount {
 			lc := event.NewLanderCleared(ent)
 			event.NotifyEvent(lc)
-
 		}
+		sound.Stop(sound.Laser)
+		sound.Play(sound.Landerdie)
 	}
 	landerCleared := func(e event.IEvent) {
 		if ent := e.GetPayload().(*game.Entity); ent != nil {
@@ -426,6 +430,8 @@ func InitEvents(engine *game.Engine) {
 	bomberDie := func(e event.IEvent) {
 		gl.Score += 250
 		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		sound.Stop(sound.Laser)
+		sound.Play(sound.Bomberdie)
 	}
 
 	playerDie := func(e event.IEvent) {
@@ -445,6 +451,7 @@ func InitEvents(engine *game.Engine) {
 				x = pc.X - 100
 			}
 			engine.TriggerLaser(x, y, sc.Direction)
+			sound.Play(sound.Laser)
 		}
 	}
 
@@ -461,6 +468,8 @@ func InitEvents(engine *game.Engine) {
 		for i := 0; i < gl.SwarmerCount; i++ {
 			AddSwarmer(engine, i, pc.X, pc.Y)
 		}
+		sound.Stop(sound.Laser)
+		sound.Play(sound.Poddie)
 	}
 
 	swarmerDie := func(e event.IEvent) {
@@ -471,6 +480,10 @@ func InitEvents(engine *game.Engine) {
 	baiterDie := func(e event.IEvent) {
 		gl.Score += 200
 		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+	}
+
+	humanGrabbed := func(e event.IEvent) {
+		sound.Play(sound.Grabbed)
 	}
 
 	humanRescued := func(e event.IEvent) {
@@ -487,6 +500,14 @@ func InitEvents(engine *game.Engine) {
 		AddScoreSprite(engine, e)
 		gl.Score += 250
 		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+	}
+
+	thrustOn := func(e event.IEvent) {
+		sound.Play(sound.Thruster)
+	}
+
+	thrustOff := func(e event.IEvent) {
+		sound.Stop(sound.Thruster)
 	}
 
 	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
@@ -506,5 +527,8 @@ func InitEvents(engine *game.Engine) {
 	event.AddEventListener(event.HumanRescuedEvent, humanRescued)
 	event.AddEventListener(event.HumanSavedEvent, humanSaved)
 	event.AddEventListener(event.HumanLandedEvent, humanLanded)
+	event.AddEventListener(event.HumanGrabbedEvent, humanGrabbed)
+	event.AddEventListener(event.PlayerThrustEvent, thrustOn)
+	event.AddEventListener(event.PlayerStopThrustEvent, thrustOff)
 
 }

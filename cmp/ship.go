@@ -13,21 +13,18 @@ type Ship struct {
 	FirePressed       bool
 	SmartBombPressed  bool
 	HyperSpacePressed bool
+	ThrustPressed     bool
 	W, H              float64
 }
 
 func NewShip(w, h int) *Ship {
 
 	return &Ship{
-		ScreenOffset:      gl.ScreenWidth * 0.2,
-		Direction:         1,
-		componentType:     types.Ship,
-		ReversePressed:    false,
-		FirePressed:       false,
-		SmartBombPressed:  false,
-		HyperSpacePressed: false,
-		W:                 float64(w),
-		H:                 float64(h),
+		ScreenOffset:  gl.ScreenWidth * 0.2,
+		Direction:     1,
+		componentType: types.Ship,
+		W:             float64(w),
+		H:             float64(h),
 	}
 }
 

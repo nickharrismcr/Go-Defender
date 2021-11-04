@@ -12,23 +12,26 @@ type IEvent interface {
 }
 
 const (
-	StartEvent         EventType = iota
-	FireBulletEvent    EventType = iota
-	ExplodeEvent       EventType = iota
-	LanderDieEvent     EventType = iota
-	HumanDieEvent      EventType = iota
-	BaiterDieEvent     EventType = iota
-	BomberDieEvent     EventType = iota
-	LanderClearedEvent EventType = iota
-	PlayerDieEvent     EventType = iota
-	PlayerCollideEvent EventType = iota
-	PlayerFireEvent    EventType = iota
-	SmartBombEvent     EventType = iota
-	SwarmerDieEvent    EventType = iota
-	PodDieEvent        EventType = iota
-	HumanRescuedEvent  EventType = iota
-	HumanSavedEvent    EventType = iota
-	HumanLandedEvent   EventType = iota
+	StartEvent            EventType = iota
+	FireBulletEvent       EventType = iota
+	ExplodeEvent          EventType = iota
+	LanderDieEvent        EventType = iota
+	HumanDieEvent         EventType = iota
+	BaiterDieEvent        EventType = iota
+	BomberDieEvent        EventType = iota
+	LanderClearedEvent    EventType = iota
+	PlayerDieEvent        EventType = iota
+	PlayerCollideEvent    EventType = iota
+	PlayerFireEvent       EventType = iota
+	PlayerThrustEvent     EventType = iota
+	PlayerStopThrustEvent EventType = iota
+	SmartBombEvent        EventType = iota
+	SwarmerDieEvent       EventType = iota
+	PodDieEvent           EventType = iota
+	HumanGrabbedEvent     EventType = iota
+	HumanRescuedEvent     EventType = iota
+	HumanSavedEvent       EventType = iota
+	HumanLandedEvent      EventType = iota
 )
 
 func (ev EventType) String() string {
@@ -66,6 +69,8 @@ func (ev EventType) String() string {
 		return "HumanSaved"
 	case HumanLandedEvent:
 		return "HumanLanded"
+	case HumanGrabbedEvent:
+		return "HumanGrabbed"
 	}
 
 	return ""
