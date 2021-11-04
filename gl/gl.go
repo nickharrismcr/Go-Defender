@@ -34,6 +34,7 @@ var KeyMap = map[types.ActionType]ebiten.Key{
 }
 
 var PlayerID types.EntityID
+var ScoreCharId int
 
 var BaiterCount = 1
 var LanderCount = 5

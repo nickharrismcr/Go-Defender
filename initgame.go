@@ -25,9 +25,6 @@ import (
 )
 
 var blankImg *ebiten.Image
-var scoreId int
-
-// game setup
 
 func InitGame(engine *game.Engine) {
 
@@ -40,7 +37,7 @@ func InitGame(engine *game.Engine) {
 	laserPool(engine)
 	InitEvents(engine)
 
-	scoreId = engine.AddString("       0", 100, 40)
+	gl.ScoreCharId = engine.AddString("       0", 100, 40)
 }
 
 func initSystems(engine *game.Engine) {
@@ -424,6 +421,7 @@ func InitEvents(engine *game.Engine) {
 			engine.TriggerPS(ct.X, ct.Y)
 		}
 	}
+
 	bulletTrigger := func(e event.IEvent) {
 		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
 			engine.TriggerBullet(ct.X, ct.Y, ct.DX, ct.DY)
@@ -437,7 +435,7 @@ func InitEvents(engine *game.Engine) {
 
 	landerDie := func(e event.IEvent) {
 		gl.Score += 150
-		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		engine.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
 		ent := e.GetPayload().(*game.Entity)
 		gl.LandersKilled++
 		if gl.LandersKilled == gl.LanderCount {
@@ -471,7 +469,7 @@ func InitEvents(engine *game.Engine) {
 
 	bomberDie := func(e event.IEvent) {
 		gl.Score += 250
-		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		engine.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
 		sound.Stop(sound.Laser)
 		sound.Play(sound.Bomberdie)
 	}
@@ -508,7 +506,7 @@ func InitEvents(engine *game.Engine) {
 
 	podDie := func(e event.IEvent) {
 		gl.Score += 1000
-		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		engine.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
 		ent := e.GetPayload().(*game.Entity)
 		pc := ent.GetComponent(types.Pos).(*cmp.Pos)
 		for i := 0; i < gl.SwarmerCount; i++ {
@@ -520,12 +518,12 @@ func InitEvents(engine *game.Engine) {
 
 	swarmerDie := func(e event.IEvent) {
 		gl.Score += 150
-		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		engine.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
 	}
 
 	baiterDie := func(e event.IEvent) {
 		gl.Score += 200
-		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		engine.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
 		sound.Play(sound.Baiterdie)
 	}
 
@@ -540,20 +538,20 @@ func InitEvents(engine *game.Engine) {
 	humanRescued := func(e event.IEvent) {
 		AddScoreSprite(engine, e)
 		gl.Score += 500
-		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		engine.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
 	}
 
 	humanSaved := func(e event.IEvent) {
 		AddScoreSprite(engine, e)
 		gl.Score += 500
-		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		engine.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
 		sound.Play(sound.Placehuman)
 	}
 
 	humanLanded := func(e event.IEvent) {
 		AddScoreSprite(engine, e)
 		gl.Score += 250
-		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		engine.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
 	}
 
 	thrustOn := func(e event.IEvent) {
