@@ -12,65 +12,83 @@ type IEvent interface {
 }
 
 const (
-	StartEvent            EventType = iota
-	FireBulletEvent       EventType = iota
-	ExplodeEvent          EventType = iota
-	LanderDieEvent        EventType = iota
-	HumanDieEvent         EventType = iota
-	BaiterDieEvent        EventType = iota
-	BomberDieEvent        EventType = iota
-	LanderClearedEvent    EventType = iota
-	PlayerDieEvent        EventType = iota
-	PlayerCollideEvent    EventType = iota
-	PlayerFireEvent       EventType = iota
-	PlayerThrustEvent     EventType = iota
-	PlayerStopThrustEvent EventType = iota
-	SmartBombEvent        EventType = iota
-	SwarmerDieEvent       EventType = iota
-	PodDieEvent           EventType = iota
-	HumanGrabbedEvent     EventType = iota
-	HumanRescuedEvent     EventType = iota
-	HumanSavedEvent       EventType = iota
-	HumanLandedEvent      EventType = iota
+	StartEvent             EventType = iota
+	FireBulletEvent        EventType = iota
+	ExplodeEvent           EventType = iota
+	LanderDieEvent         EventType = iota
+	MutantSoundEvent       EventType = iota
+	HumanDieEvent          EventType = iota
+	BaiterDieEvent         EventType = iota
+	BomberDieEvent         EventType = iota
+	LanderClearedEvent     EventType = iota
+	PlayerDieEvent         EventType = iota
+	PlayerCollideEvent     EventType = iota
+	PlayerFireEvent        EventType = iota
+	PlayerThrustEvent      EventType = iota
+	PlayerStopThrustEvent  EventType = iota
+	SmartBombEvent         EventType = iota
+	SwarmerDieEvent        EventType = iota
+	PodDieEvent            EventType = iota
+	HumanDroppedEvent      EventType = iota
+	HumanGrabbedEvent      EventType = iota
+	HumanRescuedEvent      EventType = iota
+	HumanSavedEvent        EventType = iota
+	HumanLandedEvent       EventType = iota
+	LanderMaterialiseEvent EventType = iota
+	PlayerExplodeEvent     EventType = iota
 )
 
 func (ev EventType) String() string {
 	switch ev {
 
 	case StartEvent:
-		return "Start"
-	case ExplodeEvent:
-		return "Explode"
+		return "StartEvent"
 	case FireBulletEvent:
-		return "FireBullet"
+		return "FireBulletEvent"
+	case ExplodeEvent:
+		return "ExplodeEvent"
 	case LanderDieEvent:
-		return "LanderDie"
+		return "LanderDieEvent"
+	case MutantSoundEvent:
+		return "MutantSoundEvent"
 	case HumanDieEvent:
-		return "LanderDie"
+		return "HumanDieEvent"
 	case BaiterDieEvent:
-		return "LanderDie"
+		return "BaiterDieEvent"
+	case BomberDieEvent:
+		return "BomberDieEvent"
 	case LanderClearedEvent:
-		return "LanderCleared"
+		return "LanderClearedEvent"
 	case PlayerDieEvent:
-		return "PlayerDie"
+		return "PlayerDieEvent"
 	case PlayerCollideEvent:
-		return "PlayerCollide"
+		return "PlayerCollideEvent"
 	case PlayerFireEvent:
-		return "PlayerFire"
+		return "PlayerFireEvent"
+	case PlayerThrustEvent:
+		return "PlayerThrustEvent"
+	case PlayerStopThrustEvent:
+		return "PlayerStopThrustEvent"
 	case SmartBombEvent:
-		return "SmartBomb"
-	case PodDieEvent:
-		return "PodDie"
+		return "SmartBombEvent"
 	case SwarmerDieEvent:
-		return "SwarmerDie"
-	case HumanRescuedEvent:
-		return "HumanRescued"
-	case HumanSavedEvent:
-		return "HumanSaved"
-	case HumanLandedEvent:
-		return "HumanLanded"
+		return "SwarmerDieEvent"
+	case PodDieEvent:
+		return "PodDieEvent"
+	case HumanDroppedEvent:
+		return "HumanDroppedEvent"
 	case HumanGrabbedEvent:
-		return "HumanGrabbed"
+		return "HumanGrabbedEvent"
+	case HumanRescuedEvent:
+		return "HumanRescuedEvent"
+	case HumanSavedEvent:
+		return "HumanSavedEvent"
+	case HumanLandedEvent:
+		return "HumanLandedEvent"
+	case LanderMaterialiseEvent:
+		return "LanderMaterialiseEvent"
+	case PlayerExplodeEvent:
+		return "PlayerExplodeEvent"
 	}
 
 	return ""

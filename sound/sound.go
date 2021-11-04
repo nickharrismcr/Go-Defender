@@ -1,6 +1,7 @@
 package sound
 
 import (
+	"Def/gl"
 	"bytes"
 	_ "embed"
 
@@ -142,11 +143,17 @@ func addSample(name SoundType, data []byte, loop bool) {
 }
 
 func Play(name SoundType) {
+	if gl.Mute {
+		return
+	}
 	players[name].Rewind()
 	players[name].Play()
 }
 
 func PlayIfNot(name SoundType) {
+	if gl.Mute {
+		return
+	}
 	if players[name].IsPlaying() {
 		return
 	}

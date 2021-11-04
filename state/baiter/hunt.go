@@ -2,8 +2,11 @@ package baiter
 
 import (
 	"Def/cmp"
+	"Def/event"
 	"Def/gl"
 	"Def/types"
+	"Def/util"
+	"math/rand"
 )
 
 // NB States should not contain entity state ;) they should act on cmp
@@ -12,7 +15,7 @@ type BaiterHunt struct {
 	Name types.StateType
 }
 
-func NewBaiterSearch() *BaiterHunt {
+func NewBaiterHunt() *BaiterHunt {
 	return &BaiterHunt{
 		Name: types.BaiterHunt,
 	}
@@ -23,29 +26,32 @@ func (s *BaiterHunt) GetName() types.StateType {
 }
 
 func (s *BaiterHunt) Enter(ai *cmp.AI, e types.IEntity) {
-
+	ai.Scratch = 0
 }
 
 func (s *BaiterHunt) Update(ai *cmp.AI, e types.IEntity) {
 
+	gs := float64(gl.BaiterSpeed)
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
+	ple := e.GetEngine().GetPlayer()
+	plpos := ple.GetComponent(types.Pos).(*cmp.Pos)
 
-	// hunt or find a target
-	te := e.GetEngine().GetEntity(ai.TargetId)
-	tpos := te.GetComponent(types.Pos).(*cmp.Pos)
+	ai.Scratch++
 
-	if tpos.X < pc.X && pc.DX > -20 {
-		pc.DX -= 1
-	}
-	if tpos.X > pc.X && pc.DX < 20 {
-		pc.DX += 1
-	}
-
-	if pc.Y < gl.ScreenTop || pc.Y > gl.ScreenHeight-100 {
-		pc.DY = -pc.DY
+	if ai.Scratch == 15 {
+		ai.Scratch = 0
+		xoff := rand.Float64() * -200
+		yoff := rand.Float64()*100 - 100
+		offpos := &cmp.Pos{X: plpos.X + xoff, Y: plpos.Y + yoff, DX: plpos.DX, DY: plpos.DY}
+		pc.DX, pc.DY = util.ComputeBullet(offpos, pc, 0.5)
+		pc.DX = util.Clamp(pc.DX, -gs, gs)
 	}
 
-	pc.X += pc.DX
-	pc.Y += pc.DY
+	if !util.OffScreen(util.ScreenX(pc.X), pc.Y) && rand.Intn(50) == 0 {
+		tc := e.GetEngine().GetPlayer().GetComponent(types.Pos).(*cmp.Pos)
+		dx, dy := util.ComputeBullet(pc, tc, gl.BulletTime)
+		ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
+		event.NotifyEvent(ev)
+	}
 
 }

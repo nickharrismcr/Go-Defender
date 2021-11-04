@@ -51,7 +51,10 @@ func (pos *PosSystem) Draw(screen *ebiten.Image) {}
 
 func (pos *PosSystem) process(e *game.Entity) {
 	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
-
+	// "hidden"
+	if poscmp.Y == 9999 {
+		return
+	}
 	if poscmp.X < 0 {
 		poscmp.X += gl.WorldWidth
 	} else if poscmp.X > gl.WorldWidth {

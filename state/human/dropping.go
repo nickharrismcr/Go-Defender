@@ -29,6 +29,8 @@ func (s *HumanDropping) Enter(ai *cmp.AI, e types.IEntity) {
 	pc.DX = 0
 	pc.DY = 0
 	ai.Counter = 0
+	ev := event.NewHumanDropped(e)
+	event.NotifyEvent(ev)
 }
 
 func (s *HumanDropping) Update(ai *cmp.AI, e types.IEntity) {

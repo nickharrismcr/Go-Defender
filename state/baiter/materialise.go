@@ -1,28 +1,27 @@
-package lander
+package baiter
 
 import (
 	"Def/cmp"
-	"Def/event"
 	"Def/types"
 )
 
 // NB States should not contain entity state ;) they should act on passed components
 
-type LanderMaterialise struct {
+type BaiterMaterialise struct {
 	Name types.StateType
 }
 
-func NewLanderMaterialise() *LanderMaterialise {
-	return &LanderMaterialise{
-		Name: types.LanderMaterialise,
+func NewBaiterMaterialise() *BaiterMaterialise {
+	return &BaiterMaterialise{
+		Name: types.BaiterMaterialise,
 	}
 }
 
-func (s *LanderMaterialise) GetName() types.StateType {
+func (s *BaiterMaterialise) GetName() types.StateType {
 	return s.Name
 }
 
-func (s *LanderMaterialise) Enter(ai *cmp.AI, e types.IEntity) {
+func (s *BaiterMaterialise) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pc.DX = 0
 	pc.DY = 0
@@ -31,16 +30,15 @@ func (s *LanderMaterialise) Enter(ai *cmp.AI, e types.IEntity) {
 	dc.Disperse = 300
 	rdc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
 	rdc.Hide = false
-	ev := event.NewLanderMaterialise(e)
-	event.NotifyEvent(ev)
+
 }
 
-func (s *LanderMaterialise) Update(ai *cmp.AI, e types.IEntity) {
+func (s *BaiterMaterialise) Update(ai *cmp.AI, e types.IEntity) {
 
 	dc := e.GetComponent(types.Draw).(*cmp.Draw)
 	dc.Disperse -= 5
 	if dc.Disperse < 10 {
 		dc.Disperse = 0
-		ai.NextState = types.LanderSearch
+		ai.NextState = types.BaiterHunt
 	}
 }

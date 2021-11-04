@@ -69,6 +69,7 @@ const (
 	LanderMutate      StateType = iota
 	LanderDie         StateType = iota
 	BaiterMaterialise StateType = iota
+	BaiterWait        StateType = iota
 	BaiterHunt        StateType = iota
 	BaiterDie         StateType = iota
 	HumanWalking      StateType = iota

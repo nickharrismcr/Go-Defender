@@ -57,3 +57,14 @@ func Collide(x1, y1, w1, h1, x2, y2, w2, h2 float64) bool {
 
 	return left < right && top < bottom
 }
+
+func Clamp(v1, v2, v3 float64) float64 {
+
+	if v1 <= v2 {
+		return v2
+	}
+	if v1 >= v3 {
+		return v3
+	}
+	return v1
+}

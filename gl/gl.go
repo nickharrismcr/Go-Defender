@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	Mute              = true
 	ScreenWidth       = 1600
 	ScreenHeight      = 1200
 	MaxTPS            = 30
@@ -19,6 +20,7 @@ const (
 	PlayerSpeedY      = 15
 	SwarmerSpeed      = 5
 	WorldExplodeTicks = 350
+	BaiterSpeed       = 70
 )
 
 var KeyMap = map[types.ActionType]ebiten.Key{
@@ -33,7 +35,8 @@ var KeyMap = map[types.ActionType]ebiten.Key{
 
 var PlayerID types.EntityID
 
-var LanderCount = 20
+var BaiterCount = 1
+var LanderCount = 5
 var LandersKilled = 0
 var HumanCount = 2
 var HumansKilled = 0

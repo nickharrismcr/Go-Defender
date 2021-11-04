@@ -35,6 +35,7 @@ func (s *LanderMutate) Enter(ai *cmp.AI, e types.IEntity) {
 	rc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
 	rc.Cycle = true
 	ai.Counter = 0
+	ai.Scratch = 0
 }
 
 func (s *LanderMutate) Update(ai *cmp.AI, e types.IEntity) {
@@ -60,6 +61,13 @@ func (s *LanderMutate) Update(ai *cmp.AI, e types.IEntity) {
 		pc.DY = util.RandChoiceF([]float64{-gs, 0, gs})
 		pc.X += util.RandChoiceF([]float64{-20, 0, 20})
 		pc.Y += util.RandChoiceF([]float64{-20, 0, 20})
+	}
+
+	ai.Scratch++
+	if ai.Scratch > 30 {
+		ai.Scratch = 0
+		ev := event.NewMutantSound(e)
+		event.NotifyEvent(ev)
 	}
 
 	// TODO gl bullet rate

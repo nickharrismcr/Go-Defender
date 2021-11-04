@@ -2,6 +2,7 @@ package player
 
 import (
 	"Def/cmp"
+	"Def/event"
 	"Def/graphics"
 	"Def/types"
 )
@@ -39,6 +40,8 @@ func (s *PlayerDie) Update(ai *cmp.AI, e types.IEntity) {
 		dc.Hide = true
 		pc := e.GetComponent(types.Pos).(*cmp.Pos)
 		e.GetEngine().TriggerPS(pc.X, pc.Y)
+		ev := event.NewPlayerExplode(e)
+		event.NotifyEvent(ev)
 	}
 	if ai.Counter == 180 {
 		ai.NextState = types.PlayerPlay

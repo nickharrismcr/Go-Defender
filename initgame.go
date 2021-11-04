@@ -8,6 +8,7 @@ import (
 	"Def/graphics"
 	"Def/logger"
 	"Def/sound"
+	"Def/state/baiter"
 	"Def/state/bomber"
 	"Def/state/human"
 	"Def/state/lander"
@@ -67,8 +68,8 @@ func initEntities(engine *game.Engine) {
 
 	}
 
-	for i := 0; i < 1; i++ {
-		//TODO baiter
+	for i := 0; i < gl.BaiterCount; i++ {
+		AddBaiter(engine, i)
 	}
 
 	for i := 0; i < gl.HumanCount; i++ {
@@ -147,6 +148,36 @@ func AddLander(engine *game.Engine, count int) {
 	col := types.ColorF{R: 0, G: 1, B: 0, A: 1}
 	rd := cmp.NewRadarDraw(blankImg, col)
 	ent.AddComponent(rd)
+
+}
+
+func AddBaiter(engine *game.Engine, count int) {
+
+	ssheet := graphics.GetSpriteSheet()
+	ent := game.NewEntity(engine, types.Baiter)
+	ent.SetActive(true)
+
+	pc := cmp.NewPos(0, 0, 0, 0)
+	ent.AddComponent(pc)
+	sgraph := game.NewStateGraph()
+	sgraph.AddState(baiter.NewBaiterWait())
+	sgraph.AddState(baiter.NewBaiterMaterialise())
+	sgraph.AddState(baiter.NewBaiterHunt())
+	sgraph.AddState(baiter.NewBaiterDie())
+
+	fsm := game.NewFSM(sgraph)
+	ai := cmp.NewAI(fsm, types.BaiterWait)
+	ent.AddComponent(ai)
+	smap := graphics.GetSpriteMap("baiter.png")
+	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
+	ent.AddComponent(dr)
+	col := types.ColorF{R: 0, G: 0.5, B: 0, A: 1}
+	rd := cmp.NewRadarDraw(blankImg, col)
+	ent.AddComponent(rd)
+	sh := cmp.NewShootable()
+	ent.AddComponent(sh)
+	//cl := cmp.NewCollide(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
+	//ent.AddComponent(cl)
 
 }
 
@@ -369,6 +400,7 @@ func InitEvents(engine *game.Engine) {
 	start := func(e event.IEvent) {
 		engine.GetSystem(game.PosSystem).SetActive(true)
 		sound.Play(sound.Background)
+		sound.Play(sound.Levelstart)
 	}
 
 	playerCollide := func(ev event.IEvent) {
@@ -399,6 +431,10 @@ func InitEvents(engine *game.Engine) {
 		sound.Play(sound.Bullet)
 	}
 
+	LanderMaterialise := func(e event.IEvent) {
+		sound.PlayIfNot(sound.Materialise)
+	}
+
 	landerDie := func(e event.IEvent) {
 		gl.Score += 150
 		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
@@ -411,10 +447,15 @@ func InitEvents(engine *game.Engine) {
 		sound.Stop(sound.Laser)
 		sound.Play(sound.Landerdie)
 	}
+
 	landerCleared := func(e event.IEvent) {
 		if ent := e.GetPayload().(*game.Entity); ent != nil {
 			// end of level
 		}
+	}
+
+	mutantSound := func(e event.IEvent) {
+		sound.PlayIfNot(sound.Mutant)
 	}
 
 	humanDie := func(e event.IEvent) {
@@ -425,6 +466,7 @@ func InitEvents(engine *game.Engine) {
 			engine.SetFlash(30)
 			engine.MutateAll()
 		}
+		sound.Play(sound.Humandie)
 	}
 
 	bomberDie := func(e event.IEvent) {
@@ -439,6 +481,10 @@ func InitEvents(engine *game.Engine) {
 		pai := pe.GetComponent(types.AI).(*cmp.AI)
 		pai.NextState = types.PlayerDie
 		engine.GetSystem(game.PosSystem).SetActive(false)
+	}
+
+	playerExplode := func(e event.IEvent) {
+		sound.Play(sound.Die)
 	}
 
 	playerFire := func(e event.IEvent) {
@@ -480,6 +526,11 @@ func InitEvents(engine *game.Engine) {
 	baiterDie := func(e event.IEvent) {
 		gl.Score += 200
 		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		sound.Play(sound.Baiterdie)
+	}
+
+	HumanDropped := func(e event.IEvent) {
+		sound.Play(sound.Dropping)
 	}
 
 	humanGrabbed := func(e event.IEvent) {
@@ -491,11 +542,14 @@ func InitEvents(engine *game.Engine) {
 		gl.Score += 500
 		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
 	}
+
 	humanSaved := func(e event.IEvent) {
 		AddScoreSprite(engine, e)
 		gl.Score += 500
 		engine.ChangeString(scoreId, fmt.Sprintf("%8d", gl.Score))
+		sound.Play(sound.Placehuman)
 	}
+
 	humanLanded := func(e event.IEvent) {
 		AddScoreSprite(engine, e)
 		gl.Score += 250
@@ -517,6 +571,7 @@ func InitEvents(engine *game.Engine) {
 	event.AddEventListener(event.HumanDieEvent, humanDie)
 	event.AddEventListener(event.BomberDieEvent, bomberDie)
 	event.AddEventListener(event.PlayerDieEvent, playerDie)
+	event.AddEventListener(event.PlayerExplodeEvent, playerExplode)
 	event.AddEventListener(event.StartEvent, start)
 	event.AddEventListener(event.PlayerFireEvent, playerFire)
 	event.AddEventListener(event.SmartBombEvent, smartBomb)
@@ -528,7 +583,9 @@ func InitEvents(engine *game.Engine) {
 	event.AddEventListener(event.HumanSavedEvent, humanSaved)
 	event.AddEventListener(event.HumanLandedEvent, humanLanded)
 	event.AddEventListener(event.HumanGrabbedEvent, humanGrabbed)
+	event.AddEventListener(event.HumanDroppedEvent, HumanDropped)
 	event.AddEventListener(event.PlayerThrustEvent, thrustOn)
 	event.AddEventListener(event.PlayerStopThrustEvent, thrustOff)
-
+	event.AddEventListener(event.LanderMaterialiseEvent, LanderMaterialise)
+	event.AddEventListener(event.MutantSoundEvent, mutantSound)
 }

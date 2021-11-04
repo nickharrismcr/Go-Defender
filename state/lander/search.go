@@ -40,12 +40,12 @@ func (s *LanderSearch) Enter(ai *cmp.AI, e types.IEntity) {
 	pc.DY = 0
 	ai.Counter = 0
 	for _, id := range e.GetEngine().GetActiveEntitiesOfClass(types.Human) {
-		te := e.GetEngine().GetEntity(id)
-		if te.Parent() == te.GetID() {
-			tepc := te.GetComponent(types.Pos).(*cmp.Pos)
-			if math.Abs(pc.X-tepc.X) < 4000 {
-				e.SetChild(te.GetID())
-				te.SetParent(e.GetID())
+		hum := e.GetEngine().GetEntity(id)
+		if hum.Parent() == hum.GetID() {
+			humpos := hum.GetComponent(types.Pos).(*cmp.Pos)
+			if humpos.X-pc.X < 4000 {
+				e.SetChild(hum.GetID())
+				hum.SetParent(e.GetID())
 				break
 			}
 		}
