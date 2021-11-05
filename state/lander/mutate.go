@@ -64,7 +64,7 @@ func (s *LanderMutate) Update(ai *cmp.AI, e types.IEntity) {
 	}
 
 	ai.Scratch++
-	if ai.Scratch > 30 {
+	if ai.Scratch > 7 {
 		ai.Scratch = 0
 		ev := event.NewMutantSound(e)
 		event.NotifyEvent(ev)

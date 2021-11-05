@@ -31,7 +31,7 @@ func (s *LanderMaterialise) Enter(ai *cmp.AI, e types.IEntity) {
 	dc.Disperse = 300
 	rdc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
 	rdc.Hide = false
-	ev := event.NewLanderMaterialise(e)
+	ev := event.NewMaterialise(e)
 	event.NotifyEvent(ev)
 }
 

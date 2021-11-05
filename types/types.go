@@ -30,6 +30,7 @@ const (
 	Pod     EntityType = iota
 	Swarmer EntityType = iota
 	Score   EntityType = iota
+	Flame   EntityType = iota
 )
 
 func (et EntityType) String() string {
@@ -56,6 +57,8 @@ func (et EntityType) String() string {
 		return "Swarmer"
 	case Score:
 		return "Score"
+	case Flame:
+		return "Flame"
 	}
 	return ""
 }

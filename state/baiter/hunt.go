@@ -38,18 +38,18 @@ func (s *BaiterHunt) Update(ai *cmp.AI, e types.IEntity) {
 
 	ai.Scratch++
 
-	if ai.Scratch == 15 {
+	if ai.Scratch == 30 {
 		ai.Scratch = 0
-		xoff := rand.Float64() * -200
+		xoff := rand.Float64()*200 - 200
 		yoff := rand.Float64()*100 - 100
 		offpos := &cmp.Pos{X: plpos.X + xoff, Y: plpos.Y + yoff, DX: plpos.DX, DY: plpos.DY}
-		pc.DX, pc.DY = util.ComputeBullet(offpos, pc, 0.5)
+		pc.DX, pc.DY = util.ComputeBullet(pc, offpos, 1)
 		pc.DX = util.Clamp(pc.DX, -gs, gs)
 	}
 
 	if !util.OffScreen(util.ScreenX(pc.X), pc.Y) && rand.Intn(50) == 0 {
-		tc := e.GetEngine().GetPlayer().GetComponent(types.Pos).(*cmp.Pos)
-		dx, dy := util.ComputeBullet(pc, tc, gl.BulletTime)
+		plp := e.GetEngine().GetPlayer().GetComponent(types.Pos).(*cmp.Pos)
+		dx, dy := util.ComputeBullet(pc, plp, gl.BulletTime/2)
 		ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
 		event.NotifyEvent(ev)
 	}

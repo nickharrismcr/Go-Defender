@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Mute              = true
+	Mute              = true //false
 	ScreenWidth       = 1600
 	ScreenHeight      = 1200
 	MaxTPS            = 30
@@ -20,7 +20,7 @@ const (
 	PlayerSpeedY      = 15
 	SwarmerSpeed      = 5
 	WorldExplodeTicks = 350
-	BaiterSpeed       = 70
+	BaiterSpeed       = 80
 )
 
 var KeyMap = map[types.ActionType]ebiten.Key{

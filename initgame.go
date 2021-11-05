@@ -87,9 +87,9 @@ func initEntities(engine *game.Engine) {
 func AddPlayer(engine *game.Engine) {
 
 	ssheet := graphics.GetSpriteSheet()
-	ent := game.NewEntity(engine, types.Player)
-	gl.PlayerID = ent.Id
-	ent.SetActive(true)
+	plEnt := game.NewEntity(engine, types.Player)
+	gl.PlayerID = plEnt.Id
+	plEnt.SetActive(true)
 
 	x := float64(gl.WorldWidth) / 2
 	y := float64(gl.ScreenHeight) / 2
@@ -100,17 +100,30 @@ func AddPlayer(engine *game.Engine) {
 
 	fsm := game.NewFSM(sgraph)
 	ai := cmp.NewAI(fsm, types.PlayerPlay)
-	ent.AddComponent(ai)
+	plEnt.AddComponent(ai)
 	smap := graphics.GetSpriteMap("ship.png")
 	dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
-	ent.AddComponent(dr)
+	plEnt.AddComponent(dr)
 	col := types.ColorF{R: 1, G: 1, B: 1, A: 1}
 	rd := cmp.NewRadarDraw(blankImg, col)
-	ent.AddComponent(rd)
+	plEnt.AddComponent(rd)
 	sc := cmp.NewShip(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
-	ent.AddComponent(sc)
+	plEnt.AddComponent(sc)
 	pc := cmp.NewPos(x, y, 0, 0)
-	ent.AddComponent(pc)
+	plEnt.AddComponent(pc)
+
+	//flame
+
+	fEnt := game.NewEntity(engine, types.Player)
+	fEnt.SetActive(true)
+	fsmap := graphics.GetSpriteMap("thrust.png")
+	fdr := cmp.NewDraw(ssheet, fsmap, types.ColorF{R: 1, G: 1, B: 1})
+
+	fdr.Scale = 0.7
+	fEnt.AddComponent(fdr)
+	plEnt.SetChild(fEnt.Id)
+	fpc := cmp.NewPos(0, 0, 0, 0)
+	fEnt.AddComponent(fpc)
 
 }
 
@@ -173,8 +186,8 @@ func AddBaiter(engine *game.Engine, count int) {
 	ent.AddComponent(rd)
 	sh := cmp.NewShootable()
 	ent.AddComponent(sh)
-	//cl := cmp.NewCollide(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
-	//ent.AddComponent(cl)
+	cl := cmp.NewCollide(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
+	ent.AddComponent(cl)
 
 }
 
@@ -316,7 +329,7 @@ func AddScoreSprite(engine *game.Engine, ev event.IEvent) {
 	ent := game.NewEntity(engine, types.Score)
 	ent.SetActive(true)
 	pc := cmp.NewPos(evpc.X-gl.CameraX(), evpc.Y, 0, 0)
-	pc.Screen = true
+	pc.ScreenCoords = true
 	ent.AddComponent(pc)
 	s := "500.png"
 	if ev.GetType() == event.HumanLandedEvent {
@@ -424,12 +437,14 @@ func InitEvents(engine *game.Engine) {
 
 	bulletTrigger := func(e event.IEvent) {
 		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
+
 			engine.TriggerBullet(ct.X, ct.Y, ct.DX, ct.DY)
+			sound.Play(sound.Bullet)
 		}
-		sound.Play(sound.Bullet)
+
 	}
 
-	LanderMaterialise := func(e event.IEvent) {
+	materialise := func(e event.IEvent) {
 		sound.PlayIfNot(sound.Materialise)
 	}
 
@@ -489,7 +504,7 @@ func InitEvents(engine *game.Engine) {
 		if pe := e.GetPayload().(*game.Entity); pe != nil {
 			pc := pe.GetComponent(types.Pos).(*cmp.Pos)
 			sc := pe.GetComponent(types.Ship).(*cmp.Ship)
-			x := pc.X + 100
+			x := pc.X + 25
 			y := pc.Y + 25
 			if sc.Direction < 0 {
 				x = pc.X - 100
@@ -584,6 +599,6 @@ func InitEvents(engine *game.Engine) {
 	event.AddEventListener(event.HumanDroppedEvent, HumanDropped)
 	event.AddEventListener(event.PlayerThrustEvent, thrustOn)
 	event.AddEventListener(event.PlayerStopThrustEvent, thrustOff)
-	event.AddEventListener(event.LanderMaterialiseEvent, LanderMaterialise)
+	event.AddEventListener(event.MaterialiseEvent, materialise)
 	event.AddEventListener(event.MutantSoundEvent, mutantSound)
 }

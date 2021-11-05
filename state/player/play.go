@@ -51,10 +51,23 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 	}
 	gl.SetCameraX(camx)
 
+	fle := e.GetEngine().GetEntity(e.Child())
+	flpc := fle.GetComponent(types.Pos).(*cmp.Pos)
+	fldc := fle.GetComponent(types.Draw).(*cmp.Draw)
+
+	flpc.X = pc.X - 40
+	if sc.Direction < 0 {
+		flpc.X = pc.X + 5
+	}
+	flpc.Y = pc.Y + 10
+
+	fdc := fle.GetComponent(types.Draw).(*cmp.Draw)
+
 	if ebiten.IsKeyPressed(gl.KeyMap[types.Reverse]) {
 		if !sc.ReversePressed {
 			sc.Direction = -sc.Direction
 			dc.FlipX = !dc.FlipX
+			fdc.FlipX = !fdc.FlipX
 			sc.ReversePressed = true
 			pc.DX /= 2
 		}
@@ -66,9 +79,11 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 			sc.ThrustPressed = true
 			ev := event.NewPlayerThrust(e)
 			event.NotifyEvent(ev)
+			fldc.Hide = false
 		}
 		pc.DX += sc.Direction * 2
 	} else {
+		fldc.Hide = true
 		sc.ThrustPressed = false
 		ev := event.NewPlayerStopThrust(e)
 		event.NotifyEvent(ev)

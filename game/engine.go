@@ -185,9 +185,7 @@ func (eng *Engine) TriggerPS(x, y float64) {
 }
 
 func (eng *Engine) TriggerBullet(x, y, dx, dy float64) {
-	if dx > 5 {
-		return
-	}
+
 	for _, v := range eng.BulletPool {
 		if !v.Active() {
 			v.SetActive(true)

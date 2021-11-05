@@ -1,10 +1,7 @@
 package main
 
 //TODO
-//  sound
 //  levels
-//  baiter
-//  ship flame
 
 import (
 	"Def/game"

@@ -36,6 +36,6 @@ func (s *BaiterDie) Update(ai *cmp.AI, e types.IEntity) {
 	dc := e.GetComponent(types.Draw).(*cmp.Draw)
 	dc.Disperse += 7
 	if dc.Disperse > 300 {
-		e.SetActive(false)
+		ai.NextState = types.BaiterMaterialise
 	}
 }

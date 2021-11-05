@@ -5,7 +5,7 @@ import "Def/types"
 type Pos struct {
 	componentType types.CmpType
 	X, Y, DX, DY  float64
-	Screen        bool // is position screen rather than world,  used for score GFX
+	ScreenCoords  bool // is position screen rather than world,  used for score GFX
 }
 
 func NewPos(x, y, dx, dy float64) *Pos {
