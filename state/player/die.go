@@ -31,6 +31,9 @@ func (s *PlayerDie) Enter(ai *cmp.AI, e types.IEntity) {
 	pc.DX = 0
 	pc.DY = 0
 	ai.Counter = 0
+	fle := e.GetEngine().GetEntity(e.Child())
+	fdc := fle.GetComponent(types.Draw).(*cmp.Draw)
+	fdc.Hide = true
 }
 
 func (s *PlayerDie) Update(ai *cmp.AI, e types.IEntity) {

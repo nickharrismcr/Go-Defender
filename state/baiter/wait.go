@@ -30,7 +30,7 @@ func (s *BaiterWait) Enter(ai *cmp.AI, e types.IEntity) {
 
 func (s *BaiterWait) Update(ai *cmp.AI, e types.IEntity) {
 
-	if gl.LanderCount-gl.LandersKilled < 3 {
+	if gl.CurrentLevel().LanderCount-gl.LandersKilled < 3 {
 		ai.NextState = types.BaiterMaterialise
 		pc := e.GetComponent(types.Pos).(*cmp.Pos)
 		pc.Y = gl.ScreenHeight / 2

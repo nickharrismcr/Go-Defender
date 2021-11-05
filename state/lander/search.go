@@ -85,7 +85,8 @@ func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
 	// TODO gl bullet rate
 	if !util.OffScreen(util.ScreenX(pc.X), pc.Y) && rand.Intn(100) == 0 {
 		tc := e.GetEngine().GetPlayer().GetComponent(types.Pos).(*cmp.Pos)
-		dx, dy := util.ComputeBullet(pc, tc, gl.BulletTime)
+		bullettime := gl.CurrentLevel().BulletTime
+		dx, dy := util.ComputeBullet(pc, tc, bullettime)
 		ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
 		event.NotifyEvent(ev)
 	}

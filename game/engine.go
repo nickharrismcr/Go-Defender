@@ -31,6 +31,7 @@ type Engine struct {
 	LaserPool             []*Entity
 	LaserColIdx           int
 	flash                 int
+	terminate             bool
 }
 
 func NewEngine() *Engine {
@@ -149,7 +150,7 @@ func (eng *Engine) GetEntitiesWithComponent(ct types.CmpType) map[types.EntityID
 	return nil
 }
 
-func (eng *Engine) Update() {
+func (eng *Engine) Update() bool {
 	for _, s := range eng.updateSystems {
 		s.Update()
 	}
@@ -159,6 +160,10 @@ func (eng *Engine) Update() {
 	event.UpdateQueue()
 	eng.world.Update()
 
+	if eng.terminate || ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		return false
+	}
+	return true
 }
 
 func (eng *Engine) Draw(screen *ebiten.Image) {
@@ -303,11 +308,13 @@ func (eng *Engine) ExplodeWorld() {
 func (eng *Engine) MutateAll() {
 
 	landers := eng.GetActiveEntitiesOfClass(types.Lander)
-
 	for _, id := range landers {
 		e := eng.GetEntity(id)
 		ai := e.GetComponent(types.AI).(*cmp.AI)
 		ai.NextState = types.LanderMutate
 	}
+}
 
+func (eng *Engine) Terminate() {
+	eng.terminate = true
 }

@@ -200,6 +200,7 @@ type IEngine interface {
 
 type IEntity interface {
 	GetComponent(c CmpType) ICmp
+	RemoveComponent(c CmpType)
 	HasComponent(c CmpType) bool
 	SetActive(bool)
 	GetEngine() IEngine

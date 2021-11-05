@@ -2,6 +2,7 @@ package main
 
 //TODO
 //  levels
+//  lives/bombs HUD
 
 import (
 	"Def/game"
@@ -21,9 +22,8 @@ var engine *game.Engine
 
 func (g *Game) Update() error {
 
-	engine.Update()
-	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
-		return errors.New("escape pressed")
+	if !engine.Update() {
+		return errors.New("end level")
 	}
 	return nil
 }

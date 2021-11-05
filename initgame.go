@@ -19,6 +19,7 @@ import (
 	"Def/types"
 	"fmt"
 	"image/color"
+	"math"
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -59,27 +60,19 @@ func initEntities(engine *game.Engine) {
 
 	AddPlayer(engine)
 
-	for i := 0; i < gl.LanderCount; i++ {
-
+	for i := 0; i < gl.CurrentLevel().LanderCount; i++ {
 		AddLander(engine, i)
-
 	}
-
-	for i := 0; i < gl.BaiterCount; i++ {
+	for i := 0; i < gl.CurrentLevel().BaiterCount; i++ {
 		AddBaiter(engine, i)
 	}
-
-	for i := 0; i < gl.HumanCount; i++ {
-
+	for i := 0; i < gl.CurrentLevel().HumanCount; i++ {
 		AddHuman(engine, i)
-
 	}
-	for i := 0; i < gl.BomberCount; i++ {
-
+	for i := 0; i < gl.CurrentLevel().BomberCount; i++ {
 		AddBomber(engine, i)
 	}
-	for i := 0; i < gl.PodCount; i++ {
-
+	for i := 0; i < gl.CurrentLevel().PodCount; i++ {
 		AddPod(engine, i)
 	}
 }
@@ -424,8 +417,8 @@ func InitEvents(engine *game.Engine) {
 			}
 		} else {
 			engine.Kill(e)
-			//ev := event.NewPlayerDie(engine.GetPlayer())
-			//event.NotifyEvent(ev)
+			ev := event.NewPlayerDie(engine.GetPlayer())
+			event.NotifyEvent(ev)
 		}
 	}
 
@@ -437,11 +430,11 @@ func InitEvents(engine *game.Engine) {
 
 	bulletTrigger := func(e event.IEvent) {
 		if ct := e.GetPayload().(*cmp.Pos); ct != nil {
-
-			engine.TriggerBullet(ct.X, ct.Y, ct.DX, ct.DY)
-			sound.Play(sound.Bullet)
+			if math.Abs(ct.DX) < 20 {
+				engine.TriggerBullet(ct.X, ct.Y, ct.DX, ct.DY)
+				sound.Play(sound.Bullet)
+			}
 		}
-
 	}
 
 	materialise := func(e event.IEvent) {
@@ -453,7 +446,7 @@ func InitEvents(engine *game.Engine) {
 		engine.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
 		ent := e.GetPayload().(*game.Entity)
 		gl.LandersKilled++
-		if gl.LandersKilled == gl.LanderCount {
+		if gl.LandersKilled == gl.CurrentLevel().LanderCount {
 			lc := event.NewLanderCleared(ent)
 			event.NotifyEvent(lc)
 		}
@@ -462,9 +455,7 @@ func InitEvents(engine *game.Engine) {
 	}
 
 	landerCleared := func(e event.IEvent) {
-		if ent := e.GetPayload().(*game.Entity); ent != nil {
-			// end of level
-		}
+		engine.Terminate()
 	}
 
 	mutantSound := func(e event.IEvent) {
@@ -474,7 +465,7 @@ func InitEvents(engine *game.Engine) {
 	humanDie := func(e event.IEvent) {
 
 		gl.HumansKilled++
-		if gl.HumansKilled == gl.HumanCount {
+		if gl.HumansKilled == gl.CurrentLevel().HumanCount {
 			engine.ExplodeWorld()
 			engine.SetFlash(30)
 			engine.MutateAll()
@@ -524,7 +515,7 @@ func InitEvents(engine *game.Engine) {
 		engine.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
 		ent := e.GetPayload().(*game.Entity)
 		pc := ent.GetComponent(types.Pos).(*cmp.Pos)
-		for i := 0; i < gl.SwarmerCount; i++ {
+		for i := 0; i < gl.CurrentLevel().SwarmerCount; i++ {
 			AddSwarmer(engine, i, pc.X, pc.Y)
 		}
 		sound.Stop(sound.Laser)

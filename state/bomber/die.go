@@ -28,6 +28,7 @@ func (s *BomberDie) Enter(ai *cmp.AI, e types.IEntity) {
 	dc.Disperse = 0
 	ev := event.NewBomberDie(e)
 	event.NotifyEvent(ev)
+	e.RemoveComponent(types.Collide)
 }
 
 func (s *BomberDie) Update(ai *cmp.AI, e types.IEntity) {

@@ -30,6 +30,7 @@ func (s *BaiterDie) Enter(ai *cmp.AI, e types.IEntity) {
 	event.NotifyEvent(ev)
 	rdc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
 	rdc.Hide = true
+	e.RemoveComponent(types.Collide)
 }
 
 func (s *BaiterDie) Update(ai *cmp.AI, e types.IEntity) {

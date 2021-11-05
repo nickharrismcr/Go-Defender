@@ -32,6 +32,8 @@ func (s *LanderDie) Enter(ai *cmp.AI, e types.IEntity) {
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	pc.DX = 0
 	pc.DY = 0
+	e.RemoveComponent(types.Collide)
+
 }
 
 func (s *LanderDie) Update(ai *cmp.AI, e types.IEntity) {

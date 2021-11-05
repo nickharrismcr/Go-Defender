@@ -36,19 +36,24 @@ func (s *LanderGrab) Update(ai *cmp.AI, e types.IEntity) {
 	ai.Counter++
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
+	he := e.GetEngine().GetEntity(e.Child())
+	if !he.Active() {
+		ai.NextState = types.LanderSearch
+	}
 
 	// TODO gl bullet rate
 	if !util.OffScreen(util.ScreenX(pc.X), pc.Y) && rand.Intn(100) == 0 {
 		tc := e.GetEngine().GetPlayer().GetComponent(types.Pos).(*cmp.Pos)
-		dx, dy := util.ComputeBullet(pc, tc, gl.BulletTime)
+		bullettime := gl.CurrentLevel().BulletTime
+		dx, dy := util.ComputeBullet(pc, tc, bullettime)
 		ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
 		event.NotifyEvent(ev)
 	}
 
 	if pc.Y < gl.ScreenTop+50 {
 		ai.NextState = types.LanderMutate
-		te := e.GetEngine().GetEntity(e.Child())
-		tai := te.GetComponent(types.AI).(*cmp.AI)
-		tai.NextState = types.HumanDie
+		he := e.GetEngine().GetEntity(e.Child())
+		hai := he.GetComponent(types.AI).(*cmp.AI)
+		hai.NextState = types.HumanDie
 	}
 }

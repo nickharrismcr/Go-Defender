@@ -49,7 +49,8 @@ func (s *BaiterHunt) Update(ai *cmp.AI, e types.IEntity) {
 
 	if !util.OffScreen(util.ScreenX(pc.X), pc.Y) && rand.Intn(50) == 0 {
 		plp := e.GetEngine().GetPlayer().GetComponent(types.Pos).(*cmp.Pos)
-		dx, dy := util.ComputeBullet(pc, plp, gl.BulletTime/2)
+		bullettime := gl.CurrentLevel().BulletTime
+		dx, dy := util.ComputeBullet(pc, plp, bullettime/2)
 		ev := event.NewFireBullet(cmp.NewPos(pc.X, pc.Y, dx, dy))
 		event.NotifyEvent(ev)
 	}
