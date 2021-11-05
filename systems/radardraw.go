@@ -55,7 +55,7 @@ func (drawsys *RadarDrawSystem) Update() {}
 
 func (drawsys *RadarDrawSystem) HUD(screen *ebiten.Image) {
 
-	col := gl.Cols[gl.HudCol]
+	col := gl.LevelCol()
 
 	lineOpts.ColorM.Scale(col.R, col.G, col.B, col.A)
 	lineOpts.GeoM.Reset()
@@ -90,7 +90,6 @@ func (drawsys *RadarDrawSystem) Draw(screen *ebiten.Image) {
 	}
 
 	drawsys.HUD(screen)
-
 	for _, e := range drawsys.targets {
 		if e.Active() {
 			drawsys.process(e, screen)

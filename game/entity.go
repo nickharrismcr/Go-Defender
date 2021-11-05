@@ -19,6 +19,7 @@ type Entity struct {
 	engine *Engine
 	parent types.EntityID
 	child  types.EntityID
+	paused bool
 }
 
 func NewEntity(engine *Engine, class types.EntityType) *Entity {
@@ -51,6 +52,14 @@ func (e *Entity) Active() bool {
 func (e *Entity) SetActive(s bool) {
 	logger.Debug("Entity %d set active %t ", e.Id, s)
 	e.active = s
+}
+
+func (e *Entity) Paused() bool {
+	return e.paused
+}
+
+func (e *Entity) SetPaused(s bool) {
+	e.paused = s
 }
 
 func (e *Entity) AddComponent(c types.ICmp) {

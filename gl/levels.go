@@ -1,5 +1,7 @@
 package gl
 
+import "Def/types"
+
 type Level struct {
 	BaiterCount  int
 	LanderCount  int
@@ -10,8 +12,16 @@ type Level struct {
 	BulletTime   float64
 }
 
+func NextLevel() {
+	currentLevel++
+}
+
 func CurrentLevel() Level {
 	return levels[currentLevel]
+}
+
+func LevelCol() types.ColorF {
+	return Cols[currentLevel%5]
 }
 
 var currentLevel int = 0
@@ -21,7 +31,7 @@ func init() {
 	levels = []Level{}
 	levels = append(levels, Level{
 		BaiterCount:  0,
-		LanderCount:  18,
+		LanderCount:  2,
 		HumanCount:   18,
 		BomberCount:  0,
 		PodCount:     0,

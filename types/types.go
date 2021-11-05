@@ -196,6 +196,7 @@ type IEngine interface {
 	GetEntitiesWithComponent(CmpType) map[EntityID]IEntity
 	GetPlayer() IEntity
 	SetFlash(int)
+	SetPauseAll(bool, EntityID)
 }
 
 type IEntity interface {
@@ -212,6 +213,8 @@ type IEntity interface {
 	SetChild(EntityID)
 	GetClass() EntityType
 	AddComponent(ICmp)
+	Paused() bool
+	SetPaused(bool)
 }
 
 type ColorF struct {

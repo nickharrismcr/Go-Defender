@@ -21,13 +21,14 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
+	"runtime"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var blankImg *ebiten.Image
 
-func InitGame(engine *game.Engine) {
+func InitEngine(engine *game.Engine) {
 
 	graphics.Load()
 
@@ -398,16 +399,15 @@ func laserPool(engine *game.Engine) {
 }
 
 func InitEvents(engine *game.Engine) {
-	// Events
 
 	start := func(e event.IEvent) {
 		engine.GetSystem(game.PosSystem).SetActive(true)
 		sound.Play(sound.Background)
 		sound.Play(sound.Levelstart)
+		engine.SetPauseAll(false, -1)
 	}
 
 	playerCollide := func(ev event.IEvent) {
-
 		e := ev.GetPayload().(*game.Entity)
 		logger.Info("Collide : %s ", e.Class.String())
 		if e.Class == types.Human {
@@ -417,8 +417,13 @@ func InitEvents(engine *game.Engine) {
 			}
 		} else {
 			engine.Kill(e)
+			engine.SetPauseAll(true, e.Id)
 			ev := event.NewPlayerDie(engine.GetPlayer())
 			event.NotifyEvent(ev)
+			gl.PlayerLives--
+			if gl.PlayerLives == 0 {
+				engine.Terminate(game.GAME_OVER)
+			}
 		}
 	}
 
@@ -455,7 +460,12 @@ func InitEvents(engine *game.Engine) {
 	}
 
 	landerCleared := func(e event.IEvent) {
-		engine.Terminate()
+		engine.ClearEntities()
+		runtime.GC()
+		initEntities(engine)
+		bulletPool(engine)
+		bombPool(engine)
+		laserPool(engine)
 	}
 
 	mutantSound := func(e event.IEvent) {
@@ -463,7 +473,6 @@ func InitEvents(engine *game.Engine) {
 	}
 
 	humanDie := func(e event.IEvent) {
-
 		gl.HumansKilled++
 		if gl.HumansKilled == gl.CurrentLevel().HumanCount {
 			engine.ExplodeWorld()
@@ -484,7 +493,7 @@ func InitEvents(engine *game.Engine) {
 		pe := engine.GetEntities()[gl.PlayerID]
 		pai := pe.GetComponent(types.AI).(*cmp.AI)
 		pai.NextState = types.PlayerDie
-		engine.GetSystem(game.PosSystem).SetActive(false)
+
 	}
 
 	playerExplode := func(e event.IEvent) {

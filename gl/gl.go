@@ -34,6 +34,7 @@ var KeyMap = map[types.ActionType]ebiten.Key{
 }
 
 var PlayerID types.EntityID
+var PlayerLives = 3
 var ScoreCharId int
 var LandersKilled = 0
 var HumansKilled = 0

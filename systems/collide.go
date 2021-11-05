@@ -45,7 +45,7 @@ func (cs *CollideSystem) Update() {
 	}
 	pe := cs.engine.GetEntities()[gl.PlayerID]
 	for _, e := range cs.targets {
-		if e.Active() {
+		if e.Active() && !e.Paused() {
 			cs.process(e, pe)
 		}
 	}

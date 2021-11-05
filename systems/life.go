@@ -40,7 +40,7 @@ func (pos *LifeSystem) Update() {
 		return
 	}
 	for _, e := range pos.targets {
-		if e.Active() {
+		if e.Active() && !e.Paused() {
 			pos.process(e)
 		}
 	}

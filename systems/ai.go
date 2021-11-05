@@ -40,7 +40,7 @@ func (ai *AISystem) Update() {
 		return
 	}
 	for _, e := range ai.targets {
-		if e.Active() {
+		if e.Active() && !e.Paused() {
 			ai.process(e)
 		}
 	}

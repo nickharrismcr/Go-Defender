@@ -16,6 +16,13 @@ const (
 	DRAW
 )
 
+const (
+	OK int = iota
+	LEVEL_END
+	GAME_OVER
+	TERMINATE
+)
+
 type Engine struct {
 	entities              map[types.EntityID]*Entity
 	entitiesWithComponent map[types.CmpType]map[types.EntityID]types.IEntity
@@ -31,7 +38,7 @@ type Engine struct {
 	LaserPool             []*Entity
 	LaserColIdx           int
 	flash                 int
-	terminate             bool
+	status                int
 }
 
 func NewEngine() *Engine {
@@ -82,6 +89,20 @@ func (eng *Engine) AddEntity(e *Entity) {
 		}
 		for _, s := range eng.drawSystems {
 			s.AddEntityIfRequired(e)
+		}
+	}
+}
+
+func (eng *Engine) RemoveEntity(id types.EntityID) {
+	logger.Debug("Engine removed entity %d ", id)
+	e := eng.entities[id]
+	for _, c := range e.GetComponents() {
+		eng.removeFromEntitiesWithComponent(e, c.Type())
+		for _, s := range eng.updateSystems {
+			s.RemoveEntityIfRequired(e)
+		}
+		for _, s := range eng.drawSystems {
+			s.RemoveEntityIfRequired(e)
 		}
 	}
 }
@@ -150,20 +171,23 @@ func (eng *Engine) GetEntitiesWithComponent(ct types.CmpType) map[types.EntityID
 	return nil
 }
 
-func (eng *Engine) Update() bool {
+func (eng *Engine) Update() int {
 	for _, s := range eng.updateSystems {
 		s.Update()
 	}
 	eng.particleSystem.Update()
 	eng.stars.Update()
-	eng.chars.Update()
 	event.UpdateQueue()
 	eng.world.Update()
 
-	if eng.terminate || ebiten.IsKeyPressed(ebiten.KeyEscape) {
-		return false
+	if eng.chars != nil {
+		eng.chars.Update()
 	}
-	return true
+
+	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		eng.status = TERMINATE
+	}
+	return eng.status
 }
 
 func (eng *Engine) Draw(screen *ebiten.Image) {
@@ -182,7 +206,9 @@ func (eng *Engine) Draw(screen *ebiten.Image) {
 	eng.particleSystem.Draw(screen)
 	eng.world.Draw(screen)
 	eng.stars.Draw(screen)
-	eng.chars.Draw(screen)
+	if eng.chars != nil {
+		eng.chars.Draw(screen)
+	}
 }
 
 func (eng *Engine) TriggerPS(x, y float64) {
@@ -288,7 +314,6 @@ func (eng *Engine) SetFlash(c int) {
 }
 
 func (eng *Engine) SmartBomb() {
-
 	for id := range eng.entitiesWithComponent[types.Shootable] {
 		e := eng.entities[id]
 		if e.Active() && e.Class != types.Human {
@@ -298,7 +323,6 @@ func (eng *Engine) SmartBomb() {
 			}
 		}
 	}
-
 }
 
 func (eng *Engine) ExplodeWorld() {
@@ -306,7 +330,6 @@ func (eng *Engine) ExplodeWorld() {
 }
 
 func (eng *Engine) MutateAll() {
-
 	landers := eng.GetActiveEntitiesOfClass(types.Lander)
 	for _, id := range landers {
 		e := eng.GetEntity(id)
@@ -315,6 +338,20 @@ func (eng *Engine) MutateAll() {
 	}
 }
 
-func (eng *Engine) Terminate() {
-	eng.terminate = true
+func (eng *Engine) Terminate(status int) {
+	eng.status = status
+}
+
+func (eng *Engine) SetPauseAll(p bool, this types.EntityID) {
+	for _, v := range eng.entities {
+		if v.Active() && v.Id != gl.PlayerID && v.Id != this {
+			v.SetPaused(p)
+		}
+	}
+}
+
+func (eng *Engine) ClearEntities() {
+	for _, e := range eng.entities {
+		eng.RemoveEntity(e.Id)
+	}
 }
