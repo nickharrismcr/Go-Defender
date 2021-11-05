@@ -460,12 +460,10 @@ func InitEvents(engine *game.Engine) {
 	}
 
 	landerCleared := func(e event.IEvent) {
-		engine.ClearEntities()
 		runtime.GC()
-		initEntities(engine)
-		bulletPool(engine)
-		bombPool(engine)
-		laserPool(engine)
+		gl.NextLevel()
+		//TODO pause, level end message, human move / bonus
+		//TODO reset all entity states, restart
 	}
 
 	mutantSound := func(e event.IEvent) {
