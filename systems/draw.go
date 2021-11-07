@@ -2,7 +2,7 @@ package systems
 
 import (
 	"Def/cmp"
-	"Def/game"
+
 	"Def/gl"
 	"Def/logger"
 	"Def/types"
@@ -15,27 +15,27 @@ import (
 // implements ISystem
 
 type DrawSystem struct {
-	sysname game.SystemName
-	filter  *game.Filter
+	sysname types.SystemName
+	filter  *Filter
 	active  bool
-	engine  *game.Engine
-	targets map[types.EntityID]*game.Entity
+	engine  types.IEngine
+	targets map[types.EntityID]types.IEntity
 }
 
-func NewDrawSystem(active bool, engine *game.Engine) *DrawSystem {
-	f := game.NewFilter()
+func NewDrawSystem(active bool, engine types.IEngine) *DrawSystem {
+	f := NewFilter()
 	f.Add(types.Draw)
 	f.Add(types.Pos)
 	return &DrawSystem{
-		sysname: game.DrawSystem,
+		sysname: types.DrawSystem,
 		active:  active,
 		filter:  f,
 		engine:  engine,
-		targets: make(map[types.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]types.IEntity),
 	}
 }
 
-func (ds *DrawSystem) GetName() game.SystemName {
+func (ds *DrawSystem) GetName() types.SystemName {
 	return ds.sysname
 }
 
@@ -56,7 +56,7 @@ func (ds *DrawSystem) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (ds *DrawSystem) process(dc *cmp.Draw, e *game.Entity, screen *ebiten.Image) {
+func (ds *DrawSystem) process(dc *cmp.Draw, e types.IEntity, screen *ebiten.Image) {
 
 	pc := e.GetComponent(types.Pos).(*cmp.Pos)
 	op := dc.Opts
@@ -160,8 +160,8 @@ func (ds *DrawSystem) SetActive(active bool) {
 	ds.active = active
 }
 
-func (ds *DrawSystem) AddEntityIfRequired(e *game.Entity) {
-	if _, ok := ds.targets[e.Id]; ok {
+func (ds *DrawSystem) AddEntityIfRequired(e types.IEntity) {
+	if _, ok := ds.targets[e.GetID()]; ok {
 		return
 	}
 	for _, c := range ds.filter.Requires() {
@@ -169,15 +169,15 @@ func (ds *DrawSystem) AddEntityIfRequired(e *game.Entity) {
 			return
 		}
 	}
-	logger.Debug("System %T added entity %d ", ds, e.Id)
-	ds.targets[e.Id] = e
+	logger.Debug("System %T added entity %d ", ds, e.GetID())
+	ds.targets[e.GetID()] = e
 }
 
-func (ds *DrawSystem) RemoveEntityIfRequired(e *game.Entity) {
+func (ds *DrawSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range ds.filter.Requires() {
 		if _, ok := e.GetComponents()[c]; !ok {
-			logger.Debug("System %T removed entity %d ", ds, e.Id)
-			delete(ds.targets, e.Id)
+			logger.Debug("System %T removed entity %d ", ds, e.GetID())
+			delete(ds.targets, e.GetID())
 			return
 		}
 	}

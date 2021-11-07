@@ -3,7 +3,7 @@ package systems
 import (
 	"Def/cmp"
 	"Def/event"
-	"Def/game"
+
 	"Def/gl"
 	"Def/logger"
 	"Def/types"
@@ -16,26 +16,26 @@ import (
 
 // system for detecting collisions between entities with the Collide component
 type CollideSystem struct {
-	sysname game.SystemName
-	filter  *game.Filter
+	sysname types.SystemName
+	filter  *Filter
 	active  bool
-	engine  *game.Engine
-	targets map[types.EntityID]*game.Entity
+	engine  types.IEngine
+	targets map[types.EntityID]types.IEntity
 }
 
-func NewCollideSystem(active bool, engine *game.Engine) *CollideSystem {
-	f := game.NewFilter()
+func NewCollideSystem(active bool, engine types.IEngine) *CollideSystem {
+	f := NewFilter()
 	f.Add(types.Collide)
 	return &CollideSystem{
-		sysname: game.CollideSystem,
+		sysname: types.CollideSystem,
 		active:  active,
 		filter:  f,
 		engine:  engine,
-		targets: make(map[types.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]types.IEntity),
 	}
 }
 
-func (cs *CollideSystem) GetName() game.SystemName {
+func (cs *CollideSystem) GetName() types.SystemName {
 	return cs.sysname
 }
 
@@ -53,7 +53,7 @@ func (cs *CollideSystem) Update() {
 
 func (cs *CollideSystem) Draw(screen *ebiten.Image) {}
 
-func (cs *CollideSystem) process(e *game.Entity, player *game.Entity) {
+func (cs *CollideSystem) process(e types.IEntity, player types.IEntity) {
 
 	ep := e.GetComponent(types.Pos).(*cmp.Pos)
 	ec := e.GetComponent(types.Collide).(*cmp.Collide)
@@ -73,8 +73,8 @@ func (cs *CollideSystem) SetActive(active bool) {
 	cs.active = active
 }
 
-func (cs *CollideSystem) AddEntityIfRequired(e *game.Entity) {
-	if _, ok := cs.targets[e.Id]; ok {
+func (cs *CollideSystem) AddEntityIfRequired(e types.IEntity) {
+	if _, ok := cs.targets[e.GetID()]; ok {
 		return
 	}
 	for _, c := range cs.filter.Requires() {
@@ -82,15 +82,15 @@ func (cs *CollideSystem) AddEntityIfRequired(e *game.Entity) {
 			return
 		}
 	}
-	logger.Debug("System %T added entity %d ", cs, e.Id)
-	cs.targets[e.Id] = e
+	logger.Debug("System %T added entity %d ", cs, e.GetID())
+	cs.targets[e.GetID()] = e
 }
 
-func (cs *CollideSystem) RemoveEntityIfRequired(e *game.Entity) {
+func (cs *CollideSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range cs.filter.Requires() {
 		if _, ok := e.GetComponents()[c]; !ok {
-			logger.Debug("System %T removed entity %d ", cs, e.Id)
-			delete(cs.targets, e.Id)
+			logger.Debug("System %T removed entity %d ", cs, e.GetID())
+			delete(cs.targets, e.GetID())
 			return
 		}
 	}

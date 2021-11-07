@@ -37,7 +37,7 @@ func NewGame() *Game {
 	game := &Game{
 		engine: game.NewEngine(),
 	}
-	InitEngine(game.engine)
+	game.engine.Init()
 	return game
 }
 

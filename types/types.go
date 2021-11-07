@@ -1,6 +1,10 @@
 package types
 
-import "image/color"
+import (
+	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type StateType int
 type EntityType int
@@ -31,6 +35,7 @@ const (
 	Swarmer EntityType = iota
 	Score   EntityType = iota
 	Flame   EntityType = iota
+	Game    EntityType = iota
 )
 
 func (et EntityType) String() string {
@@ -88,6 +93,11 @@ const (
 	PodDie            StateType = iota
 	SwarmerMove       StateType = iota
 	SwarmerDie        StateType = iota
+	GameIntro         StateType = iota
+	GameStart         StateType = iota
+	GamePlay          StateType = iota
+	GameLevelEnd      StateType = iota
+	GameOver          StateType = iota
 )
 
 func (st StateType) String() string {
@@ -182,6 +192,39 @@ func (t CmpType) String() string {
 	return ""
 }
 
+type SystemName int
+
+const (
+	AISystem        SystemName = iota
+	DrawSystem      SystemName = iota
+	PosSystem       SystemName = iota
+	CollideSystem   SystemName = iota
+	LifeSystem      SystemName = iota
+	RadarDrawSystem SystemName = iota
+	LaserDrawSystem SystemName = iota
+	LaserMoveSystem SystemName = iota
+)
+
+func (t SystemName) String() string {
+	switch t {
+	case AISystem:
+		return "AI"
+	case DrawSystem:
+		return "Draw"
+	case PosSystem:
+		return "Pos"
+	case CollideSystem:
+		return "Collide"
+	case LifeSystem:
+		return "Life"
+	case RadarDrawSystem:
+		return "RadarDraw"
+	case LaserMoveSystem:
+		return "LaserMove"
+	}
+	return ""
+}
+
 type ICmp interface {
 	Type() CmpType
 }
@@ -193,14 +236,27 @@ type IEngine interface {
 	TriggerBomb(float64, float64)
 	TriggerPS(float64, float64)
 	Kill(IEntity)
+	GetEntities() map[EntityID]IEntity
 	GetEntitiesWithComponent(CmpType) map[EntityID]IEntity
 	GetPlayer() IEntity
 	SetFlash(int)
-	SetPauseAll(bool, EntityID)
+	GetSystem(SystemName) ISystem
+}
+
+// interface for ECS systems
+type ISystem interface {
+	GetName() SystemName
+	Active() bool
+	SetActive(bool)
+	Update()
+	Draw(*ebiten.Image)
+	AddEntityIfRequired(IEntity)
+	RemoveEntityIfRequired(IEntity)
 }
 
 type IEntity interface {
 	GetComponent(c CmpType) ICmp
+	GetComponents() map[CmpType]ICmp
 	RemoveComponent(c CmpType)
 	HasComponent(c CmpType) bool
 	SetActive(bool)

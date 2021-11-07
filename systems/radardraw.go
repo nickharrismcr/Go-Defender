@@ -2,7 +2,6 @@ package systems
 
 import (
 	"Def/cmp"
-	"Def/game"
 	"Def/gl"
 	"Def/logger"
 	"Def/types"
@@ -26,28 +25,28 @@ var lineOpts = &ebiten.DrawImageOptions{}
 // implements ISystem
 
 type RadarDrawSystem struct {
-	sysname game.SystemName
-	filter  *game.Filter
+	sysname types.SystemName
+	filter  *Filter
 	active  bool
-	engine  *game.Engine
-	targets map[types.EntityID]*game.Entity
+	engine  types.IEngine
+	targets map[types.EntityID]types.IEntity
 }
 
-func NewRadarDrawSystem(active bool, engine *game.Engine) *RadarDrawSystem {
-	f := game.NewFilter()
+func NewRadarDrawSystem(active bool, engine types.IEngine) *RadarDrawSystem {
+	f := NewFilter()
 	f.Add(types.RadarDraw)
 	f.Add(types.Pos)
 	lineImg.Fill(color.White)
 	return &RadarDrawSystem{
-		sysname: game.RadarDrawSystem,
+		sysname: types.RadarDrawSystem,
 		active:  active,
 		filter:  f,
 		engine:  engine,
-		targets: make(map[types.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]types.IEntity),
 	}
 }
 
-func (drawsys *RadarDrawSystem) GetName() game.SystemName {
+func (drawsys *RadarDrawSystem) GetName() types.SystemName {
 	return drawsys.sysname
 }
 
@@ -97,7 +96,7 @@ func (drawsys *RadarDrawSystem) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (drawsys *RadarDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
+func (drawsys *RadarDrawSystem) process(e types.IEntity, screen *ebiten.Image) {
 
 	rdc := e.GetComponent(types.RadarDraw).(*cmp.RadarDraw)
 	if rdc.Hide {
@@ -139,8 +138,8 @@ func (drawsys *RadarDrawSystem) SetActive(active bool) {
 	drawsys.active = active
 }
 
-func (drawsys *RadarDrawSystem) AddEntityIfRequired(e *game.Entity) {
-	if _, ok := drawsys.targets[e.Id]; ok {
+func (drawsys *RadarDrawSystem) AddEntityIfRequired(e types.IEntity) {
+	if _, ok := drawsys.targets[e.GetID()]; ok {
 		return
 	}
 	for _, c := range drawsys.filter.Requires() {
@@ -148,15 +147,15 @@ func (drawsys *RadarDrawSystem) AddEntityIfRequired(e *game.Entity) {
 			return
 		}
 	}
-	logger.Debug("System %T added entity %d ", drawsys, e.Id)
-	drawsys.targets[e.Id] = e
+	logger.Debug("System %T added entity %d ", drawsys, e.GetID())
+	drawsys.targets[e.GetID()] = e
 }
 
-func (drawsys *RadarDrawSystem) RemoveEntityIfRequired(e *game.Entity) {
+func (drawsys *RadarDrawSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range drawsys.filter.Requires() {
 		if _, ok := e.GetComponents()[c]; !ok {
-			logger.Debug("System %T removed entity %d ", drawsys, e.Id)
-			delete(drawsys.targets, e.Id)
+			logger.Debug("System %T removed entity %d ", drawsys, e.GetID())
+			delete(drawsys.targets, e.GetID())
 			return
 		}
 	}

@@ -24,11 +24,11 @@ const (
 )
 
 type Engine struct {
-	entities              map[types.EntityID]*Entity
+	entities              map[types.EntityID]types.IEntity
 	entitiesWithComponent map[types.CmpType]map[types.EntityID]types.IEntity
-	systems               map[SystemName]ISystem
-	updateSystems         []ISystem
-	drawSystems           []ISystem
+	systems               map[types.SystemName]types.ISystem
+	updateSystems         []types.ISystem
+	drawSystems           []types.ISystem
 	particleSystem        *ParticleSystem
 	world                 *World
 	stars                 *Stars
@@ -44,9 +44,9 @@ type Engine struct {
 func NewEngine() *Engine {
 
 	e := &Engine{
-		entities:              make(map[types.EntityID]*Entity),
+		entities:              make(map[types.EntityID]types.IEntity),
 		entitiesWithComponent: make(map[types.CmpType]map[types.EntityID]types.IEntity),
-		systems:               make(map[SystemName]ISystem),
+		systems:               make(map[types.SystemName]types.ISystem),
 		chars:                 nil,
 		BulletPool:            []*Entity{},
 		BombPool:              []*Entity{},
@@ -59,7 +59,7 @@ func NewEngine() *Engine {
 	return e
 }
 
-func (eng *Engine) AddSystem(s ISystem, systype int) {
+func (eng *Engine) AddSystem(s types.ISystem, systype int) {
 	eng.systems[s.GetName()] = s
 	switch systype {
 	case UPDATE:
@@ -71,17 +71,17 @@ func (eng *Engine) AddSystem(s ISystem, systype int) {
 	}
 }
 
-func (eng *Engine) GetSystem(s SystemName) ISystem {
+func (eng *Engine) GetSystem(s types.SystemName) types.ISystem {
 	return eng.systems[s]
 }
 
-func (eng *Engine) SetSystemActive(s SystemName, active bool) {
+func (eng *Engine) SetSystemActive(s types.SystemName, active bool) {
 	eng.systems[s].SetActive(active)
 }
 
 func (eng *Engine) AddEntity(e *Entity) {
-	logger.Debug("Engine added entity %d ", e.Id)
-	eng.entities[e.Id] = e
+	logger.Debug("Engine added entity %d ", e.GetID())
+	eng.entities[e.GetID()] = e
 	for _, c := range e.GetComponents() {
 		eng.addToEntitiesWithComponent(e, c)
 		for _, s := range eng.updateSystems {
@@ -115,19 +115,19 @@ func (eng *Engine) GetActiveEntitiesOfClass(et types.EntityType) []types.EntityI
 
 	rv := []types.EntityID{}
 	for _, v := range eng.entities {
-		if v.Class == et && v.Active() {
-			rv = append(rv, v.Id)
+		if v.GetClass() == et && v.Active() {
+			rv = append(rv, v.GetID())
 		}
 	}
 	return rv
 }
 
-func (eng *Engine) GetEntities() map[types.EntityID]*Entity {
+func (eng *Engine) GetEntities() map[types.EntityID]types.IEntity {
 	return eng.entities
 }
 
 func (eng *Engine) AddComponent(e *Entity, c types.ICmp) {
-	logger.Debug("Engine added component %s to entity %d ", c.Type(), e.Id)
+	logger.Debug("Engine added component %s to entity %d ", c.Type(), e.GetID())
 	eng.addToEntitiesWithComponent(e, c)
 	for _, s := range eng.systems {
 		s.AddEntityIfRequired(e)
@@ -138,7 +138,7 @@ func (eng *Engine) AddComponent(e *Entity, c types.ICmp) {
 }
 
 func (eng *Engine) RemoveComponent(e *Entity, ct types.CmpType) {
-	logger.Debug("Engine removed component %s from entity %d ", ct.String(), e.Id)
+	logger.Debug("Engine removed component %s from entity %d ", ct.String(), e.GetID())
 	eng.removeFromEntitiesWithComponent(e, ct)
 	for _, s := range eng.systems {
 		s.RemoveEntityIfRequired(e)
@@ -153,13 +153,13 @@ func (eng *Engine) addToEntitiesWithComponent(e *Entity, c types.ICmp) {
 	if !ok {
 		eng.entitiesWithComponent[c.Type()] = map[types.EntityID]types.IEntity{}
 	}
-	eng.entitiesWithComponent[c.Type()][e.Id] = e
+	eng.entitiesWithComponent[c.Type()][e.GetID()] = e
 }
 
-func (eng *Engine) removeFromEntitiesWithComponent(e *Entity, ct types.CmpType) {
+func (eng *Engine) removeFromEntitiesWithComponent(e types.IEntity, ct types.CmpType) {
 	_, ok := eng.entitiesWithComponent[ct]
 	if ok {
-		delete(eng.entitiesWithComponent[ct], e.Id)
+		delete(eng.entitiesWithComponent[ct], e.GetID())
 	}
 }
 
@@ -316,7 +316,7 @@ func (eng *Engine) SetFlash(c int) {
 func (eng *Engine) SmartBomb() {
 	for id := range eng.entitiesWithComponent[types.Shootable] {
 		e := eng.entities[id]
-		if e.Active() && e.Class != types.Human {
+		if e.Active() && e.GetClass() != types.Human {
 			pc := e.GetComponent(types.Pos).(*cmp.Pos)
 			if !util.OffScreen(util.ScreenX(pc.X), pc.Y) {
 				eng.Kill(e)
@@ -344,7 +344,7 @@ func (eng *Engine) Terminate(status int) {
 
 func (eng *Engine) SetPauseAll(p bool, this types.EntityID) {
 	for _, v := range eng.entities {
-		if v.Active() && v.Id != gl.PlayerID && v.Id != this {
+		if v.Active() && v.GetID() != gl.PlayerID && v.GetID() != this {
 			v.SetPaused(p)
 		}
 	}
@@ -352,6 +352,6 @@ func (eng *Engine) SetPauseAll(p bool, this types.EntityID) {
 
 func (eng *Engine) ClearEntities() {
 	for _, e := range eng.entities {
-		eng.RemoveEntity(e.Id)
+		eng.RemoveEntity(e.GetID())
 	}
 }

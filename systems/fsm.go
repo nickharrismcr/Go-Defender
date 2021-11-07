@@ -1,8 +1,9 @@
-package game
+package systems
 
 import (
 	"Def/cmp"
 	"Def/logger"
+	"Def/types"
 	"fmt"
 )
 
@@ -34,7 +35,7 @@ func GetFSM(id int) FSM {
 	return fsmList[id]
 }
 
-func (f FSM) Update(ai *cmp.AI, e *Entity) {
+func (f FSM) Update(ai *cmp.AI, e types.IEntity) {
 
 	if ai.NextState != ai.State {
 		//if ai.StateName != -1 {
@@ -47,7 +48,7 @@ func (f FSM) Update(ai *cmp.AI, e *Entity) {
 			panic(fmt.Sprintf("No state defined in FSM for %s", ai.NextState.String()))
 		}
 		next_state.Enter(ai, e)
-		logger.Debug("Entity %d state change %s -> %s", e.Id, ai.State.String(), ai.NextState.String())
+		logger.Debug("Entity %d state change %s -> %s", e.GetID(), ai.State.String(), ai.NextState.String())
 
 		ai.State = ai.NextState
 	}

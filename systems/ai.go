@@ -2,7 +2,6 @@ package systems
 
 import (
 	"Def/cmp"
-	"Def/game"
 	"Def/logger"
 	"Def/types"
 
@@ -12,26 +11,26 @@ import (
 // implements ISystem
 
 type AISystem struct {
-	sysname game.SystemName
-	filter  *game.Filter
+	sysname types.SystemName
+	filter  *Filter
 	active  bool
-	engine  *game.Engine
-	targets map[types.EntityID]*game.Entity
+	engine  types.IEngine
+	targets map[types.EntityID]types.IEntity
 }
 
-func NewAISystem(active bool, engine *game.Engine) *AISystem {
-	f := game.NewFilter()
+func NewAISystem(active bool, engine types.IEngine) *AISystem {
+	f := NewFilter()
 	f.Add(types.AI)
 	return &AISystem{
-		sysname: game.AISystem,
+		sysname: types.AISystem,
 		active:  active,
 		filter:  f,
 		engine:  engine,
-		targets: make(map[types.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]types.IEntity),
 	}
 }
 
-func (ai *AISystem) GetName() game.SystemName {
+func (ai *AISystem) GetName() types.SystemName {
 	return ai.sysname
 }
 
@@ -48,10 +47,10 @@ func (ai *AISystem) Update() {
 
 func (ai *AISystem) Draw(screen *ebiten.Image) {}
 
-func (ai *AISystem) process(e *game.Entity) {
+func (ai *AISystem) process(e types.IEntity) {
 	aicmp := e.GetComponent(types.AI).(*cmp.AI)
 	// TODO should fsms be held in AISystem?
-	game.GetFSM(aicmp.FSMId).Update(aicmp, e)
+	GetFSM(aicmp.FSMId).Update(aicmp, e)
 }
 
 func (ai *AISystem) Active() bool {
@@ -62,8 +61,8 @@ func (ai *AISystem) SetActive(active bool) {
 	ai.active = active
 }
 
-func (ai *AISystem) AddEntityIfRequired(e *game.Entity) {
-	if _, ok := ai.targets[e.Id]; ok {
+func (ai *AISystem) AddEntityIfRequired(e types.IEntity) {
+	if _, ok := ai.targets[e.GetID()]; ok {
 		return
 	}
 	for _, c := range ai.filter.Requires() {
@@ -71,15 +70,15 @@ func (ai *AISystem) AddEntityIfRequired(e *game.Entity) {
 			return
 		}
 	}
-	logger.Debug("System %T added entity %d ", ai, e.Id)
-	ai.targets[e.Id] = e
+	logger.Debug("System %T added entity %d ", ai, e.GetID())
+	ai.targets[e.GetID()] = e
 }
 
-func (ai *AISystem) RemoveEntityIfRequired(e *game.Entity) {
+func (ai *AISystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range ai.filter.Requires() {
 		if _, ok := e.GetComponents()[c]; !ok {
-			logger.Debug("System %T removed entity %d ", ai, e.Id)
-			delete(ai.targets, e.Id)
+			logger.Debug("System %T removed entity %d ", ai, e.GetID())
+			delete(ai.targets, e.GetID())
 			return
 		}
 	}

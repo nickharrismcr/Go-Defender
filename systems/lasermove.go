@@ -2,7 +2,7 @@ package systems
 
 import (
 	"Def/cmp"
-	"Def/game"
+
 	"Def/gl"
 	"Def/logger"
 	"Def/types"
@@ -15,29 +15,29 @@ import (
 // implements ISystem
 
 type LaserMoveSystem struct {
-	sysname game.SystemName
-	filter  *game.Filter
+	sysname types.SystemName
+	filter  *Filter
 	active  bool
-	engine  *game.Engine
-	targets map[types.EntityID]*game.Entity
+	engine  types.IEngine
+	targets map[types.EntityID]types.IEntity
 }
 
-func NewLaserMoveSystem(active bool, engine *game.Engine) *LaserMoveSystem {
+func NewLaserMoveSystem(active bool, engine types.IEngine) *LaserMoveSystem {
 
-	f := game.NewFilter()
+	f := NewFilter()
 	f.Add(types.LaserMove)
 	f.Add(types.Pos)
 
 	return &LaserMoveSystem{
-		sysname: game.LaserMoveSystem,
+		sysname: types.LaserMoveSystem,
 		active:  active,
 		filter:  f,
 		engine:  engine,
-		targets: make(map[types.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]types.IEntity),
 	}
 }
 
-func (lms *LaserMoveSystem) GetName() game.SystemName {
+func (lms *LaserMoveSystem) GetName() types.SystemName {
 	return lms.sysname
 }
 
@@ -52,7 +52,7 @@ func (lms *LaserMoveSystem) Update() {
 	}
 }
 
-func (lms *LaserMoveSystem) process(laserEnt *game.Entity) {
+func (lms *LaserMoveSystem) process(laserEnt types.IEntity) {
 
 	pe := laserEnt.GetEngine().GetEntity(gl.PlayerID)
 	ppc := pe.GetComponent(types.Pos).(*cmp.Pos)
@@ -101,8 +101,8 @@ func (lms *LaserMoveSystem) SetActive(active bool) {
 	lms.active = active
 }
 
-func (lms *LaserMoveSystem) AddEntityIfRequired(e *game.Entity) {
-	if _, ok := lms.targets[e.Id]; ok {
+func (lms *LaserMoveSystem) AddEntityIfRequired(e types.IEntity) {
+	if _, ok := lms.targets[e.GetID()]; ok {
 		return
 	}
 	for _, c := range lms.filter.Requires() {
@@ -110,15 +110,15 @@ func (lms *LaserMoveSystem) AddEntityIfRequired(e *game.Entity) {
 			return
 		}
 	}
-	logger.Debug("System %T added entity %d ", lms, e.Id)
-	lms.targets[e.Id] = e
+	logger.Debug("System %T added entity %d ", lms, e.GetID())
+	lms.targets[e.GetID()] = e
 }
 
-func (lms *LaserMoveSystem) RemoveEntityIfRequired(e *game.Entity) {
+func (lms *LaserMoveSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range lms.filter.Requires() {
 		if _, ok := e.GetComponents()[c]; !ok {
-			logger.Debug("System %T removed entity %d ", lms, e.Id)
-			delete(lms.targets, e.Id)
+			logger.Debug("System %T removed entity %d ", lms, e.GetID())
+			delete(lms.targets, e.GetID())
 			return
 		}
 	}

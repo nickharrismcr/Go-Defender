@@ -2,7 +2,7 @@ package systems
 
 import (
 	"Def/cmp"
-	"Def/game"
+
 	"Def/logger"
 	"Def/types"
 	"Def/util"
@@ -15,35 +15,35 @@ import (
 // implements ISystem
 
 type LaserDrawSystem struct {
-	sysname game.SystemName
-	filter  *game.Filter
+	sysname types.SystemName
+	filter  *Filter
 	active  bool
-	engine  *game.Engine
-	targets map[types.EntityID]*game.Entity
+	engine  types.IEngine
+	targets map[types.EntityID]types.IEntity
 	img     *ebiten.Image
 	opts    *ebiten.DrawImageOptions
 }
 
-func NewLaserDrawSystem(active bool, engine *game.Engine) *LaserDrawSystem {
+func NewLaserDrawSystem(active bool, engine types.IEngine) *LaserDrawSystem {
 
-	f := game.NewFilter()
+	f := NewFilter()
 	f.Add(types.LaserDraw)
 	f.Add(types.Pos)
 	img := ebiten.NewImage(1, 1)
 	img.Fill(color.White)
 
 	return &LaserDrawSystem{
-		sysname: game.LaserDrawSystem,
+		sysname: types.LaserDrawSystem,
 		active:  active,
 		filter:  f,
 		engine:  engine,
-		targets: make(map[types.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]types.IEntity),
 		img:     img,
 		opts:    &ebiten.DrawImageOptions{},
 	}
 }
 
-func (lds *LaserDrawSystem) GetName() game.SystemName {
+func (lds *LaserDrawSystem) GetName() types.SystemName {
 	return lds.sysname
 }
 
@@ -60,7 +60,7 @@ func (lds *LaserDrawSystem) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (lds *LaserDrawSystem) process(e *game.Entity, screen *ebiten.Image) {
+func (lds *LaserDrawSystem) process(e types.IEntity, screen *ebiten.Image) {
 
 	ldc := e.GetComponent(types.LaserDraw).(*cmp.LaserDraw)
 	lasmov := e.GetComponent(types.LaserMove).(*cmp.LaserMove)
@@ -119,8 +119,8 @@ func (lds *LaserDrawSystem) SetActive(active bool) {
 	lds.active = active
 }
 
-func (lds *LaserDrawSystem) AddEntityIfRequired(e *game.Entity) {
-	if _, ok := lds.targets[e.Id]; ok {
+func (lds *LaserDrawSystem) AddEntityIfRequired(e types.IEntity) {
+	if _, ok := lds.targets[e.GetID()]; ok {
 		return
 	}
 	for _, c := range lds.filter.Requires() {
@@ -128,15 +128,15 @@ func (lds *LaserDrawSystem) AddEntityIfRequired(e *game.Entity) {
 			return
 		}
 	}
-	logger.Debug("System %T added entity %d ", lds, e.Id)
-	lds.targets[e.Id] = e
+	logger.Debug("System %T added entity %d ", lds, e.GetID())
+	lds.targets[e.GetID()] = e
 }
 
-func (lds *LaserDrawSystem) RemoveEntityIfRequired(e *game.Entity) {
+func (lds *LaserDrawSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range lds.filter.Requires() {
 		if _, ok := e.GetComponents()[c]; !ok {
-			logger.Debug("System %T removed entity %d ", lds, e.Id)
-			delete(lds.targets, e.Id)
+			logger.Debug("System %T removed entity %d ", lds, e.GetID())
+			delete(lds.targets, e.GetID())
 			return
 		}
 	}

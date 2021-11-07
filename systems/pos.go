@@ -2,7 +2,6 @@ package systems
 
 import (
 	"Def/cmp"
-	"Def/game"
 	"Def/gl"
 	"Def/logger"
 	"Def/types"
@@ -13,26 +12,26 @@ import (
 // implements ISystem
 
 type PosSystem struct {
-	sysname game.SystemName
-	filter  *game.Filter
+	sysname types.SystemName
+	filter  *Filter
 	active  bool
-	engine  *game.Engine
-	targets map[types.EntityID]*game.Entity
+	engine  types.IEngine
+	targets map[types.EntityID]types.IEntity
 }
 
-func NewPosSystem(active bool, engine *game.Engine) *PosSystem {
-	f := game.NewFilter()
+func NewPosSystem(active bool, engine types.IEngine) *PosSystem {
+	f := NewFilter()
 	f.Add(types.Pos)
 	return &PosSystem{
-		sysname: game.PosSystem,
+		sysname: types.PosSystem,
 		active:  active,
 		filter:  f,
 		engine:  engine,
-		targets: make(map[types.EntityID]*game.Entity),
+		targets: make(map[types.EntityID]types.IEntity),
 	}
 }
 
-func (pos *PosSystem) GetName() game.SystemName {
+func (pos *PosSystem) GetName() types.SystemName {
 	return pos.sysname
 }
 
@@ -49,7 +48,7 @@ func (pos *PosSystem) Update() {
 
 func (pos *PosSystem) Draw(screen *ebiten.Image) {}
 
-func (pos *PosSystem) process(e *game.Entity) {
+func (pos *PosSystem) process(e types.IEntity) {
 	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
 	// "hidden"
 	if poscmp.Y == 9999 {
@@ -79,8 +78,8 @@ func (pos *PosSystem) SetActive(active bool) {
 	pos.active = active
 }
 
-func (pos *PosSystem) AddEntityIfRequired(e *game.Entity) {
-	if _, ok := pos.targets[e.Id]; ok {
+func (pos *PosSystem) AddEntityIfRequired(e types.IEntity) {
+	if _, ok := pos.targets[e.GetID()]; ok {
 		return
 	}
 	for _, c := range pos.filter.Requires() {
@@ -88,15 +87,15 @@ func (pos *PosSystem) AddEntityIfRequired(e *game.Entity) {
 			return
 		}
 	}
-	logger.Debug("System %T added entity %d ", pos, e.Id)
-	pos.targets[e.Id] = e
+	logger.Debug("System %T added entity %d ", pos, e.GetID())
+	pos.targets[e.GetID()] = e
 }
 
-func (pos *PosSystem) RemoveEntityIfRequired(e *game.Entity) {
+func (pos *PosSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range pos.filter.Requires() {
 		if _, ok := e.GetComponents()[c]; !ok {
-			logger.Debug("System %T removed entity %d ", pos, e.Id)
-			delete(pos.targets, e.Id)
+			logger.Debug("System %T removed entity %d ", pos, e.GetID())
+			delete(pos.targets, e.GetID())
 			return
 		}
 	}

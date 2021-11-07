@@ -1,5 +1,5 @@
 // game/ECS functions
-package game
+package systems
 
 import (
 	"Def/state"
