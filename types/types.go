@@ -230,6 +230,7 @@ type ICmp interface {
 }
 
 type IEngine interface {
+	InitEntities()
 	GetActiveEntitiesOfClass(EntityType) []EntityID
 	GetEntity(EntityID) IEntity
 	MountainHeight(float64) float64

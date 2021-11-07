@@ -13,22 +13,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type (
-	GameOver  struct{}
-	Terminate struct{}
-	LevelEnd  struct{}
-)
-
-func (e *GameOver) Error() string {
-	return "Game over"
-}
-func (e *Terminate) Error() string {
-	return "Terminated"
-}
-func (e *LevelEnd) Error() string {
-	return "LevelEnd"
-}
-
 type Game struct {
 	engine *game.Engine
 }

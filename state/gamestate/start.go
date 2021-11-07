@@ -1,4 +1,4 @@
-package game
+package gamestate
 
 import (
 	"Def/cmp"
@@ -22,7 +22,7 @@ func (s *GameStart) GetName() types.StateType {
 }
 
 func (s *GameStart) Enter(ai *cmp.AI, e types.IEntity) {
-
+	e.GetEngine().InitEntities()
 }
 
 func (s *GameStart) Update(ai *cmp.AI, e types.IEntity) {

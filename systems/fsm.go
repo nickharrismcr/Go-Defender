@@ -16,15 +16,15 @@ func init() {
 }
 
 // a finite state machine used by the AI ECS.
-// each entity with an AI component will have its own state tree, this struct
+// each entity with an AI component will have its own state graph, this struct
 // runs logic in the current AI state and handles transitions between states.
 type FSM struct {
-	statetree *StateGraph
+	stategraph *StateGraph
 }
 
 func NewFSM(s *StateGraph) int {
 	fsmList = append(fsmList, FSM{
-		statetree: s,
+		stategraph: s,
 	})
 	rv := fsmCount
 	fsmCount++
@@ -39,11 +39,11 @@ func (f FSM) Update(ai *cmp.AI, e types.IEntity) {
 
 	if ai.NextState != ai.State {
 		//if ai.StateName != -1 {
-		//if !f.statetree.ValidTransition(ai.StateName, ai.NextStateName) {
+		//if !f.stategraph.ValidTransition(ai.StateName, ai.NextStateName) {
 		//	panic(fmt.Sprintf("invalid transition %s -> %s", ai.StateName.String(), ai.NextStateName.String()))
 		//}
 		//}
-		next_state, err := f.statetree.State(ai.NextState)
+		next_state, err := f.stategraph.State(ai.NextState)
 		if err != nil {
 			panic(fmt.Sprintf("No state defined in FSM for %s", ai.NextState.String()))
 		}
@@ -52,7 +52,7 @@ func (f FSM) Update(ai *cmp.AI, e types.IEntity) {
 
 		ai.State = ai.NextState
 	}
-	curr_state, err := f.statetree.State(ai.State)
+	curr_state, err := f.stategraph.State(ai.State)
 	if err != nil {
 		panic(fmt.Sprintf("no current state %s in FSM ", ai.State.String()))
 	}

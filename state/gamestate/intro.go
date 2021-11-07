@@ -1,4 +1,4 @@
-package game
+package gamestate
 
 import (
 	"Def/cmp"
@@ -26,5 +26,5 @@ func (s *GameIntro) Enter(ai *cmp.AI, e types.IEntity) {
 }
 
 func (s *GameIntro) Update(ai *cmp.AI, e types.IEntity) {
-
+	ai.NextState = types.GameStart
 }

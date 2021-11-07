@@ -10,6 +10,7 @@ import (
 	"Def/sound"
 	"Def/state/baiter"
 	"Def/state/bomber"
+	"Def/state/gamestate"
 	"Def/state/human"
 	"Def/state/lander"
 	"Def/state/player"
@@ -32,12 +33,17 @@ func (e *Engine) Init() {
 
 	graphics.Load()
 
+	blankImg = ebiten.NewImage(20, 20)
+	blankImg.Fill(color.White)
+
 	e.initSystems()
-	e.initEntities()
+	e.addGame()
+	e.addPlayer()
+
 	e.bulletPool()
 	e.bombPool()
 	e.laserPool()
-	e.InitEvents()
+	e.initEvents()
 
 	gl.ScoreCharId = e.AddString("       0", 100, 40)
 }
@@ -54,31 +60,44 @@ func (e *Engine) initSystems() {
 	e.AddSystem(systems.NewLaserMoveSystem(true, e), UPDATE)
 }
 
-func (e *Engine) initEntities() {
-
-	blankImg = ebiten.NewImage(20, 20)
-	blankImg.Fill(color.White)
-
-	e.AddPlayer()
+func (e *Engine) InitEntities() {
 
 	for i := 0; i < gl.CurrentLevel().LanderCount; i++ {
-		e.AddLander(i)
+		e.addLander(i)
 	}
 	for i := 0; i < gl.CurrentLevel().BaiterCount; i++ {
-		e.AddBaiter(i)
+		e.addBaiter(i)
 	}
 	for i := 0; i < gl.CurrentLevel().HumanCount; i++ {
-		e.AddHuman(i)
+		e.addHuman(i)
 	}
 	for i := 0; i < gl.CurrentLevel().BomberCount; i++ {
-		e.AddBomber(i)
+		e.addBomber(i)
 	}
 	for i := 0; i < gl.CurrentLevel().PodCount; i++ {
-		e.AddPod(i)
+		e.addPod(i)
 	}
 }
 
-func (e *Engine) AddPlayer() {
+func (e *Engine) addGame() {
+
+	gme := NewEntity(e, types.Player)
+	gme.SetActive(true)
+
+	sgraph := systems.NewStateGraph()
+	sgraph.AddState(gamestate.NewGameIntro())
+	sgraph.AddState(gamestate.NewGameStart())
+	sgraph.AddState(gamestate.NewGamePlay())
+	sgraph.AddState(gamestate.NewGameLevelEnd())
+	sgraph.AddState(gamestate.NewGameOver())
+
+	fsm := systems.NewFSM(sgraph)
+	ai := cmp.NewAI(fsm, types.GameIntro)
+	gme.AddComponent(ai)
+
+}
+
+func (e *Engine) addPlayer() {
 
 	ssheet := graphics.GetSpriteSheet()
 	plEnt := NewEntity(e, types.Player)
@@ -121,7 +140,7 @@ func (e *Engine) AddPlayer() {
 
 }
 
-func (e *Engine) AddLander(count int) {
+func (e *Engine) addLander(count int) {
 
 	ssheet := graphics.GetSpriteSheet()
 	ent := NewEntity(e, types.Lander)
@@ -155,7 +174,7 @@ func (e *Engine) AddLander(count int) {
 
 }
 
-func (e *Engine) AddBaiter(count int) {
+func (e *Engine) addBaiter(count int) {
 
 	ssheet := graphics.GetSpriteSheet()
 	ent := NewEntity(e, types.Baiter)
@@ -185,7 +204,7 @@ func (e *Engine) AddBaiter(count int) {
 
 }
 
-func (e *Engine) AddHuman(count int) {
+func (e *Engine) addHuman(count int) {
 
 	ssheet := graphics.GetSpriteSheet()
 	ent := NewEntity(e, types.Human)
@@ -220,7 +239,7 @@ func (e *Engine) AddHuman(count int) {
 
 }
 
-func (e *Engine) AddBomber(count int) {
+func (e *Engine) addBomber(count int) {
 
 	ent := NewEntity(e, types.Bomber)
 	ent.SetActive(true)
@@ -256,7 +275,7 @@ func (e *Engine) AddBomber(count int) {
 	ent.AddComponent(sh)
 }
 
-func (e *Engine) AddPod(count int) {
+func (e *Engine) addPod(count int) {
 
 	ent := NewEntity(e, types.Pod)
 	ent.SetActive(true)
@@ -317,7 +336,7 @@ func (e *Engine) AddSwarmer(count int, x, y float64) {
 
 func (e *Engine) AddScoreSprite(ev event.IEvent) {
 
-	eve := ev.GetPayload().(Entity)
+	eve := ev.GetPayload().(*Entity)
 	evpc := eve.GetComponent(types.Pos).(*cmp.Pos)
 
 	ent := NewEntity(e, types.Score)
@@ -398,7 +417,7 @@ func (e *Engine) laserPool() {
 
 }
 
-func (e *Engine) InitEvents() {
+func (e *Engine) initEvents() {
 
 	start := func(ev event.IEvent) {
 		e.GetSystem(types.PosSystem).SetActive(true)
@@ -449,7 +468,7 @@ func (e *Engine) InitEvents() {
 	landerDie := func(ev event.IEvent) {
 		gl.Score += 150
 		e.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
-		ent := ev.GetPayload().(Entity)
+		ent := ev.GetPayload().(*Entity)
 		gl.LandersKilled++
 		if gl.LandersKilled == gl.CurrentLevel().LanderCount {
 			lc := event.NewLanderCleared(ent)
@@ -499,7 +518,7 @@ func (e *Engine) InitEvents() {
 	}
 
 	playerFire := func(ev event.IEvent) {
-		pe := ev.GetPayload().(Entity)
+		pe := ev.GetPayload().(*Entity)
 		pc := pe.GetComponent(types.Pos).(*cmp.Pos)
 		sc := pe.GetComponent(types.Ship).(*cmp.Ship)
 		x := pc.X + 25
@@ -520,7 +539,7 @@ func (e *Engine) InitEvents() {
 	podDie := func(ev event.IEvent) {
 		gl.Score += 1000
 		e.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
-		ent := ev.GetPayload().(Entity)
+		ent := ev.GetPayload().(*Entity)
 		pc := ent.GetComponent(types.Pos).(*cmp.Pos)
 		for i := 0; i < gl.CurrentLevel().SwarmerCount; i++ {
 			e.AddSwarmer(i, pc.X, pc.Y)
