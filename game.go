@@ -11,6 +11,7 @@ import (
 	_ "image/png"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type App struct {
@@ -35,6 +36,8 @@ func (app *App) Update() error {
 
 func (app *App) Draw(screen *ebiten.Image) {
 
+	s := fmt.Sprintf("%f  %f ", ebiten.CurrentFPS(), ebiten.CurrentTPS())
+	ebitenutil.DebugPrint(screen, s)
 	app.engine.Draw(screen)
 }
 

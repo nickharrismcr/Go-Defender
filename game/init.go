@@ -52,6 +52,7 @@ func (e *Engine) initSystems() {
 	e.AddSystem(systems.NewLifeSystem(true, e), UPDATE)
 	e.AddSystem(systems.NewCollideSystem(true, e), UPDATE)
 	e.AddSystem(systems.NewDrawSystem(true, e), DRAW)
+	e.AddSystem(systems.NewAnimateSystem(true, e), UPDATE)
 	e.AddSystem(systems.NewRadarDrawSystem(true, e), DRAW)
 	e.AddSystem(systems.NewLaserDrawSystem(true, e), DRAW)
 	e.AddSystem(systems.NewLaserMoveSystem(true, e), UPDATE)

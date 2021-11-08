@@ -208,6 +208,7 @@ type SystemName int
 const (
 	AISystem        SystemName = iota
 	DrawSystem      SystemName = iota
+	AnimateSystem   SystemName = iota
 	PosSystem       SystemName = iota
 	CollideSystem   SystemName = iota
 	LifeSystem      SystemName = iota
@@ -222,6 +223,8 @@ func (t SystemName) String() string {
 		return "AI"
 	case DrawSystem:
 		return "Draw"
+	case AnimateSystem:
+		return "Animate"
 	case PosSystem:
 		return "Pos"
 	case CollideSystem:

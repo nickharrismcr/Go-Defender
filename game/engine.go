@@ -382,7 +382,7 @@ func (eng *Engine) LevelEnd() {
 	eng.stars.SetActive(false)
 	// TODO attack wave N completed bonus * (100*N)
 
-	s := fmt.Sprintf("ATTACK WAVE %d COMPLETED   BONUS x%d", gl.LevelNo()+1, (gl.LevelNo()+1)*100)
+	s := fmt.Sprintf("ATTACK WAVE %d COMPLETED   BONUS X %d", gl.LevelNo()+1, (gl.LevelNo()+1)*100)
 	eng.levelEndChars = eng.chars.Add(s, gl.ScreenWidth/2-500, gl.ScreenHeight/2)
 }
 

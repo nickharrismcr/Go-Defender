@@ -81,15 +81,6 @@ func (ds *DrawSystem) process(dc *cmp.Draw, e types.IEntity, screen *ebiten.Imag
 	y := pc.Y - float64(fh)/2
 	op.GeoM.Translate(screenx, y)
 
-	// animation frame
-	dc.Counter++
-	if dc.Counter > dc.SpriteMap.Ticks_per_frame {
-		dc.Counter = 0
-		dc.Frame++
-		if dc.Frame == frames {
-			dc.Frame = 0
-		}
-	}
 	sx, sy := dc.SpriteMap.Frame.X+dc.Frame*fw, dc.SpriteMap.Frame.Y
 	si := dc.Image.SubImage(image.Rect(sx, sy, sx+fw, sy+fh)).(*ebiten.Image)
 
