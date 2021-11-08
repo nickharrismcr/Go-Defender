@@ -12,25 +12,25 @@ func init() {
 }
 
 type Entity struct {
-	Id     types.EntityID
-	Class  types.EntityType
-	comps  map[types.CmpType]types.ICmp
-	active bool
-	engine *Engine
-	parent types.EntityID
-	child  types.EntityID
-	paused bool
+	Id         types.EntityID
+	Class      types.EntityType
+	components map[types.CmpType]types.ICmp
+	active     bool
+	engine     *Engine
+	parent     types.EntityID
+	child      types.EntityID
+	paused     bool
 }
 
 func NewEntity(engine *Engine, class types.EntityType) *Entity {
 	rv := &Entity{
-		Id:     idCounter,
-		Class:  class,
-		comps:  map[types.CmpType]types.ICmp{},
-		engine: engine,
-		active: false,
-		parent: idCounter,
-		child:  idCounter,
+		Id:         idCounter,
+		Class:      class,
+		components: map[types.CmpType]types.ICmp{},
+		engine:     engine,
+		active:     false,
+		parent:     idCounter,
+		child:      idCounter,
 	}
 	engine.AddEntity(rv)
 	idCounter++
@@ -64,24 +64,24 @@ func (e *Entity) SetPaused(s bool) {
 
 func (e *Entity) AddComponent(c types.ICmp) {
 	logger.Debug("Entity %d add component %s", e.Id, c.Type())
-	e.comps[c.Type()] = c
+	e.components[c.Type()] = c
 	e.engine.AddComponent(e, c)
 
 }
 
 func (e *Entity) RemoveComponent(ct types.CmpType) {
 	logger.Debug("Entity %d remove component %s", e.Id, ct.String())
-	delete(e.comps, ct)
+	delete(e.components, ct)
 	e.engine.RemoveComponent(e, ct)
 }
 
 func (e *Entity) HasComponent(c types.CmpType) bool {
-	_, ok := e.comps[c]
+	_, ok := e.components[c]
 	return ok
 }
 
 func (e *Entity) GetComponent(c types.CmpType) types.ICmp {
-	rv, ok := e.comps[c]
+	rv, ok := e.components[c]
 	if !ok {
 		return nil
 	}
@@ -89,7 +89,7 @@ func (e *Entity) GetComponent(c types.CmpType) types.ICmp {
 }
 
 func (e *Entity) GetComponents() map[types.CmpType]types.ICmp {
-	return e.comps
+	return e.components
 }
 
 func (e *Entity) Parent() types.EntityID {

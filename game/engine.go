@@ -82,7 +82,7 @@ func (eng *Engine) SetSystemActive(s types.SystemName, active bool) {
 }
 
 func (eng *Engine) AddEntity(e *Entity) {
-	logger.Debug("Engine added entity %d ", e.GetID())
+	logger.Debug("Engine added %s entity %d ", e.GetClass().String(), e.GetID())
 	eng.entities[e.GetID()] = e
 	for _, c := range e.GetComponents() {
 		eng.addToEntitiesWithComponent(e, c)
@@ -96,16 +96,20 @@ func (eng *Engine) AddEntity(e *Entity) {
 }
 
 func (eng *Engine) RemoveEntity(id types.EntityID) {
-	logger.Debug("Engine removed entity %d ", id)
+
 	e := eng.entities[id]
+	if e.GetClass() == types.Baiter {
+		logger.Debug("remove baiter")
+	}
+	logger.Debug("Engine removed %s entity %d ", e.GetClass().String(), id)
 	for _, c := range e.GetComponents() {
 		eng.removeFromEntitiesWithComponent(e, c.Type())
-		for _, s := range eng.updateSystems {
-			s.RemoveEntityIfRequired(e)
-		}
-		for _, s := range eng.drawSystems {
-			s.RemoveEntityIfRequired(e)
-		}
+	}
+	for _, s := range eng.updateSystems {
+		s.RemoveEntity(e)
+	}
+	for _, s := range eng.drawSystems {
+		s.RemoveEntity(e)
 	}
 }
 
@@ -368,6 +372,9 @@ func (eng *Engine) LevelEnd() {
 
 	eng.clearEnemies()
 	for _, e := range eng.LaserPool {
+		e.SetActive(false)
+	}
+	for _, e := range eng.BombPool {
 		e.SetActive(false)
 	}
 	eng.GetPlayer().SetActive(false)

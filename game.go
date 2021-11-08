@@ -13,31 +13,31 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type Game struct {
+type App struct {
 	engine *game.Engine
 }
 
-func NewGame() *Game {
-	game := &Game{
+func NewApp() *App {
+	app := &App{
 		engine: game.NewEngine(),
 	}
-	game.engine.Init()
-	return game
+	app.engine.Init()
+	return app
 }
 
-func (g *Game) Update() error {
+func (app *App) Update() error {
 
-	if status := g.engine.Update(); status != game.OK {
+	if status := app.engine.Update(); status != game.OK {
 		return errors.New(fmt.Sprintf("%d", status))
 	}
 	return nil
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
+func (app *App) Draw(screen *ebiten.Image) {
 
-	g.engine.Draw(screen)
+	app.engine.Draw(screen)
 }
 
-func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (g *App) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return 320 * 5, 240 * 5
 }

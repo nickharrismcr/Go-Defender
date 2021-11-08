@@ -134,10 +134,17 @@ func (lds *LaserDrawSystem) AddEntityIfRequired(e types.IEntity) {
 
 func (lds *LaserDrawSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range lds.filter.Requires() {
-		if _, ok := e.GetComponents()[c]; !ok {
+		if !e.HasComponent(c) {
+
 			logger.Debug("System %T removed entity %d ", lds, e.GetID())
 			delete(lds.targets, e.GetID())
 			return
 		}
 	}
+}
+
+func (s *LaserDrawSystem) RemoveEntity(e types.IEntity) {
+
+	logger.Debug("System %T removed entity %d ", s, e.GetID())
+	delete(s.targets, e.GetID())
 }

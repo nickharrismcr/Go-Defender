@@ -49,8 +49,8 @@ func (ai *AISystem) Draw(screen *ebiten.Image) {}
 
 func (ai *AISystem) process(e types.IEntity) {
 	aicmp := e.GetComponent(types.AI).(*cmp.AI)
-	// TODO should fsms be held in AISystem?
 	GetFSM(aicmp.FSMId).Update(aicmp, e)
+
 }
 
 func (ai *AISystem) Active() bool {
@@ -74,9 +74,15 @@ func (ai *AISystem) AddEntityIfRequired(e types.IEntity) {
 	ai.targets[e.GetID()] = e
 }
 
+func (ai *AISystem) RemoveEntity(e types.IEntity) {
+
+	logger.Debug("System %T removed entity %d ", ai, e.GetID())
+	delete(ai.targets, e.GetID())
+}
+
 func (ai *AISystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range ai.filter.Requires() {
-		if _, ok := e.GetComponents()[c]; !ok {
+		if !e.HasComponent(c) {
 			logger.Debug("System %T removed entity %d ", ai, e.GetID())
 			delete(ai.targets, e.GetID())
 			return

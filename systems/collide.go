@@ -88,10 +88,17 @@ func (cs *CollideSystem) AddEntityIfRequired(e types.IEntity) {
 
 func (cs *CollideSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range cs.filter.Requires() {
-		if _, ok := e.GetComponents()[c]; !ok {
+		if !e.HasComponent(c) {
+
 			logger.Debug("System %T removed entity %d ", cs, e.GetID())
 			delete(cs.targets, e.GetID())
 			return
 		}
 	}
+}
+
+func (cs *CollideSystem) RemoveEntity(e types.IEntity) {
+
+	logger.Debug("System %T removed entity %d ", cs, e.GetID())
+	delete(cs.targets, e.GetID())
 }

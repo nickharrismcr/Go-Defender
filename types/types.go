@@ -116,6 +116,8 @@ func (st StateType) String() string {
 		return "Lander-Mutate"
 	case LanderDie:
 		return "Lander-Die"
+	case BaiterWait:
+		return "Baiter-Wait"
 	case BaiterMaterialise:
 		return "Baiter-Materialise"
 	case BaiterHunt:
@@ -265,6 +267,7 @@ type ISystem interface {
 	Draw(*ebiten.Image)
 	AddEntityIfRequired(IEntity)
 	RemoveEntityIfRequired(IEntity)
+	RemoveEntity(IEntity)
 }
 
 type IEntity interface {

@@ -43,8 +43,8 @@ func init() {
 	levels = []Level{}
 	levels = append(levels, Level{
 		BaiterCount:  0,
-		LanderCount:  2, //18
-		HumanCount:   2, //18
+		LanderCount:  4, //18
+		HumanCount:   4, //18
 		BomberCount:  0,
 		PodCount:     0,
 		SwarmerCount: 0,
@@ -52,8 +52,8 @@ func init() {
 	})
 	levels = append(levels, Level{
 		BaiterCount:  1,
-		LanderCount:  2, //24,
-		HumanCount:   2, //24,
+		LanderCount:  4, //24,
+		HumanCount:   4, //24,
 		BomberCount:  1,
 		PodCount:     0,
 		SwarmerCount: 0,

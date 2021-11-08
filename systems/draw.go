@@ -175,10 +175,17 @@ func (ds *DrawSystem) AddEntityIfRequired(e types.IEntity) {
 
 func (ds *DrawSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range ds.filter.Requires() {
-		if _, ok := e.GetComponents()[c]; !ok {
+		if !e.HasComponent(c) {
+
 			logger.Debug("System %T removed entity %d ", ds, e.GetID())
 			delete(ds.targets, e.GetID())
 			return
 		}
 	}
+}
+
+func (s *DrawSystem) RemoveEntity(e types.IEntity) {
+
+	logger.Debug("System %T removed entity %d ", s, e.GetID())
+	delete(s.targets, e.GetID())
 }

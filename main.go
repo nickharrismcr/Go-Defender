@@ -21,7 +21,7 @@ func main() {
 	ebiten.SetWindowTitle("Defender")
 	//ebiten.SetFullscreen(true)
 	ebiten.SetMaxTPS(gl.MaxTPS)
-	gm := NewGame()
+	gm := NewApp()
 	if err := ebiten.RunGame(gm); err != nil {
 	}
 

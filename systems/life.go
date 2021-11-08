@@ -79,10 +79,17 @@ func (pos *LifeSystem) AddEntityIfRequired(e types.IEntity) {
 
 func (pos *LifeSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range pos.filter.Requires() {
-		if _, ok := e.GetComponents()[c]; !ok {
+		if !e.HasComponent(c) {
+
 			logger.Debug("System %T removed entity %d ", pos, e.GetID())
 			delete(pos.targets, e.GetID())
 			return
 		}
 	}
+}
+
+func (s *LifeSystem) RemoveEntity(e types.IEntity) {
+
+	logger.Debug("System %T removed entity %d ", s, e.GetID())
+	delete(s.targets, e.GetID())
 }

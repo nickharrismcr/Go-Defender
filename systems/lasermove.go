@@ -116,10 +116,17 @@ func (lms *LaserMoveSystem) AddEntityIfRequired(e types.IEntity) {
 
 func (lms *LaserMoveSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range lms.filter.Requires() {
-		if _, ok := e.GetComponents()[c]; !ok {
+		if !e.HasComponent(c) {
+
 			logger.Debug("System %T removed entity %d ", lms, e.GetID())
 			delete(lms.targets, e.GetID())
 			return
 		}
 	}
+}
+
+func (s *LaserMoveSystem) RemoveEntity(e types.IEntity) {
+
+	logger.Debug("System %T removed entity %d ", s, e.GetID())
+	delete(s.targets, e.GetID())
 }

@@ -153,10 +153,16 @@ func (drawsys *RadarDrawSystem) AddEntityIfRequired(e types.IEntity) {
 
 func (drawsys *RadarDrawSystem) RemoveEntityIfRequired(e types.IEntity) {
 	for _, c := range drawsys.filter.Requires() {
-		if _, ok := e.GetComponents()[c]; !ok {
+		if !e.HasComponent(c) {
 			logger.Debug("System %T removed entity %d ", drawsys, e.GetID())
 			delete(drawsys.targets, e.GetID())
 			return
 		}
 	}
+}
+
+func (s *RadarDrawSystem) RemoveEntity(e types.IEntity) {
+
+	logger.Debug("System %T removed entity %d ", s, e.GetID())
+	delete(s.targets, e.GetID())
 }
