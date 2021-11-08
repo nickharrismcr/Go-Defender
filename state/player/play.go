@@ -83,10 +83,13 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 		}
 		pc.DX += sc.Direction * 2
 	} else {
+		if sc.ThrustPressed {
+			ev := event.NewPlayerStopThrust(e)
+			event.NotifyEvent(ev)
+		}
 		fldc.Hide = true
 		sc.ThrustPressed = false
-		ev := event.NewPlayerStopThrust(e)
-		event.NotifyEvent(ev)
+
 		pc.DX /= 1.05
 	}
 	if pc.DX > gl.PlayerSpeedX {

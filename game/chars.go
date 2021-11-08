@@ -55,6 +55,10 @@ func (w *Characters) Clear() {
 	w.chars = [][]Char{}
 }
 
+func (w *Characters) Remove(idx int) {
+	w.chars[idx] = []Char{}
+}
+
 func (w *Characters) Add(s string, x, y float64) int {
 
 	idx := w.sIdx

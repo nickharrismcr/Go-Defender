@@ -36,8 +36,7 @@ var KeyMap = map[types.ActionType]ebiten.Key{
 var PlayerID types.EntityID
 var PlayerLives = 3
 var ScoreCharId int
-var LandersKilled = 0
-var HumansKilled = 0
+
 var Score int = 0
 
 var Blue = types.ColorF{R: 0, G: 0, B: 1, A: 1}

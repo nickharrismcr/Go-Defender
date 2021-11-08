@@ -2,6 +2,7 @@ package gamestate
 
 import (
 	"Def/cmp"
+	"Def/gl"
 	"Def/types"
 )
 
@@ -22,9 +23,16 @@ func (s *GameLevelEnd) GetName() types.StateType {
 }
 
 func (s *GameLevelEnd) Enter(ai *cmp.AI, e types.IEntity) {
-
+	e.GetEngine().LevelEnd()
+	ai.Scratch = 0
 }
 
 func (s *GameLevelEnd) Update(ai *cmp.AI, e types.IEntity) {
 
+	ai.Scratch++
+
+	if ai.Scratch > 4*30 {
+		gl.NextLevel()
+		ai.NextState = types.GameStart
+	}
 }

@@ -7,6 +7,7 @@ import (
 	"Def/logger"
 	"Def/types"
 	"Def/util"
+	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -39,6 +40,7 @@ type Engine struct {
 	LaserColIdx           int
 	flash                 int
 	status                int
+	levelEndChars         int
 }
 
 func NewEngine() *Engine {
@@ -350,8 +352,41 @@ func (eng *Engine) SetPauseAll(p bool, this types.EntityID) {
 	}
 }
 
-func (eng *Engine) ClearEntities() {
+func (eng *Engine) isEnemy(c types.EntityType) bool {
+	return c == types.Lander || c == types.Baiter || c == types.Bomber || c == types.Pod || c == types.Swarmer
+}
+
+func (eng *Engine) clearEnemies() {
 	for _, e := range eng.entities {
-		eng.RemoveEntity(e.GetID())
+		if eng.isEnemy(e.GetClass()) {
+			eng.RemoveEntity(e.GetID())
+		}
 	}
+}
+
+func (eng *Engine) LevelEnd() {
+
+	eng.clearEnemies()
+	for _, e := range eng.LaserPool {
+		e.SetActive(false)
+	}
+	eng.GetPlayer().SetActive(false)
+	eng.world.SetActive(false)
+	eng.stars.SetActive(false)
+	// TODO attack wave N completed bonus * (100*N)
+
+	s := fmt.Sprintf("ATTACK WAVE %d COMPLETED   BONUS x%d", gl.LevelNo()+1, (gl.LevelNo()+1)*100)
+	eng.levelEndChars = eng.chars.Add(s, gl.ScreenWidth/2-500, gl.ScreenHeight/2)
+}
+
+func (eng *Engine) LevelStart() {
+
+	eng.InitEnemies()
+	if gl.ResetHumans() {
+		eng.InitHumans()
+	}
+	eng.world.SetActive(true)
+	eng.stars.SetActive(true)
+	eng.GetPlayer().SetActive(true)
+	eng.chars.Remove(eng.levelEndChars)
 }

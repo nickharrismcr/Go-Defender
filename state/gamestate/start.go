@@ -22,9 +22,10 @@ func (s *GameStart) GetName() types.StateType {
 }
 
 func (s *GameStart) Enter(ai *cmp.AI, e types.IEntity) {
-	e.GetEngine().InitEntities()
+
+	e.GetEngine().LevelStart()
 }
 
 func (s *GameStart) Update(ai *cmp.AI, e types.IEntity) {
-
+	ai.NextState = types.GamePlay
 }

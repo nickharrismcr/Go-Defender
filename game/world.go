@@ -19,12 +19,14 @@ type World struct {
 	engine  *Engine
 	explode bool
 	counter int
+	active  bool
 }
 
 func NewWorld(engine *Engine) *World {
 
 	w := &World{
 		engine: engine,
+		active: true,
 	}
 	w.points = make([]float64, gl.WorldWidth+1)
 	var y float64 = 50
@@ -59,6 +61,10 @@ func NewWorld(engine *Engine) *World {
 	return w
 }
 
+func (w *World) SetActive(b bool) {
+	w.active = b
+}
+
 func (w *World) Explode() {
 	w.explode = true
 }
@@ -76,6 +82,9 @@ func (w *World) At(wx float64) float64 {
 
 func (w *World) Update() {
 
+	if !w.active {
+		return
+	}
 	if w.explode {
 		w.counter++
 		if w.counter > gl.WorldExplodeTicks {
@@ -99,6 +108,10 @@ func (w *World) Update() {
 }
 
 func (w *World) Draw(scr *ebiten.Image) {
+
+	if !w.active {
+		return
+	}
 
 	if w.counter > gl.WorldExplodeTicks {
 		return

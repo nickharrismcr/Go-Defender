@@ -148,7 +148,16 @@ func (st StateType) String() string {
 		return "Swarmer-Move"
 	case SwarmerDie:
 		return "Swarmer-Die"
-
+	case GameIntro:
+		return "Game-Intro"
+	case GameStart:
+		return "Game-Start"
+	case GamePlay:
+		return "Game-Play"
+	case GameLevelEnd:
+		return "Game-LevelEnd"
+	case GameOver:
+		return "Game-Over"
 	}
 	return ""
 }
@@ -230,7 +239,8 @@ type ICmp interface {
 }
 
 type IEngine interface {
-	InitEntities()
+	InitEnemies()
+	InitHumans()
 	GetActiveEntitiesOfClass(EntityType) []EntityID
 	GetEntity(EntityID) IEntity
 	MountainHeight(float64) float64
@@ -242,6 +252,8 @@ type IEngine interface {
 	GetPlayer() IEntity
 	SetFlash(int)
 	GetSystem(SystemName) ISystem
+	LevelStart()
+	LevelEnd()
 }
 
 // interface for ECS systems

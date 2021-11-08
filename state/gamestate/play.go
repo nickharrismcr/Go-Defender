@@ -2,6 +2,8 @@ package gamestate
 
 import (
 	"Def/cmp"
+
+	"Def/gl"
 	"Def/types"
 )
 
@@ -26,5 +28,9 @@ func (s *GamePlay) Enter(ai *cmp.AI, e types.IEntity) {
 }
 
 func (s *GamePlay) Update(ai *cmp.AI, e types.IEntity) {
+
+	if gl.LandersKilled == gl.CurrentLevel().LanderCount {
+		ai.NextState = types.GameLevelEnd
+	}
 
 }

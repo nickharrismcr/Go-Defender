@@ -18,6 +18,7 @@ var starsImg *ebiten.Image
 type Stars struct {
 	plist  []*star
 	engine *Engine
+	active bool
 }
 
 // individual star. system has a pool of these size = MAXSTARS
@@ -36,6 +37,7 @@ func NewStars(engine *Engine) *Stars {
 	starsImg.Fill(color.White)
 	s := &Stars{
 		engine: engine,
+		active: true,
 	}
 	for i := 0; i < MAXSTARS; i++ {
 
@@ -52,9 +54,15 @@ func NewStars(engine *Engine) *Stars {
 	}
 	return s
 }
+func (s *Stars) SetActive(b bool) {
+	s.active = b
+}
 
 func (s *Stars) Update() {
 
+	if !s.active {
+		return
+	}
 	for _, p := range s.plist {
 		p.ticksToLive--
 		if p.ticksToLive == 0 {
@@ -67,6 +75,9 @@ func (s *Stars) Update() {
 
 func (s *Stars) Draw(screen *ebiten.Image) {
 
+	if !s.active {
+		return
+	}
 	for _, p := range s.plist {
 
 		screenX := p.x - gl.CameraX()/4

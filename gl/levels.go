@@ -12,8 +12,19 @@ type Level struct {
 	BulletTime   float64
 }
 
+var currentLevel int = 0
+var LandersKilled = 0
+var HumansKilled = 0
+var levels []Level
+
 func NextLevel() {
 	currentLevel++
+	LandersKilled = 0
+	HumansKilled = 0
+}
+
+func LevelNo() int {
+	return currentLevel
 }
 
 func CurrentLevel() Level {
@@ -24,15 +35,16 @@ func LevelCol() types.ColorF {
 	return Cols[currentLevel%5]
 }
 
-var currentLevel int = 0
-var levels []Level
+func ResetHumans() bool {
+	return currentLevel%2 == 0
+}
 
 func init() {
 	levels = []Level{}
 	levels = append(levels, Level{
 		BaiterCount:  0,
-		LanderCount:  2,
-		HumanCount:   18,
+		LanderCount:  2, //18
+		HumanCount:   2, //18
 		BomberCount:  0,
 		PodCount:     0,
 		SwarmerCount: 0,
@@ -40,8 +52,8 @@ func init() {
 	})
 	levels = append(levels, Level{
 		BaiterCount:  1,
-		LanderCount:  24,
-		HumanCount:   24,
+		LanderCount:  2, //24,
+		HumanCount:   2, //24,
 		BomberCount:  1,
 		PodCount:     0,
 		SwarmerCount: 0,

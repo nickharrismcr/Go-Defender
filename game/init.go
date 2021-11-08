@@ -6,7 +6,6 @@ import (
 
 	"Def/gl"
 	"Def/graphics"
-	"Def/logger"
 	"Def/sound"
 	"Def/state/baiter"
 	"Def/state/bomber"
@@ -22,7 +21,6 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
-	"runtime"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -39,7 +37,6 @@ func (e *Engine) Init() {
 	e.initSystems()
 	e.addGame()
 	e.addPlayer()
-
 	e.bulletPool()
 	e.bombPool()
 	e.laserPool()
@@ -60,7 +57,7 @@ func (e *Engine) initSystems() {
 	e.AddSystem(systems.NewLaserMoveSystem(true, e), UPDATE)
 }
 
-func (e *Engine) InitEntities() {
+func (e *Engine) InitEnemies() {
 
 	for i := 0; i < gl.CurrentLevel().LanderCount; i++ {
 		e.addLander(i)
@@ -68,14 +65,18 @@ func (e *Engine) InitEntities() {
 	for i := 0; i < gl.CurrentLevel().BaiterCount; i++ {
 		e.addBaiter(i)
 	}
-	for i := 0; i < gl.CurrentLevel().HumanCount; i++ {
-		e.addHuman(i)
-	}
+
 	for i := 0; i < gl.CurrentLevel().BomberCount; i++ {
 		e.addBomber(i)
 	}
 	for i := 0; i < gl.CurrentLevel().PodCount; i++ {
 		e.addPod(i)
+	}
+}
+
+func (e *Engine) InitHumans() {
+	for i := 0; i < gl.CurrentLevel().HumanCount; i++ {
+		e.addHuman(i)
 	}
 }
 
@@ -428,7 +429,7 @@ func (e *Engine) initEvents() {
 
 	playerCollide := func(ev event.IEvent) {
 		en := ev.GetPayload().(*Entity)
-		logger.Info("Collide : %s ", en.GetClass().String())
+		//logger.Info("Collide : %s ", en.GetClass().String())
 		if en.GetClass() == types.Human {
 			ai := en.GetComponent(types.AI).(*cmp.AI)
 			if ai.State == types.HumanDropping {
@@ -468,21 +469,9 @@ func (e *Engine) initEvents() {
 	landerDie := func(ev event.IEvent) {
 		gl.Score += 150
 		e.ChangeString(gl.ScoreCharId, fmt.Sprintf("%8d", gl.Score))
-		ent := ev.GetPayload().(*Entity)
 		gl.LandersKilled++
-		if gl.LandersKilled == gl.CurrentLevel().LanderCount {
-			lc := event.NewLanderCleared(ent)
-			event.NotifyEvent(lc)
-		}
 		sound.Stop(sound.Laser)
 		sound.Play(sound.Landerdie)
-	}
-
-	landerCleared := func(ev event.IEvent) {
-		runtime.GC()
-		gl.NextLevel()
-		//TODO pause, level end message, human move / bonus
-		//TODO reset all entity states, restart
 	}
 
 	mutantSound := func(ev event.IEvent) {
@@ -597,7 +586,6 @@ func (e *Engine) initEvents() {
 	event.AddEventListener(event.ExplodeEvent, explodeTrigger)
 	event.AddEventListener(event.FireBulletEvent, bulletTrigger)
 	event.AddEventListener(event.LanderDieEvent, landerDie)
-	event.AddEventListener(event.LanderClearedEvent, landerCleared)
 	event.AddEventListener(event.HumanDieEvent, humanDie)
 	event.AddEventListener(event.BomberDieEvent, bomberDie)
 	event.AddEventListener(event.PlayerDieEvent, playerDie)
