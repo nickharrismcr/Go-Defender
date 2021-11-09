@@ -51,7 +51,7 @@ func (pos *PosSystem) Draw(screen *ebiten.Image) {}
 func (pos *PosSystem) process(e types.IEntity) {
 	poscmp := e.GetComponent(types.Pos).(*cmp.Pos)
 	// "hidden"
-	if poscmp.Y == 9999 {
+	if poscmp.Y == 9999 || poscmp.ScreenCoords {
 		return
 	}
 	if poscmp.X < 0 {

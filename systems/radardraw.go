@@ -22,8 +22,6 @@ var rsw = rw * (sw / ww)
 var lineImg = ebiten.NewImage(1, 1)
 var lineOpts = &ebiten.DrawImageOptions{}
 
-// implements ISystem
-
 type RadarDrawSystem struct {
 	sysname types.SystemName
 	filter  *Filter

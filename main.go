@@ -1,8 +1,8 @@
 package main
 
 //TODO
-//  levels entity resets
-//  lives/bombs HUD
+//  intro
+//  lives/bombs HUD update
 
 import (
 	"Def/gl"

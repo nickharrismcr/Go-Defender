@@ -37,12 +37,13 @@ func (e *Engine) Init() {
 	e.initSystems()
 	e.addGame()
 	e.addPlayer()
-	e.bulletPool()
-	e.bombPool()
-	e.laserPool()
+	e.initBulletPool()
+	e.initBombPool()
+	e.initLaserPool()
 	e.initEvents()
+	e.initHUD()
 
-	gl.ScoreCharId = e.AddString("       0", 100, 40)
+	gl.ScoreCharId = e.AddString("       0", 50, 80)
 }
 
 func (e *Engine) initSystems() {
@@ -360,7 +361,7 @@ func (e *Engine) AddScoreSprite(ev event.IEvent) {
 
 }
 
-func (e *Engine) bulletPool() {
+func (e *Engine) initBulletPool() {
 
 	ssheet := graphics.GetSpriteSheet()
 
@@ -375,12 +376,12 @@ func (e *Engine) bulletPool() {
 		ent.AddComponent(li)
 		cl := cmp.NewCollide(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
 		ent.AddComponent(cl)
-		e.BulletPool = append(e.BulletPool, ent)
+		e.bulletPool = append(e.bulletPool, ent)
 	}
 
 }
 
-func (e *Engine) bombPool() {
+func (e *Engine) initBombPool() {
 
 	ssheet := graphics.GetSpriteSheet()
 
@@ -396,12 +397,12 @@ func (e *Engine) bombPool() {
 		ent.AddComponent(cl)
 		li := cmp.NewLife(240)
 		ent.AddComponent(li)
-		e.BombPool = append(e.BombPool, ent)
+		e.bombPool = append(e.bombPool, ent)
 	}
 
 }
 
-func (e *Engine) laserPool() {
+func (e *Engine) initLaserPool() {
 
 	for i := 0; i < 15; i++ {
 		ent := NewEntity(e, types.Laser)
@@ -414,9 +415,46 @@ func (e *Engine) laserPool() {
 		mv := cmp.NewLaserMove()
 		ent.AddComponent(mv)
 
-		e.LaserPool = append(e.LaserPool, ent)
+		e.laserPool = append(e.laserPool, ent)
 	}
 
+}
+
+func (e *Engine) initHUD() {
+
+	ssheet := graphics.GetSpriteSheet()
+
+	for i := 0; i < 5; i++ {
+		ent := NewEntity(e, types.PlayerLife)
+		ent.SetActive(true)
+		pc := cmp.NewPos(float64(i*50), 40, 0, 0)
+		pc.ScreenCoords = true
+		ent.AddComponent(pc)
+		smap := graphics.GetSpriteMap("shiplife.png")
+		dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
+		dr.Scale = 0.8
+		if i >= gl.PlayerLives {
+			dr.Hide = true
+		}
+		ent.AddComponent(dr)
+		e.lives = append(e.lives, ent)
+	}
+
+	for i := 0; i < 5; i++ {
+		ent := NewEntity(e, types.HUDBomb)
+		ent.SetActive(true)
+		pc := cmp.NewPos(350, 40+float64(i*20), 0, 0)
+		pc.ScreenCoords = true
+		ent.AddComponent(pc)
+		smap := graphics.GetSpriteMap("smartbomb.png")
+		dr := cmp.NewDraw(ssheet, smap, types.ColorF{R: 1, G: 1, B: 1})
+		dr.Scale = 0.8
+		if i >= gl.SmartBombs {
+			dr.Hide = true
+		}
+		ent.AddComponent(dr)
+		e.bombs = append(e.bombs, ent)
+	}
 }
 
 func (e *Engine) initEvents() {

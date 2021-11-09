@@ -34,13 +34,15 @@ type Engine struct {
 	world                 *World
 	stars                 *Stars
 	chars                 *Characters
-	BulletPool            []*Entity
-	BombPool              []*Entity
-	LaserPool             []*Entity
-	LaserColIdx           int
+	bulletPool            []*Entity
+	bombPool              []*Entity
+	laserPool             []*Entity
+	laserColIdx           int
 	flash                 int
 	status                int
 	levelEndChars         int
+	lives                 []*Entity
+	bombs                 []*Entity
 }
 
 func NewEngine() *Engine {
@@ -50,10 +52,13 @@ func NewEngine() *Engine {
 		entitiesWithComponent: make(map[types.CmpType]map[types.EntityID]types.IEntity),
 		systems:               make(map[types.SystemName]types.ISystem),
 		chars:                 nil,
-		BulletPool:            []*Entity{},
-		BombPool:              []*Entity{},
-		LaserPool:             []*Entity{},
-		LaserColIdx:           0,
+		bulletPool:            []*Entity{},
+		bombPool:              []*Entity{},
+		laserPool:             []*Entity{},
+		laserColIdx:           0,
+		lives:                 []*Entity{},
+		bombs:                 []*Entity{},
+		levelEndChars:         -1,
 	}
 	e.particleSystem = NewParticleSystem(e)
 	e.stars = NewStars(e)
@@ -223,7 +228,7 @@ func (eng *Engine) TriggerPS(x, y float64) {
 
 func (eng *Engine) TriggerBullet(x, y, dx, dy float64) {
 
-	for _, v := range eng.BulletPool {
+	for _, v := range eng.bulletPool {
 		if !v.Active() {
 			v.SetActive(true)
 			pc := v.GetComponent(types.Pos).(*cmp.Pos)
@@ -236,7 +241,7 @@ func (eng *Engine) TriggerBullet(x, y, dx, dy float64) {
 }
 
 func (eng *Engine) TriggerBomb(x, y float64) {
-	for _, v := range eng.BombPool {
+	for _, v := range eng.bombPool {
 		if !v.Active() {
 			v.SetActive(true)
 			pc := v.GetComponent(types.Pos).(*cmp.Pos)
@@ -249,7 +254,7 @@ func (eng *Engine) TriggerBomb(x, y float64) {
 }
 
 func (eng *Engine) TriggerLaser(x, y, dx float64) {
-	for _, v := range eng.LaserPool {
+	for _, v := range eng.laserPool {
 		if !v.Active() {
 			v.SetActive(true)
 			pc := v.GetComponent(types.Pos).(*cmp.Pos)
@@ -257,10 +262,10 @@ func (eng *Engine) TriggerLaser(x, y, dx float64) {
 			lc := v.GetComponent(types.Life).(*cmp.Life)
 			lc.TicksToLive = 90
 			dc := v.GetComponent(types.LaserDraw).(*cmp.LaserDraw)
-			dc.Color = gl.LaserCols[eng.LaserColIdx%15]
+			dc.Color = gl.LaserCols[eng.laserColIdx%15]
 			mv := v.GetComponent(types.LaserMove).(*cmp.LaserMove)
 			mv.Length = 0
-			eng.LaserColIdx++
+			eng.laserColIdx++
 			break
 		}
 	}
@@ -371,10 +376,10 @@ func (eng *Engine) clearEnemies() {
 func (eng *Engine) LevelEnd() {
 
 	eng.clearEnemies()
-	for _, e := range eng.LaserPool {
+	for _, e := range eng.laserPool {
 		e.SetActive(false)
 	}
-	for _, e := range eng.BombPool {
+	for _, e := range eng.bombPool {
 		e.SetActive(false)
 	}
 	eng.GetPlayer().SetActive(false)
@@ -395,5 +400,7 @@ func (eng *Engine) LevelStart() {
 	eng.world.SetActive(true)
 	eng.stars.SetActive(true)
 	eng.GetPlayer().SetActive(true)
-	eng.chars.Remove(eng.levelEndChars)
+	if eng.levelEndChars != -1 {
+		eng.chars.Remove(eng.levelEndChars)
+	}
 }

@@ -124,12 +124,16 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 	}
 
 	if ebiten.IsKeyPressed(gl.KeyMap[types.SmartBomb]) {
+		if gl.SmartBombs == 0 {
+			return
+		}
 		if !sc.SmartBombPressed {
 			sc.SmartBombPressed = true
 			ev := event.NewSmartBomb(pc)
 			event.NotifyEvent(ev)
 			event.NotifyEventDelay(ev, 5)
 			event.NotifyEventDelay(ev, 10)
+			gl.SmartBombs--
 		}
 	} else {
 		sc.SmartBombPressed = false

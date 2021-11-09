@@ -23,19 +23,21 @@ const (
 )
 
 const (
-	Lander  EntityType = iota
-	Baiter  EntityType = iota
-	Bullet  EntityType = iota
-	Human   EntityType = iota
-	Bomb    EntityType = iota
-	Bomber  EntityType = iota
-	Player  EntityType = iota
-	Laser   EntityType = iota
-	Pod     EntityType = iota
-	Swarmer EntityType = iota
-	Score   EntityType = iota
-	Flame   EntityType = iota
-	Game    EntityType = iota
+	Lander     EntityType = iota
+	Baiter     EntityType = iota
+	Bullet     EntityType = iota
+	Human      EntityType = iota
+	Bomb       EntityType = iota
+	Bomber     EntityType = iota
+	Player     EntityType = iota
+	Laser      EntityType = iota
+	Pod        EntityType = iota
+	Swarmer    EntityType = iota
+	Score      EntityType = iota
+	Flame      EntityType = iota
+	Game       EntityType = iota
+	PlayerLife EntityType = iota
+	HUDBomb    EntityType = iota
 )
 
 func (et EntityType) String() string {

@@ -35,6 +35,7 @@ var KeyMap = map[types.ActionType]ebiten.Key{
 
 var PlayerID types.EntityID
 var PlayerLives = 3
+var SmartBombs = 5
 var ScoreCharId int
 
 var Score int = 0
