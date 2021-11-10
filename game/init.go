@@ -460,10 +460,12 @@ func (e *Engine) initHUD() {
 func (e *Engine) initEvents() {
 
 	start := func(ev event.IEvent) {
+
 		e.GetSystem(types.PosSystem).SetActive(true)
 		sound.Play(sound.Background)
 		sound.Play(sound.Levelstart)
 		e.SetPauseAll(false, -1)
+		e.UpdateHUD()
 	}
 
 	playerCollide := func(ev event.IEvent) {
@@ -479,10 +481,6 @@ func (e *Engine) initEvents() {
 			e.SetPauseAll(true, en.GetID())
 			ev := event.NewPlayerDie(e.GetPlayer())
 			event.NotifyEvent(ev)
-			gl.PlayerLives--
-			if gl.PlayerLives == 0 {
-				e.Terminate(GAME_OVER)
-			}
 		}
 	}
 
@@ -538,7 +536,6 @@ func (e *Engine) initEvents() {
 		pe := e.GetEntities()[gl.PlayerID]
 		pai := pe.GetComponent(types.AI).(*cmp.AI)
 		pai.NextState = types.PlayerDie
-
 	}
 
 	playerExplode := func(ev event.IEvent) {
@@ -562,6 +559,7 @@ func (e *Engine) initEvents() {
 	smartBomb := func(ev event.IEvent) {
 		e.SetFlash(1)
 		e.SmartBomb()
+		e.UpdateHUD()
 	}
 
 	podDie := func(ev event.IEvent) {

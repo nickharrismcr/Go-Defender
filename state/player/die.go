@@ -3,6 +3,7 @@ package player
 import (
 	"Def/cmp"
 	"Def/event"
+	"Def/gl"
 	"Def/graphics"
 	"Def/types"
 )
@@ -48,10 +49,12 @@ func (s *PlayerDie) Update(ai *cmp.AI, e types.IEntity) {
 		event.NotifyEvent(ev)
 	}
 	if ai.Counter == 180 {
+		gl.PlayerLives--
 		ai.NextState = types.PlayerPlay
 		dc.Hide = false
 		dc.SpriteMap = graphics.GetSpriteMap("ship.png")
 		dc.Frame = 0
 
 	}
+
 }

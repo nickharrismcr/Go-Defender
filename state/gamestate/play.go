@@ -32,5 +32,8 @@ func (s *GamePlay) Update(ai *cmp.AI, e types.IEntity) {
 	if gl.LandersKilled == gl.CurrentLevel().LanderCount {
 		ai.NextState = types.GameLevelEnd
 	}
+	if gl.PlayerLives == 0 {
+		ai.NextState = types.GameOver
+	}
 
 }

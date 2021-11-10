@@ -261,6 +261,8 @@ type IEngine interface {
 	GetSystem(SystemName) ISystem
 	LevelStart()
 	LevelEnd()
+	GameOver()
+	Terminate()
 }
 
 // interface for ECS systems

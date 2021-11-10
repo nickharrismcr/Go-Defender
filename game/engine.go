@@ -349,8 +349,8 @@ func (eng *Engine) MutateAll() {
 	}
 }
 
-func (eng *Engine) Terminate(status int) {
-	eng.status = status
+func (eng *Engine) Terminate() {
+	eng.status = GAME_OVER
 }
 
 func (eng *Engine) SetPauseAll(p bool, this types.EntityID) {
@@ -403,4 +403,35 @@ func (eng *Engine) LevelStart() {
 	if eng.levelEndChars != -1 {
 		eng.chars.Remove(eng.levelEndChars)
 	}
+	eng.UpdateHUD()
+}
+
+func (eng *Engine) UpdateHUD() {
+
+	for i := 0; i < 5; i++ {
+		pl := eng.lives[i]
+		dc := pl.GetComponent(types.Draw).(*cmp.Draw)
+		if i >= gl.PlayerLives-1 {
+			dc.Hide = true
+		} else {
+			dc.Hide = false
+		}
+		sb := eng.bombs[i]
+		dc = sb.GetComponent(types.Draw).(*cmp.Draw)
+		if i >= gl.SmartBombs {
+			dc.Hide = true
+		} else {
+			dc.Hide = false
+		}
+	}
+}
+
+func (eng *Engine) GameOver() {
+	eng.world.SetActive(false)
+	eng.stars.SetActive(false)
+	for _, s := range eng.drawSystems {
+		s.SetActive(false)
+	}
+	eng.chars.Clear()
+	eng.chars.Add("GAME OVER", gl.ScreenWidth/2-100, gl.ScreenHeight/2)
 }

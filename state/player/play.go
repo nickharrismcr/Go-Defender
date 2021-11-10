@@ -142,6 +142,8 @@ func (s *PlayerPlay) Update(ai *cmp.AI, e types.IEntity) {
 	if ebiten.IsKeyPressed(gl.KeyMap[types.HyperSpace]) {
 		if !sc.HyperSpacePressed {
 			sc.HyperSpacePressed = true
+			ev := event.NewPlayerDie(e)
+			event.NotifyEvent(ev)
 		}
 	} else {
 		sc.HyperSpacePressed = false

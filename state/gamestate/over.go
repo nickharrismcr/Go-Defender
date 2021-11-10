@@ -22,9 +22,13 @@ func (s *GameOver) GetName() types.StateType {
 }
 
 func (s *GameOver) Enter(ai *cmp.AI, e types.IEntity) {
-
+	ai.Scratch = 0
+	e.GetEngine().GameOver()
 }
 
 func (s *GameOver) Update(ai *cmp.AI, e types.IEntity) {
-
+	ai.Scratch++
+	if ai.Scratch > 4*30 {
+		e.GetEngine().Terminate()
+	}
 }

@@ -2,7 +2,8 @@ package main
 
 //TODO
 //  intro
-//  lives/bombs HUD update
+//  lives HUD update bug
+//  player explode bug
 
 import (
 	"Def/gl"
@@ -22,8 +23,8 @@ func main() {
 	//ebiten.SetFullscreen(true)
 	ebiten.SetMaxTPS(gl.MaxTPS)
 
-	gm := NewApp()
-	if err := ebiten.RunGame(gm); err != nil {
+	app := NewApp()
+	if err := ebiten.RunGame(app); err != nil {
 	}
 
 }
