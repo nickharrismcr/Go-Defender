@@ -382,6 +382,11 @@ func (eng *Engine) LevelEnd() {
 	for _, e := range eng.bombPool {
 		e.SetActive(false)
 	}
+	for _, e := range eng.bulletPool {
+		e.SetActive(false)
+	}
+	ev := event.NewPlayerStopThrust(eng.GetPlayer())
+	event.NotifyEvent(ev)
 	eng.GetPlayer().SetActive(false)
 	eng.world.SetActive(false)
 	eng.stars.SetActive(false)
