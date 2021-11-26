@@ -35,21 +35,6 @@ func (s *LanderSearch) Enter(ai *cmp.AI, e types.IEntity) {
 	cl := cmp.NewCollide(smap.Frame.W/smap.Anim_frames, smap.Frame.H)
 	e.AddComponent(cl)
 
-	pc := e.GetComponent(types.Pos).(*cmp.Pos)
-	pc.DX = gl.LanderSpeed
-	pc.DY = 0
-	ai.Counter = 0
-	for _, id := range e.GetEngine().GetActiveEntitiesOfClass(types.Human) {
-		hum := e.GetEngine().GetEntity(id)
-		if hum.Parent() == hum.GetID() {
-			humpos := hum.GetComponent(types.Pos).(*cmp.Pos)
-			if humpos.X-pc.X < 4000 {
-				e.SetChild(hum.GetID())
-				hum.SetParent(e.GetID())
-				break
-			}
-		}
-	}
 }
 
 func (s *LanderSearch) Update(ai *cmp.AI, e types.IEntity) {
