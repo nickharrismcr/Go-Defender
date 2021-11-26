@@ -20,7 +20,7 @@ func main() {
 
 	ebiten.SetWindowSize(320*5, 240*5)
 	ebiten.SetWindowTitle("Defender")
-	//ebiten.SetFullscreen(true)
+	ebiten.SetFullscreen(true)
 	ebiten.SetMaxTPS(gl.MaxTPS)
 
 	app := NewApp()

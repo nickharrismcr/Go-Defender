@@ -52,7 +52,9 @@ func (w *Characters) SetSpeed(s float64) {
 }
 
 func (w *Characters) Clear() {
-	w.chars = [][]Char{}
+	for i := range w.chars {
+		w.chars[i] = []Char{}
+	}
 }
 
 func (w *Characters) Remove(idx int) {
